@@ -250,6 +250,7 @@ class Create_DataSet(unittest.TestCase):
         self.assertEqual(err_code, 902, '创建dataset, schema缺失时err_code不正确')
 
 class Get_DataSet(unittest.TestCase):
+    """该脚本用来测试dataset查询接口：使用id进行查询"""
 
     def test_case01(self):
         try:
