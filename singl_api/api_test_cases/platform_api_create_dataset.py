@@ -250,9 +250,10 @@ class Create_DataSet(unittest.TestCase):
         self.assertEqual(err_code, 902, '创建dataset, schema缺失时err_code不正确')
 
 class Get_DataSet(unittest.TestCase):
-    """该脚本用来测试dataset查询接口：使用id进行查询"""
+    """该脚本用来测试dataset查询接口"""
 
     def test_case01(self):
+        """使用id查询"""
         try:
             dataset_sql = 'select id, name from merce_dataset order by create_time desc limit 1'
             dataset_info = ms.ExecuQuery(dataset_sql)
@@ -271,6 +272,26 @@ class Get_DataSet(unittest.TestCase):
             # print({"id": dataset_id, "name": dataset_name} == {"id": response_id, "name": response_name})
             self.assertEqual({"id": dataset_id, "name": dataset_name}, {"id": response_id, "name": response_name}, '两次查询得到的dataset id和name不一致，查询失败')
 
+    # def test_case02(self):
+    #     """使用name查询"""
+    #     try:
+    #         dataset_sql = 'select id, name from merce_dataset order by create_time desc limit 1'
+    #         dataset_info = ms.ExecuQuery(dataset_sql)
+    #         dataset_id = dataset_info[0][0]
+    #         dataset_name = dataset_info[0][1]
+    #         # print(type(dataset_id[0][0]))
+    #     except Exception as e:
+    #         raise e
+    #     else:
+    #         url2 = '%s/api/datasets/%s?tenant=%s' % (MY_LOGIN_INFO["HOST"], dataset_id, tenant_id)
+    #         response = requests.get(url=url2, headers=get_headers()).text
+    #         response = json.loads(response)
+    #         response_id = response["id"]
+    #         response_name = response["name"]
+    #         # print("id:", response["id"])
+    #         # print({"id": dataset_id, "name": dataset_name} == {"id": response_id, "name": response_name})
+    #         self.assertEqual({"id": dataset_id, "name": dataset_name}, {"id": response_id, "name": response_name},
+    #                          '两次查询得到的dataset id和name不一致，查询失败')
 
 
 
