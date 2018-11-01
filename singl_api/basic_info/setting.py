@@ -11,7 +11,9 @@ email_list = {
 
 email_to = {
     "gubingjie": "bingjie.gu@inforefiner.com",
-    "daming": "zhiming.wang@inforefiner.com"
+    "daming": "zhiming.wang@inforefiner.com",
+    "pengyuan":"yuan.peng@inforefiner.com"
+
 }
 
 
@@ -25,6 +27,7 @@ MySQL_CONFIG = {
 }
 schema_id = "c71b8d28-6c5b-4b9f-a470-61eda073bd6e"
 owner = "2059750c-a300-4b64-84a6-e8b086dbfd42"
+tenant_id = "2d7ad891-41c5-4fba-9ff2-03aef3c729e5"  # default租戶ID
 dataset_resource = {"id": "39386f75-9b28-43a6-a6bf-bd5e0e85d437"}
 schema_resource = {"id": "9123ca72-ebd1-422b-b8b0-e150b7c69dc5"}
 

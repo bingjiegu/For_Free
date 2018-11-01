@@ -1,5 +1,6 @@
 import pymysql
 
+# 数据库连接
 class MYSQL:
     def __init__(self, host, user, pwd, db):
         self.host = host
@@ -34,13 +35,13 @@ class MYSQL:
         self.conn.close()
 
 
-if __name__ == '__main__':
-    ms = MYSQL('192.168.1.189', 'merce', 'merce', 'merce')
-    sql = 'select name from merce_schema order  by create_time desc limit 1'
-    res = ms.ExecuQuery(sql)
-    res = res[0][0]
-    print(type(res))
-    print(res)
+# if __name__ == '__main__':
+#     ms = MYSQL('192.168.1.189', 'merce', 'merce', 'merce')
+#     sql = 'select name from merce_schema order  by create_time desc limit 1'
+#     res = ms.ExecuQuery(sql)
+#     res = res[0][0]
+    # print(type(res))
+    # print(res)
 
     # update_sql = 'update merce_schema set name = "8899" where id = "360e9d2d-1f4d-4283-bf10-ec232d7ab4ec"'
     # res_update = ms.ExecuNoQuery(update_sql)
