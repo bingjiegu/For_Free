@@ -8,15 +8,12 @@ email_pwd = 'ruifantest'       # 发送者密码
 email_list = {
     'gubingjie': "bingjie.gu@inforefiner.com"
 }
-
 email_to = {
     "gubingjie": "bingjie.gu@inforefiner.com",
     "daming": "zhiming.wang@inforefiner.com",
     "pengyuan":"yuan.peng@inforefiner.com"
 
 }
-
-
 MySQL_CONFIG = {
     'HOST': '192.168.1.189',
     "PORT": 3306,
