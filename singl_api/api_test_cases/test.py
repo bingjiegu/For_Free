@@ -17,7 +17,7 @@ url = '%s/api/datasets' % MY_LOGIN_INFO["HOST"]
 
 storage = get_datasource()
 
-# 该脚本用来测试flow
+
 class Get_DataSet(unittest.TestCase):
     """该脚本用来测试dataset查询接口"""
 

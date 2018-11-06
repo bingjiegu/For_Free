@@ -168,10 +168,10 @@
         <entry file="file://$PROJECT_DIR$/api_test_cases/test.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="157">
-              <caret line="19" column="13" selection-start-line="19" selection-start-column="13" selection-end-line="19" selection-end-column="13" />
+              <caret line="19" selection-start-line="19" selection-end-line="19" />
               <folding>
                 <element signature="e#0#65#0" expanded="true" />
-                <marker date="1541472228808" expanded="true" signature="932:938" ph="..." />
+                <marker date="1541472943861" expanded="true" signature="919:925" ph="..." />
               </folding>
             </state>
           </provider>
@@ -639,10 +639,10 @@
     <entry file="file://$PROJECT_DIR$/api_test_cases/test.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="157">
-          <caret line="19" column="13" selection-start-line="19" selection-start-column="13" selection-end-line="19" selection-end-column="13" />
+          <caret line="19" selection-start-line="19" selection-end-line="19" />
           <folding>
             <element signature="e#0#65#0" expanded="true" />
-            <marker date="1541472228808" expanded="true" signature="932:938" ph="..." />
+            <marker date="1541472943861" expanded="true" signature="919:925" ph="..." />
           </folding>
         </state>
       </provider>
