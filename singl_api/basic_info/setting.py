@@ -27,6 +27,8 @@ owner = "2059750c-a300-4b64-84a6-e8b086dbfd42"
 tenant_id = "2d7ad891-41c5-4fba-9ff2-03aef3c729e5"  # default租戶ID
 dataset_resource = {"id": "39386f75-9b28-43a6-a6bf-bd5e0e85d437"}
 schema_resource = {"id": "9123ca72-ebd1-422b-b8b0-e150b7c69dc5"}
+# 查询scheduler时使用的id
+scheduler_name = "gbj_dataflow 2018-10-17 16:23:19"
 
 MY_LOGIN_INFO = {
  "HEADERS": {'Content-Type': 'application/x-www-form-urlencoded'},

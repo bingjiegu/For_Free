@@ -4,7 +4,7 @@ import datetime
 import time
 from basic_info.Open_DB import MYSQL
 # from basic_info.timestamp_13 import timestamp_to_13
-from basic_info.setting import MySQL_CONFIG, schema_id
+from basic_info.setting import MySQL_CONFIG, schema_id, scheduler_name
 
 ms = MYSQL(MySQL_CONFIG["HOST"], MySQL_CONFIG["USER"], MySQL_CONFIG["PASSWORD"], MySQL_CONFIG["DB"],)
 
@@ -66,6 +66,22 @@ def get_datasource():
         return storageConfigurations
 
 
+def get_schedulers():
+    try:
+        sql = 'select id, name from merce_flow_schedule where name = "%s"' % scheduler_name
+        scheduler_id = ms.ExecuQuery(sql)
+    except Exception as e:
+        print("scheduler数据查询出错:%s" %e)
+    else:
+        scheduler_id = scheduler_id[0][0]
+        return scheduler_id
+
+
+
+
+
 if __name__ == '__main__':
-    get_datasource()
-    schema()
+    # get_datasource()
+    # schema()
+    get_schedulers()
+
