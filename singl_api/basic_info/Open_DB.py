@@ -22,17 +22,19 @@ class MYSQL:
     def ExecuQuery(self, query):
         cur = self._Getconnect()
         cur.execute(query)
+        # 获取查询到的全部数据
         res = cur.fetchall()
         # 关闭数据库连接并返回查询结果
         self.conn.close()
         return res
-    def ExecuNoQuery(self,sql):
+
+    def ExecuNoQuery(self, sql):
         cur = self._Getconnect()
         cur.execute(sql)
         res = cur.fetchall()
-
         self.conn.commit()
         self.conn.close()
+        return res
 
 
 # if __name__ == '__main__':
