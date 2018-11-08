@@ -1,10 +1,13 @@
 import pymysql
 import json
-import datetime
+import requests
 import time
 from basic_info.Open_DB import MYSQL
-# from basic_info.timestamp_13 import timestamp_to_13
-from basic_info.setting import MySQL_CONFIG, schema_id, scheduler_name
+from basic_info.setting import MySQL_CONFIG, schema_id, scheduler_name,flow_id
+import traceback
+from basic_info.url_info import *
+# from basic_info import url_info
+from basic_info.get_auth_token import get_headers
 
 ms = MYSQL(MySQL_CONFIG["HOST"], MySQL_CONFIG["USER"], MySQL_CONFIG["PASSWORD"], MySQL_CONFIG["DB"],)
 
@@ -75,6 +78,36 @@ def get_schedulers():
     else:
         scheduler_id = scheduler_id[0][0]
         return scheduler_id
+
+
+def get_flows():
+    try:
+        sql = 'select name, flow_type from merce_flow where id = "%s"' % flow_id
+        flow_info = ms.ExecuQuery(sql)
+
+    except Exception as e:
+        traceback.print_exc()
+    else:
+        return flow_info
+
+
+def create_schedulers():
+    scheduler_name = time.strftime("%Y%m%d%H%M%S", time.localtime()) + 'schedulers_delete'
+    flow_name = get_flows()[0][0]
+    flow_type = get_flows()[0][1]
+    # url = "%s/api/schedulers" % MY_LOGIN_INFO["HOST"]
+    url = create_scheduler_url
+    data = {"name": scheduler_name,
+            "flowId": flow_id,
+            "flowName": flow_name,
+            "flowType": flow_type,
+            "schedulerId": "once",
+            "configurations":
+                {"startTime": int((time.time() + 7200) * 1000), "arguments": [], "cron": "once", "properties": []}            }
+
+    res = requests.post(url=url, headers=get_headers(), data=json.dumps(data))
+    # print('get_n_schedulers执行return')
+    return res.text
 
 
 

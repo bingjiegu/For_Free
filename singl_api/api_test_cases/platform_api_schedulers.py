@@ -4,7 +4,6 @@ import requests
 import json
 import time
 from basic_info.format_res import dict_res, get_time
-
 from basic_info.setting import MySQL_CONFIG
 from basic_info.Open_DB import MYSQL
 from basic_info.url_info import *
@@ -29,7 +28,7 @@ class Create_schedulers(unittest.TestCase):
                     {"startTime": int((time.time() + 7200)*1000), "arguments": [], "cron": "once", "properties": []}
                 }
         res = requests.post(url=create_scheduler_url, headers=get_headers(), data=json.dumps(data))
-        print(res.status_code, res.text)
+        # print(res.status_code, res.text)
         self.assertEqual(res.status_code, 201, '创建单次执行的scheduler失败')
 
     def test_case02(self):
@@ -146,7 +145,7 @@ class query_schedulers(unittest.TestCase):
         # 响应码应该为200
         self.assertEqual(res.status_code, 200, "查询失败")
         # 对比查询关键字和查询结果中的flowType
-        print("fieldValue", fieldValue, "query_result_flowType", query_result_flowType)
+        # print("fieldValue", fieldValue, "query_result_flowType", query_result_flowType)
         self.assertEqual(fieldValue, query_result_flowType, "查询结果中scheduler关联flowtype和查询关键词flowType不一致")
 
     def test_case04(self):
@@ -167,7 +166,7 @@ class query_schedulers(unittest.TestCase):
         # 响应码应该为200
         self.assertEqual(res.status_code, 200, "查询失败")
         # 对比查询关键字和查询结果中的flowType
-        print("fieldValue", fieldValue, "query_result_flowType", query_result_flowType)
+        # print("fieldValue", fieldValue, "query_result_flowType", query_result_flowType)
         self.assertEqual(fieldValue, query_result_flowType, "查询结果中scheduler关联flowtype和查询关键词flowType不一致")
 
     def test_case05(self):
@@ -181,7 +180,7 @@ class query_schedulers(unittest.TestCase):
             data_name = data["fieldList"][0]["fieldValue"][1:-1]
             data_flowType = data["fieldList"][1]["fieldValue"]
             res = requests.post(url=query_scheduler_url, headers=get_headers(), data=json.dumps(data))
-            print(res.status_code, res.text)
+            # print(res.status_code, res.text)
 
             query_results = dict_res(res.text)
             query_result_name = query_results["content"][0]["name"]
@@ -209,7 +208,7 @@ class query_schedulers(unittest.TestCase):
         query_results = dict_res(res.text)
         # print(res.text, query_results)
         first_Time = query_results["content"][0]["lastModifiedTime"]
-        print('first_one_lastModifiedTime:', first_Time)
+        # print('first_one_lastModifiedTime:', first_Time)
         # 将查询结果中的第一个的lastModifiedTime和查询使用的开始时间，结束时间做对比，应该包含在二者之间
         self.assertEqual(end_time > first_Time > start_time, True,
                          "查询结果的lastModifiedTime不包含在起始时间内，查询结果不正确")
@@ -235,3 +234,7 @@ class enable_disable(unittest.TestCase):
         res = requests.post(url=disable_scheduler_url, headers=get_headers(), data=json.dumps(data))
         # print(res.status_code)
         self.assertEqual(res.status_code, 204, msg="停用计划接口调用失败")
+
+
+if __name__ == '__main__':
+    unittest.main()
