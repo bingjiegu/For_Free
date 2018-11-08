@@ -1,6 +1,6 @@
 import json
 from json.decoder import JSONDecodeError
-
+import time
 
 # 将res从str转化为dict
 def dict_res(res):
@@ -19,6 +19,10 @@ def dict_res(res):
     else:
         print("没有返回值或返回值为空")
 
+def get_time():
+    # 当前时间的时间戳转化为毫秒级
+    time_stamp = int(time.time())*1000
+    return time_stamp
 
 
 

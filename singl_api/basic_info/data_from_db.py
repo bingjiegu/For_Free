@@ -80,8 +80,3 @@ def get_schedulers():
 
 
 
-if __name__ == '__main__':
-    # get_datasource()
-    # schema()
-    get_schedulers()
-

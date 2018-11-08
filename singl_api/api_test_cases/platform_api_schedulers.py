@@ -3,7 +3,7 @@ import unittest
 import requests
 import json
 import time
-from basic_info.format_res import dict_res
+from basic_info.format_res import dict_res, get_time
 
 from basic_info.setting import MySQL_CONFIG
 from basic_info.Open_DB import MYSQL
@@ -35,6 +35,8 @@ class Create_schedulers(unittest.TestCase):
     def test_case02(self):
         """创建schedulers，周期执行"""
         scheduler_name = time.strftime("%Y%m%d%H%M%S", time.localtime()) + 'scheduler'
+        start_time = get_time()+(2*3600*1000)  # starttime设为当前时间2个小时后
+        end_time = get_time()+ (10*24*3600*1000)  # endtime设为当前时间十天后
         data = {"name": scheduler_name,
                 "flowId": "1f028f3c-fd76-4e89-afa9-9c1d12b14946",
                 "flowName": "gbj_dataflow",
@@ -45,7 +47,7 @@ class Create_schedulers(unittest.TestCase):
                     {"arguments": [],
                      "cron": "0 0 12 * * ? ",
                      "cronType": "simple",
-                     "endTime": 3153600000000,
+                     "endTime": end_time,
                      "properties":
                          [{"name":"all.debug","value":"false"},
                           {"name":"all.dataset-nullable","value":"false"},
@@ -60,7 +62,7 @@ class Create_schedulers(unittest.TestCase):
                           {"name":"dataflow.verbose","value":"true"},
                           {"name":"dataflow.local-dirs","value":""},
                           {"name":"dataflow.sink.concat-files","value":"true"}],
-                     "startTime": int((time.time() + 7200)*1000)}}
+                     "startTime": start_time}}
         res = requests.post(url=create_scheduler_url, headers=get_headers(), data=json.dumps(data))
         # print(res.status_code, res.text)
         self.assertEqual(res.status_code, 201, '创建周期执行的scheduler失败')
@@ -189,37 +191,47 @@ class query_schedulers(unittest.TestCase):
             # print(data_flowType, query_result_flowType)
             self.assertEqual(data_flowType, query_result_flowType,  "查询出的scheduler flowType和查询条件不一致")
 
-    # def test_case06(self):
-    #     """query:根据上次修改时间查询全部的scheduler""" # 使用createtime还是lastModifiedTime不确定，需要确认
-    #     select_url = "%s/api/schedulers/query" % (MY_LOGIN_INFO["HOST"])
-    #     data = {"fieldList":[
-    #                  {"fieldName":"lastModifiedTime","fieldValue":1538323200000,"comparatorOperator":"GREATER_THAN"},
-    #                  {"fieldName":"lastModifiedTime","fieldValue":1543507200000,"comparatorOperator":"LESS_THAN"}
-    #                  ],
-    #             "sortObject":{"field":"lastModifiedTime","orderDirection":"DESC"},
-    #             "offset": 0,
-    #             "limit": 8
-    #            }
-    #     res = requests.post(url=select_url, headers=get_headers(), data=json.dumps(data))
-    #     # 响应码应该为200
-    #     self.assertEqual(res.status_code, 200, "查询失败")
+    def test_case06(self):
+        """query:根据上次修改时间查询全部的scheduler"""
+        select_url = "%s/api/schedulers/query" % (MY_LOGIN_INFO["HOST"])
+        end_time = get_time()  # lastModifiedTime结束时间是当前时间
+        start_time = get_time() - (10 * 24 * 3600 * 1000)  # lastModifiedTime开始时间是当前时间的十天前
+        data = {"fieldList": [
+            {"fieldName": "lastModifiedTime", "fieldValue": start_time, "comparatorOperator": "GREATER_THAN"},
+            {"fieldName": "lastModifiedTime", "fieldValue": end_time, "comparatorOperator": "LESS_THAN"}
+        ],
+            "sortObject": {"field": "lastModifiedTime", "orderDirection": "DESC"},
+            "offset": 0,
+            "limit": 8
+        }
+        res = requests.post(url=select_url, headers=get_headers(), data=json.dumps(data))
+
+        query_results = dict_res(res.text)
+        # print(res.text, query_results)
+        first_Time = query_results["content"][0]["lastModifiedTime"]
+        print('first_one_lastModifiedTime:', first_Time)
+        # 将查询结果中的第一个的lastModifiedTime和查询使用的开始时间，结束时间做对比，应该包含在二者之间
+        self.assertEqual(end_time > first_Time > start_time, True,
+                         "查询结果的lastModifiedTime不包含在起始时间内，查询结果不正确")
 
 
 # 该类用来测试启用停用计划接口
 class enable_disable(unittest.TestCase):
     """测试启用停用schedulers接口"""
     def test_case01(self):
+        """启用计划"""
         data = []
         scheduler_id = get_schedulers()
         data.append(scheduler_id)
         res = requests.post(url=enable_scheduler_url, headers=get_headers(), data=json.dumps(data))
-        print(res.status_code)
+        # print(res.status_code)
         self.assertEqual(res.status_code, 204, msg="启用计划接口调用失败")
 
     def test_case02(self):
+        """停用计划"""
         data = []
         scheduler_id = get_schedulers()
         data.append(scheduler_id)
         res = requests.post(url=disable_scheduler_url, headers=get_headers(), data=json.dumps(data))
-        print(res.status_code)
+        # print(res.status_code)
         self.assertEqual(res.status_code, 204, msg="停用计划接口调用失败")
