@@ -30,6 +30,23 @@ schema_resource = {"id": "9123ca72-ebd1-422b-b8b0-e150b7c69dc5"}
 # 查询scheduler时使用的id
 scheduler_name = "gbj_dataflow 2018-10-17 16:23:19"
 
+# 查询flow时使用的id
+flow_id = "1f028f3c-fd76-4e89-afa9-9c1d12b14946"
+# 查询flow时使用的resource的id
+Flows_resourceid = "8cb5f399-ec5d-4236-98d3-88f0d1d19d2b"
+# 创建flow时使用的schema的name和id
+idnameage_schema_name = 'idnameage'
+idnameage_schema_id = '0a80565f-10ef-4bea-8563-0cb28cd0db27'
+left_age_dataset_name = 'left_age'
+left_age_dataset_id = '8bfcf577-ebb6-4f8d-ae43-eac671ad5364'
+# 根据flowname查询流程使用的name,version
+query_flow_name = 'test_df_supplement'
+query_flow_version = 3
+# 更新流程时使用的流程id
+flow_update_id = 'cb0a37ea-de4a-495c-bae0-236fcbd08eaf'
+# 根据流程id和计划id查询执行历史
+flow_scheduler_id = '63b0a864-ce40-4f88-a25d-929164198087'
+
 MY_LOGIN_INFO = {
  "HEADERS": {'Content-Type': 'application/x-www-form-urlencoded'},
  "URL": "http://192.168.1.189:8515/api/auth/login",
