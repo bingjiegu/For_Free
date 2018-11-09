@@ -235,6 +235,15 @@ class enable_disable(unittest.TestCase):
         # print(res.status_code)
         self.assertEqual(res.status_code, 204, msg="停用计划接口调用失败")
 
+    def test_case03(self):
+        """停用计划"""
+        data = []
+        scheduler_id = get_schedulers()
+        data.append(scheduler_id)
+        res = requests.post(url=disable_scheduler_url, headers=get_headers(), data=json.dumps(data))
+        # print(res.status_code)
+        self.assertEqual(res.status_code, 204, msg="停用计划接口调用失败")
+
 
 if __name__ == '__main__':
     unittest.main()
