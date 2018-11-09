@@ -1,18 +1,30 @@
 from basic_info.setting import *
-from basic_info.data_from_db import get_schedulers
+from basic_info.Open_DB import MYSQL
 
+ms = MYSQL(MySQL_CONFIG["HOST"], MySQL_CONFIG["USER"], MySQL_CONFIG["PASSWORD"], MySQL_CONFIG["DB"],)
 
 # 创建schedule的接口
 create_scheduler_url = "%s/api/schedulers" % MY_LOGIN_INFO["HOST"]
 
-# 查询schedule的接口
+# 查询schedule的接口--query
 query_scheduler_url = "%s/api/schedulers/query" % (MY_LOGIN_INFO["HOST"])
-select_by_schedulerId_url = "%s/api/schedulers/%s" % (MY_LOGIN_INFO["HOST"], get_schedulers())
+
+# 查询scheduler的接口--id
+sql = 'select id from merce_flow_schedule where name = "%s"' % scheduler_name
+id_info = ms.ExecuQuery(sql)
+scheduler_id = id_info[0][0]
+select_by_schedulerId_url = "%s/api/schedulers/%s" % (MY_LOGIN_INFO["HOST"], scheduler_id)
 
 # 启用计划接口
 enable_scheduler_url = "%s/api/schedulers/enable" % (MY_LOGIN_INFO["HOST"])
 # 停用计划接口
 disable_scheduler_url = "%s/api/schedulers/disable" % (MY_LOGIN_INFO["HOST"])
+
+# 批量删除schedulers
+delete_schedulers_url = "%s/api/schedulers/removeList" % (MY_LOGIN_INFO["HOST"])
+
+
+
 
 # 查询flow接口
 query_flows_url = "%s/api/flows/query" % (MY_LOGIN_INFO["HOST"])

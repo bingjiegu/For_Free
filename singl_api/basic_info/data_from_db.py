@@ -5,6 +5,10 @@ import time
 from basic_info.Open_DB import MYSQL
 # from basic_info.timestamp_13 import timestamp_to_13
 from basic_info.setting import MySQL_CONFIG, schema_id, scheduler_name
+from basic_info.url_info import *
+import requests
+from basic_info.get_auth_token import get_headers
+from basic_info.format_res import dict_res
 
 ms = MYSQL(MySQL_CONFIG["HOST"], MySQL_CONFIG["USER"], MySQL_CONFIG["PASSWORD"], MySQL_CONFIG["DB"],)
 
@@ -26,11 +30,6 @@ def schema():
     except:
         return None
 
-    # 将浮点数的时间戳转化成13位格式后存入schema字典
-    # lastModifiedTime = data[0][6]
-    # create_time = ms[0][1]
-    # create_time = timestamp_to_13(create_time, 13)
-    # lastModifiedTime = timestamp_to_13(lastModifiedTime, 13)
     else:
         # 使用字典存储返回的schema id 和 name
         schema = {}
@@ -76,7 +75,30 @@ def get_schedulers():
         scheduler_id = scheduler_id[0][0]
         return scheduler_id
 
+def get_new_schedulers():
+    scheduler_name = time.strftime("%Y%m%d%H%M%S", time.localtime()) + 'schedulers_de'
+    create_scheduler_url = "%s/api/schedulers" % MY_LOGIN_INFO["HOST"]
+    data = {"name": scheduler_name,
+            "flowId": "1f028f3c-fd76-4e89-afa9-9c1d12b14946",
+            "flowName": "gbj_dataflow",
+            "flowType": "dataflow",
+            "schedulerId": "once",
+            "configurations":
+                {"startTime": int((time.time() + 7200) * 1000), "arguments": [], "cron": "once", "properties": []}
+            }
+    res = requests.post(url=create_scheduler_url, headers=get_headers(), data=json.dumps(data))
+    new_scheduler_id = dict_res(res.text)
+    scheduler_id = new_scheduler_id["id"]
+    return scheduler_id
 
+def get_flow():
+    sql = 'select name ,flow_type from merce_flow where id = "%s"' % flow_id
+    flow_info = ms.ExecuQuery(sql)
+    return flow_info
+
+
+if __name__ == '__main__':
+    print(get_flow())
 
 
 

@@ -4,10 +4,10 @@ import requests
 import json
 import time
 from basic_info.format_res import dict_res, get_time
-
-from basic_info.setting import MySQL_CONFIG
+from basic_info.setting import MySQL_CONFIG, flow_id
 from basic_info.Open_DB import MYSQL
 from basic_info.url_info import *
+from basic_info.data_from_db import get_flow, get_schedulers, get_new_schedulers
 
 # 配置数据库连接
 ms = MYSQL(MySQL_CONFIG["HOST"], MySQL_CONFIG["USER"], MySQL_CONFIG["PASSWORD"], MySQL_CONFIG["DB"])
@@ -21,9 +21,9 @@ class Create_schedulers(unittest.TestCase):
         """创建schedulers，单次执行"""
         scheduler_name = time.strftime("%Y%m%d%H%M%S", time.localtime()) + 'schedulers'
         data = {"name": scheduler_name,
-                "flowId": "1f028f3c-fd76-4e89-afa9-9c1d12b14946",
-                "flowName": "gbj_dataflow",
-                "flowType": "dataflow",
+                "flowId": flow_id,
+                "flowName": get_flow()[0][0],
+                "flowType": get_flow()[0][1],
                 "schedulerId": "once",
                 "configurations":
                     {"startTime": int((time.time() + 7200)*1000), "arguments": [], "cron": "once", "properties": []}
@@ -38,9 +38,9 @@ class Create_schedulers(unittest.TestCase):
         start_time = get_time()+(2*3600*1000)  # starttime设为当前时间2个小时后
         end_time = get_time()+ (10*24*3600*1000)  # endtime设为当前时间十天后
         data = {"name": scheduler_name,
-                "flowId": "1f028f3c-fd76-4e89-afa9-9c1d12b14946",
-                "flowName": "gbj_dataflow",
-                "flowType": "dataflow",
+                "flowId": flow_id,
+                "flowName": get_flow()[0][0],
+                "flowType": get_flow()[0][1],
                 "schedulerId": "cron",
                 "source": "rhinos",
                 "configurations":
@@ -215,9 +215,9 @@ class query_schedulers(unittest.TestCase):
                          "查询结果的lastModifiedTime不包含在起始时间内，查询结果不正确")
 
 
-# 该类用来测试启用停用计划接口
+# 该类用来测试启用停用计划接口、批量删除计划接口
 class enable_disable(unittest.TestCase):
-    """测试启用停用schedulers接口"""
+    """测试启用停用、批量删除schedulers接口"""
     def test_case01(self):
         """启用计划"""
         data = []
@@ -235,3 +235,13 @@ class enable_disable(unittest.TestCase):
         res = requests.post(url=disable_scheduler_url, headers=get_headers(), data=json.dumps(data))
         # print(res.status_code)
         self.assertEqual(res.status_code, 204, msg="停用计划接口调用失败")
+
+    def test_case03(self):
+        """批量删除计划"""
+        scheduler1 = get_new_schedulers()
+        time.sleep(3)
+        scheduler2 = get_new_schedulers()
+        # data = ["ba2f07ea-8bd5-47b1-b3b3-8756bceb608d","6d74d437-9d31-4cbb-a87b-f71e34e7b616"]
+        res = requests.post(url=delete_schedulers_url, headers=get_headers(), json=[scheduler1, scheduler2])
+        # print(res.status_code, res.text)
+        self.assertEqual(res.status_code, 204, "批量删除失败")
