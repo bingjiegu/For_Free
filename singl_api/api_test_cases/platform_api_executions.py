@@ -1,15 +1,12 @@
-
-import requests
-import time
-from basic_info.Open_DB import MYSQL
-from basic_info.setting import MySQL_CONFIG, MY_LOGIN_INFO
-
 from basic_info.get_auth_token import get_headers
-from basic_info.data_from_db import get_flows, flow_id
 import unittest
+import requests
 import json
-from basic_info.url_info import query_exectution_url
-from basic_info.format_res import dict_res
+import time
+from basic_info.format_res import dict_res, get_time
+from basic_info.setting import MySQL_CONFIG, scheduler_id, flow_id
+from basic_info.Open_DB import MYSQL
+from basic_info.url_info import *
 
 
 # 配置数据库连接
@@ -18,12 +15,11 @@ ms = MYSQL(MySQL_CONFIG["HOST"], MySQL_CONFIG["USER"], MySQL_CONFIG["PASSWORD"],
 
 class query_execution(unittest.TestCase):
     """测试execution接口"""
-    def test_case01(self):
-        """根据flow ID 查询 该ID下的所有execution"""
-        # from basic_info.url_info import update_scheduler_url
 
+    def test_case01(self):
+        """1.execution查询：根据flow ID 查询execution"""
         data = {"fieldList":
-                [{"fieldName": "flowId", "fieldValue": flow_id, "comparatorOperator": "EQUAL"}],
+                    [{"fieldName": "flowId", "fieldValue": flow_id, "comparatorOperator": "EQUAL"}],
                 "sortObject": {"field": "lastModifiedTime", "orderDirection": "DESC"}}
         res = requests.post(url=query_exectution_url, headers=get_headers(), json=data)
         # print(res.status_code, res.text)
@@ -33,11 +29,9 @@ class query_execution(unittest.TestCase):
         self.assertEqual(flow_id, executions_flowId, "查询得到的execution中的flowId和查询使用的flowId不一致")
 
     def test_case02(self):
-        """根据flow ID 查询 该ID下的所有execution"""
-        # from basic_info.url_info import update_scheduler_url
-
+        """2.execution查询：比对接口查询和数据库表查询得到的结果数是否一致"""
         data = {"fieldList":
-                [{"fieldName": "flowId", "fieldValue": flow_id, "comparatorOperator": "EQUAL"}],
+                    [{"fieldName": "flowId", "fieldValue": flow_id, "comparatorOperator": "EQUAL"}],
                 "sortObject": {"field": "lastModifiedTime", "orderDirection": "DESC"}}
         res = requests.post(url=query_exectution_url, headers=get_headers(), json=data)
         # print(res.status_code, res.text)
@@ -49,13 +43,3 @@ class query_execution(unittest.TestCase):
         executions_count2 = ms.ExecuQuery(execution_sql)
         executions_count2 = executions_count2[0][0]
         self.assertEqual(executions_count1, executions_count2, "接口查询和数据库表查询得到的execution个数不一致")
-
-
-
-
-
-
-
-
-
-

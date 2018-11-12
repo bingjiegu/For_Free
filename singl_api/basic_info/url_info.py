@@ -1,23 +1,27 @@
 from basic_info.setting import *
 from basic_info.setting import scheduler_id
 
-
-# 创建schedule的接口
+# -------------------------schedulers---------------------------------------------------
+# 创建scheduler的接口
 create_scheduler_url = "%s/api/schedulers" % MY_LOGIN_INFO["HOST"]
-
-# 查询schedule的接口
+# 查询scheduler的接口
 query_scheduler_url = "%s/api/schedulers/query" % (MY_LOGIN_INFO["HOST"])
 select_by_schedulerId_url = "%s/api/schedulers/%s" % (MY_LOGIN_INFO["HOST"], scheduler_id)
-
-# 启用计划接口
+# 启用scheduler接口
 enable_scheduler_url = "%s/api/schedulers/enable" % (MY_LOGIN_INFO["HOST"])
-# 停用计划接口
+# 停用scheduler接口
 disable_scheduler_url = "%s/api/schedulers/disable" % (MY_LOGIN_INFO["HOST"])
 # 批量删除schedulers
 remove_list_url = "%s/api/schedulers/removeList" % (MY_LOGIN_INFO["HOST"])
-
 # 更新schedulers, scheduler_id给定
 update_scheduler_url = "%s/api/schedulers/%s" % (MY_LOGIN_INFO["HOST"], scheduler_id)
+
+# -------------------------executions----------------------------------------------------
+# 查询execution
+query_exectution_url = "%s/api/executions/query" % MY_LOGIN_INFO["HOST"]
+# 批量查询execution
+gQuery_execution_url = "%s/api/executions/groupQuery" % MY_LOGIN_INFO["HOST"]
+
 
 
 # 查询flow接口
