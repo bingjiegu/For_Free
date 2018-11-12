@@ -7,6 +7,7 @@ from basic_info.format_res import dict_res, get_time
 from basic_info.setting import MySQL_CONFIG
 from basic_info.Open_DB import MYSQL
 from basic_info.url_info import *
+from basic_info.data_from_db import create_schedulers
 
 # 配置数据库连接
 ms = MYSQL(MySQL_CONFIG["HOST"], MySQL_CONFIG["USER"], MySQL_CONFIG["PASSWORD"], MySQL_CONFIG["DB"])
@@ -216,7 +217,7 @@ class query_schedulers(unittest.TestCase):
 
 # 该类用来测试启用停用计划接口
 class enable_disable(unittest.TestCase):
-    """测试启用停用schedulers接口"""
+    """测试启用停用、批量删除schedulers接口"""
     def test_case01(self):
         """启用计划"""
         data = []
@@ -236,13 +237,15 @@ class enable_disable(unittest.TestCase):
         self.assertEqual(res.status_code, 204, msg="停用计划接口调用失败")
 
     def test_case03(self):
-        """停用计划"""
-        data = []
-        scheduler_id = get_schedulers()
-        data.append(scheduler_id)
-        res = requests.post(url=disable_scheduler_url, headers=get_headers(), data=json.dumps(data))
-        # print(res.status_code)
-        self.assertEqual(res.status_code, 204, msg="停用计划接口调用失败")
+        """批量删除计划"""
+        scheduler_id1 = create_schedulers()
+        time.sleep(2)
+        scheduler_id2 = create_schedulers()
+        # print(scheduler_id1, scheduler_id2)
+        remove_list_url = "%s/api/schedulers/removeList" % (MY_LOGIN_INFO["HOST"])
+        data = [scheduler_id1, scheduler_id2]
+        res = requests.post(url=remove_list_url, headers=get_headers(), json=data)
+        self.assertEqual(res.status_code, 204, "批量删除接口调用失败")
 
 
 if __name__ == '__main__':

@@ -2,7 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c8051931-c5ff-46f3-9043-f40768cf16f2" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/api_test_cases/platform_api_schedulers.py" beforeDir="false" afterPath="$PROJECT_DIR$/api_test_cases/platform_api_schedulers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api_test_cases/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/api_test_cases/test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/basic_info/data_from_db.py" beforeDir="false" afterPath="$PROJECT_DIR$/basic_info/data_from_db.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -37,12 +40,13 @@
     <SUITE FILE_PATH="coverage/singl_api$Unittests_in_login_py.coverage" NAME="Unittests in login.py Coverage Results" MODIFIED="1539688224054" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/api_test_cases" />
     <SUITE FILE_PATH="coverage/singl_api$alarmrules.coverage" NAME="alarmrules Coverage Results" MODIFIED="1538292121549" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/api_test_cases" />
     <SUITE FILE_PATH="coverage/singl_api$dataset.coverage" NAME="dataset Coverage Results" MODIFIED="1539158714369" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/api_test_cases" />
-    <SUITE FILE_PATH="coverage/singl_api$Unittests_in_platform_api_schedulers_py.coverage" NAME="Unittests in platform_api_schedulers.py Coverage Results" MODIFIED="1541747552997" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/api_test_cases" />
+    <SUITE FILE_PATH="coverage/singl_api$Unittests_in_platform_api_schedulers_py.coverage" NAME="Unittests in platform_api_schedulers.py Coverage Results" MODIFIED="1541990867978" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/api_test_cases" />
     <SUITE FILE_PATH="coverage/singl_api$run.coverage" NAME="run Coverage Results" MODIFIED="1541054106967" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/singl_api$Unittests_in_test_py.coverage" NAME="Unittests in test.py Coverage Results" MODIFIED="1541756135504" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/api_test_cases" />
+    <SUITE FILE_PATH="coverage/singl_api$Unittests_in_test_py.coverage" NAME="Unittests in test.py Coverage Results" MODIFIED="1541990556267" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/api_test_cases" />
     <SUITE FILE_PATH="coverage/singl_api$db.coverage" NAME="db Coverage Results" MODIFIED="1539673119283" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/basic_info" />
+    <SUITE FILE_PATH="coverage/singl_api$setting.coverage" NAME="setting Coverage Results" MODIFIED="1541990452022" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/basic_info" />
     <SUITE FILE_PATH="coverage/singl_api$saxutils.coverage" NAME="saxutils Coverage Results" MODIFIED="1538114914588" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="C:/Program Files/Python36/Lib/xml/sax" />
-    <SUITE FILE_PATH="coverage/singl_api$data_from_db.coverage" NAME="data_from_db Coverage Results" MODIFIED="1541747467816" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/basic_info" />
+    <SUITE FILE_PATH="coverage/singl_api$data_from_db.coverage" NAME="data_from_db Coverage Results" MODIFIED="1541990549285" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/basic_info" />
     <SUITE FILE_PATH="coverage/singl_api$platform_api_schema.coverage" NAME="platform_api_schema Coverage Results" MODIFIED="1539250796639" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/api_test_cases" />
     <SUITE FILE_PATH="coverage/singl_api$Open_DB.coverage" NAME="Open_DB Coverage Results" MODIFIED="1540180715791" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/basic_info" />
   </component>
@@ -86,33 +90,33 @@
     <session id="-1120522209">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="7" />
-          <entry key="project.open.time.0" value="8" />
+          <entry key="project.closed" value="8" />
+          <entry key="project.open.time.0" value="9" />
           <entry key="project.open.time.2" value="2" />
           <entry key="project.open.time.3" value="1" />
-          <entry key="project.opened" value="11" />
+          <entry key="project.opened" value="12" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
-          <entry key="py" value="28" />
+          <entry key="py" value="29" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="Python" value="28" />
+          <entry key="Python" value="29" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="dummy" value="18" />
-          <entry key="py" value="7886" />
+          <entry key="py" value="8022" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="PLAIN_TEXT" value="18" />
-          <entry key="Python" value="7886" />
+          <entry key="Python" value="8022" />
         </counts>
       </usages-collector>
     </session>
@@ -122,8 +126,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/api_test_cases/platform_api_schedulers.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="366">
-              <caret line="237" column="19" selection-start-line="237" selection-start-column="19" selection-end-line="237" selection-end-column="19" />
+            <state relative-caret-position="294">
+              <caret line="98" column="42" lean-forward="true" selection-start-line="98" selection-start-column="42" selection-end-line="98" selection-end-column="42" />
               <folding>
                 <element signature="e#0#49#0" expanded="true" />
               </folding>
@@ -134,10 +138,10 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/basic_info/data_from_db.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="63">
-              <caret line="3" selection-start-line="3" selection-end-line="3" />
+            <state relative-caret-position="187">
+              <caret line="98" column="32" lean-forward="true" selection-start-line="98" selection-start-column="32" selection-end-line="98" selection-end-column="32" />
               <folding>
-                <marker date="1541756967824" expanded="true" signature="3649:3653" ph="..." />
+                <element signature="e#0#14#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -146,11 +150,20 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/api_test_cases/test.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="378">
-              <caret line="25" lean-forward="true" selection-start-line="25" selection-end-line="25" />
+            <state relative-caret-position="145">
+              <caret line="16" column="4" lean-forward="true" selection-start-line="16" selection-start-column="4" selection-end-line="25" selection-end-column="60" />
               <folding>
-                <marker date="1541756967809" expanded="true" signature="789:792" ph="..." />
+                <element signature="e#1#16#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/basic_info/setting.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="439">
+              <caret line="53" column="36" lean-forward="true" selection-start-line="53" selection-start-column="36" selection-end-line="53" selection-end-column="36" />
             </state>
           </provider>
         </entry>
@@ -204,8 +217,8 @@
         <option value="$PROJECT_DIR$/basic_info/check_data.py" />
         <option value="$PROJECT_DIR$/basic_info/format_res.py" />
         <option value="$PROJECT_DIR$/basic_info/setting.py" />
-        <option value="$PROJECT_DIR$/basic_info/data_from_db.py" />
         <option value="$PROJECT_DIR$/basic_info/url_info.py" />
+        <option value="$PROJECT_DIR$/basic_info/data_from_db.py" />
         <option value="$PROJECT_DIR$/api_test_cases/test.py" />
         <option value="$PROJECT_DIR$/api_test_cases/platform_api_schedulers.py" />
       </list>
@@ -284,7 +297,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python tests.Unittests in test.py">
+  <component name="RunManager" selected="Python tests.Unittests in platform_api_schedulers.py">
     <configuration name="data_from_db" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="singl_api" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -307,7 +320,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="test" type="PythonConfigurationType" factoryName="Python" temporary="true">
+    <configuration name="setting" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="singl_api" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -315,12 +328,12 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/api_test_cases" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/basic_info" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/api_test_cases/test.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/basic_info/setting.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -385,16 +398,16 @@
       <item itemvalue="Python tests.Unittests in test.py" />
       <item itemvalue="Python.data_from_db" />
       <item itemvalue="Python tests.Unittests in platform_api_schedulers.py" />
-      <item itemvalue="Python.test" />
       <item itemvalue="Python.url_info" />
+      <item itemvalue="Python.setting" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python tests.Unittests in test.py" />
-        <item itemvalue="Python.url_info" />
         <item itemvalue="Python tests.Unittests in platform_api_schedulers.py" />
+        <item itemvalue="Python tests.Unittests in test.py" />
         <item itemvalue="Python.data_from_db" />
-        <item itemvalue="Python.test" />
+        <item itemvalue="Python.setting" />
+        <item itemvalue="Python.url_info" />
       </list>
     </recent_temporary>
   </component>
@@ -412,35 +425,35 @@
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="Unittests_in_test_py - 2018.11.09 at 16h 52m 54s.xml">
+    <history-entry file="Unittests_in_test_py - 2018.11.12 at 10h 32m 33s.xml">
       <configuration name="Unittests in test.py" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_in_test_py - 2018.11.09 at 16h 53m 27s.xml">
+    <history-entry file="Unittests_in_test_py - 2018.11.12 at 10h 33m 04s.xml">
       <configuration name="Unittests in test.py" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_in_test_py - 2018.11.09 at 16h 54m 38s.xml">
+    <history-entry file="Unittests_in_test_py - 2018.11.12 at 10h 35m 03s.xml">
       <configuration name="Unittests in test.py" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_in_test_py - 2018.11.09 at 16h 55m 03s.xml">
+    <history-entry file="Unittests_in_test_py - 2018.11.12 at 10h 36m 00s.xml">
       <configuration name="Unittests in test.py" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_in_test_py - 2018.11.09 at 16h 55m 42s.xml">
+    <history-entry file="Unittests_in_test_py - 2018.11.12 at 10h 37m 47s.xml">
       <configuration name="Unittests in test.py" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_in_test_py - 2018.11.09 at 16h 57m 03s.xml">
+    <history-entry file="Unittests_in_test_py - 2018.11.12 at 10h 39m 00s.xml">
       <configuration name="Unittests in test.py" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_in_test_py - 2018.11.09 at 16h 57m 59s.xml">
+    <history-entry file="Unittests_in_test_py - 2018.11.12 at 10h 40m 56s.xml">
       <configuration name="Unittests in test.py" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_in_test_py - 2018.11.09 at 17h 04m 47s.xml">
+    <history-entry file="Unittests_in_test_py - 2018.11.12 at 10h 41m 25s.xml">
       <configuration name="Unittests in test.py" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_in_test_py - 2018.11.09 at 17h 20m 32s.xml">
+    <history-entry file="Unittests_in_test_py - 2018.11.12 at 10h 42m 39s.xml">
       <configuration name="Unittests in test.py" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_in_test_py - 2018.11.09 at 17h 35m 44s.xml">
-      <configuration name="Unittests in test.py" configurationId="tests" />
+    <history-entry file="Unittests_in_platform_api_schedulers_py - 2018.11.12 at 10h 48m 46s.xml">
+      <configuration name="Unittests in platform_api_schedulers.py" configurationId="tests" />
     </history-entry>
   </component>
   <component name="ToolWindowManager">
@@ -448,7 +461,7 @@
     <editor active="true" />
     <layout>
       <window_info id="Favorites" order="0" side_tool="true" />
-      <window_info active="true" content_ui="combo" id="Project" order="1" visible="true" weight="0.17963752" />
+      <window_info content_ui="combo" id="Project" order="1" visible="true" weight="0.18123667" />
       <window_info id="Structure" order="2" side_tool="true" weight="0.25" />
       <window_info anchor="bottom" id="Database Changes" order="0" show_stripe_button="false" />
       <window_info anchor="bottom" id="Terminal" order="1" />
@@ -458,8 +471,8 @@
       <window_info anchor="bottom" id="Docker" order="5" show_stripe_button="false" />
       <window_info anchor="bottom" id="Message" order="6" />
       <window_info anchor="bottom" id="Find" order="7" />
-      <window_info anchor="bottom" id="Run" order="8" visible="true" weight="0.34310532" />
-      <window_info anchor="bottom" id="Debug" order="9" weight="0.3984799" />
+      <window_info active="true" anchor="bottom" id="Run" order="8" visible="true" weight="0.5222584" />
+      <window_info anchor="bottom" id="Debug" order="9" weight="0.5363735" />
       <window_info anchor="bottom" id="Cvs" order="10" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="11" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="12" />
@@ -619,46 +632,42 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/basic_info/setting.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="395">
-          <caret line="31" lean-forward="true" selection-start-line="31" selection-end-line="31" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/api_test_cases/platform_api_dataset.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-3218">
-          <folding>
-            <element signature="e#0#65#0" expanded="true" />
-          </folding>
-        </state>
+        <state relative-caret-position="-3218" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/basic_info/data_from_db.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="63">
-          <caret line="3" selection-start-line="3" selection-end-line="3" />
+        <state relative-caret-position="187">
+          <caret line="98" column="32" lean-forward="true" selection-start-line="98" selection-start-column="32" selection-end-line="98" selection-end-column="32" />
           <folding>
-            <marker date="1541756967824" expanded="true" signature="3649:3653" ph="..." />
+            <element signature="e#0#14#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/basic_info/setting.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="439">
+          <caret line="53" column="36" lean-forward="true" selection-start-line="53" selection-start-column="36" selection-end-line="53" selection-end-column="36" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/api_test_cases/test.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="378">
-          <caret line="25" lean-forward="true" selection-start-line="25" selection-end-line="25" />
+        <state relative-caret-position="145">
+          <caret line="16" column="4" lean-forward="true" selection-start-line="16" selection-start-column="4" selection-end-line="25" selection-end-column="60" />
           <folding>
-            <marker date="1541756967809" expanded="true" signature="789:792" ph="..." />
+            <element signature="e#1#16#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/api_test_cases/platform_api_schedulers.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="366">
-          <caret line="237" column="19" selection-start-line="237" selection-start-column="19" selection-end-line="237" selection-end-column="19" />
+        <state relative-caret-position="294">
+          <caret line="98" column="42" lean-forward="true" selection-start-line="98" selection-start-column="42" selection-end-line="98" selection-end-column="42" />
           <folding>
             <element signature="e#0#49#0" expanded="true" />
           </folding>

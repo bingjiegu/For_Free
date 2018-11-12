@@ -3,9 +3,9 @@ import json
 import requests
 import time
 from basic_info.Open_DB import MYSQL
-from basic_info.setting import MySQL_CONFIG, schema_id, scheduler_name,flow_id
+from basic_info.setting import MySQL_CONFIG, schema_id, scheduler_name,flow_id, MY_LOGIN_INFO
 import traceback
-from basic_info.url_info import *
+# from basic_info.url_info import *
 # from basic_info import url_info
 from basic_info.get_auth_token import get_headers
 
@@ -95,15 +95,15 @@ def create_schedulers():
     scheduler_name = time.strftime("%Y%m%d%H%M%S", time.localtime()) + 'schedulers_delete'
     flow_name = get_flows()[0][0]
     flow_type = get_flows()[0][1]
-    # url = "%s/api/schedulers" % MY_LOGIN_INFO["HOST"]
-    url = create_scheduler_url
+    url = "%s/api/schedulers" % MY_LOGIN_INFO["HOST"]
+    # url = create_scheduler_url
     data = {"name": scheduler_name,
             "flowId": flow_id,
             "flowName": flow_name,
             "flowType": flow_type,
             "schedulerId": "once",
             "configurations":
-                {"startTime": int((time.time() + 7200) * 1000), "arguments": [], "cron": "once", "properties": []}            }
+                {"startTime": int((time.time() + 7200) * 1000), "arguments": [], "cron": "once", "properties": []}}
 
     res = requests.post(url=url, headers=get_headers(), data=json.dumps(data))
     # print('get_n_schedulers执行return')
