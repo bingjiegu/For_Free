@@ -27,8 +27,12 @@ owner = "2059750c-a300-4b64-84a6-e8b086dbfd42"
 tenant_id = "2d7ad891-41c5-4fba-9ff2-03aef3c729e5"  # default租戶ID
 dataset_resource = {"id": "39386f75-9b28-43a6-a6bf-bd5e0e85d437"}
 schema_resource = {"id": "9123ca72-ebd1-422b-b8b0-e150b7c69dc5"}
-# 查询scheduler时使用的id
+
+# 查询scheduler时使用的name
 scheduler_name = "gbj_dataflow 2018-10-17 16:23:19"
+
+# 查询schedulers时使用的id（和"gbj_dataflow 2018-10-17 16:23:19"是同一个）
+scheduler_id = "03c9d141-4374-4f24-a427-1781bfbfed58"
 
 # 查询flow时使用的id
 flow_id = "1f028f3c-fd76-4e89-afa9-9c1d12b14946"

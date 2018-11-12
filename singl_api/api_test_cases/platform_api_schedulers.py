@@ -4,7 +4,7 @@ import requests
 import json
 import time
 from basic_info.format_res import dict_res, get_time
-from basic_info.setting import MySQL_CONFIG
+from basic_info.setting import MySQL_CONFIG, scheduler_id
 from basic_info.Open_DB import MYSQL
 from basic_info.url_info import *
 from basic_info.data_from_db import create_schedulers
@@ -74,13 +74,13 @@ class select_schedulers(unittest.TestCase):
     def test_case01(self):
         """用来id查询scheduler"""
         res = requests.get(url=select_by_schedulerId_url, headers=get_headers())
-        scheduler_id = dict_res(res.text)["id"]
+        schedulerid = dict_res(res.text)["id"]
         # print(scheduler_id)
         # print(type(text), text)
         # 响应码
         self.assertEqual(res.status_code, 200, msg='scheduler查询失败')
         # 查询到的scheduler id 和 用来做查询使用的 scheduler id 做比对
-        self.assertEqual(scheduler_id, get_schedulers(), "通过scheduler ID查询返回的scheduler结果不正确")
+        self.assertEqual(schedulerid, scheduler_id, "通过scheduler ID查询返回的scheduler结果不正确")
 
 
 # 该类用来测试查询schedulers接口 /api/schedulers/query
@@ -221,7 +221,6 @@ class enable_disable(unittest.TestCase):
     def test_case01(self):
         """启用计划"""
         data = []
-        scheduler_id = get_schedulers()
         data.append(scheduler_id)
         res = requests.post(url=enable_scheduler_url, headers=get_headers(), data=json.dumps(data))
         # print(res.status_code)
@@ -230,7 +229,6 @@ class enable_disable(unittest.TestCase):
     def test_case02(self):
         """停用计划"""
         data = []
-        scheduler_id = get_schedulers()
         data.append(scheduler_id)
         res = requests.post(url=disable_scheduler_url, headers=get_headers(), data=json.dumps(data))
         # print(res.status_code)
@@ -246,6 +244,18 @@ class enable_disable(unittest.TestCase):
         data = [scheduler_id1, scheduler_id2]
         res = requests.post(url=remove_list_url, headers=get_headers(), json=data)
         self.assertEqual(res.status_code, 204, "批量删除接口调用失败")
+
+#该类用来测试update schedulers接口，传参不确定？？？？
+# class update_scheduler(unittest.TestCase):
+#     """测试update计划接口, update name"""
+#     def test_case01(self):
+#         # from basic_info.url_info import update_scheduler_url
+#         update_scheduler_url = "%s/api/schedulers/a1bd03e7-52bc-4816-a02e-f740f49a3e3a" % (MY_LOGIN_INFO["HOST"])
+#         scheduler_name = time.strftime("%Y%m%d%H%M%S", time.localtime()) + 'update_schedulers'
+#         data = {"name": scheduler_name}
+#         res = requests.put(url=update_scheduler_url, headers=get_headers(), json=data)
+#         print(res.status_code, res.text)
+#         # self.assertEqual(res.status_code, 201, '创建单次执行的scheduler失败')
 
 
 if __name__ == '__main__':

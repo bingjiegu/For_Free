@@ -14,22 +14,16 @@ import json
 ms = MYSQL(MySQL_CONFIG["HOST"], MySQL_CONFIG["USER"], MySQL_CONFIG["PASSWORD"], MySQL_CONFIG["DB"])
 
 
-def create_schedulers():
-    from basic_info.url_info import create_scheduler_url
-
-    scheduler_name = time.strftime("%Y%m%d%H%M%S", time.localtime()) + 'schedulers_delete'
-    flow_name = get_flows()[0][0]
-    flow_type = get_flows()[0][1]
-    data = {"name": scheduler_name,
-            "flowId": flow_id,
-            "flowName": flow_name,
-            "flowType": flow_type,
-            "schedulerId": "once",
-            "configurations":
-                {"startTime": int((time.time() + 7200) * 1000), "arguments": [], "cron": "once", "properties": []}}
-
-    res = requests.post(url=create_scheduler_url, headers=get_headers(), data=json.dumps(data))
-    return res.text
+# class update_scheduler(unittest.TestCase):
+#     """测试update计划接口, update name"""
+#     def test_case01(self):
+#         # from basic_info.url_info import update_scheduler_url
+#         update_scheduler_url = "%s/api/schedulers/a1bd03e7-52bc-4816-a02e-f740f49a3e3a" % (MY_LOGIN_INFO["HOST"])
+#         scheduler_name = time.strftime("%Y%m%d%H%M%S", time.localtime()) + 'update_schedulers'
+#         data = {"name": scheduler_name}
+#         res = requests.put(url=update_scheduler_url, headers=get_headers(), json=data)
+#         print(res.status_code, res.text)
+#         # self.assertEqual(res.status_code, 201, '创建单次执行的scheduler失败')
 
 
 
