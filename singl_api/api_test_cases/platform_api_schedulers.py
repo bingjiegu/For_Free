@@ -4,7 +4,7 @@ import requests
 import json
 import time
 from basic_info.format_res import dict_res, get_time
-from basic_info.setting import MySQL_CONFIG, scheduler_id
+from basic_info.setting import MySQL_CONFIG, scheduler_id, flow_id
 from basic_info.Open_DB import MYSQL
 from basic_info.url_info import *
 from basic_info.data_from_db import create_schedulers
@@ -21,8 +21,7 @@ class Create_schedulers(unittest.TestCase):
         """创建schedulers，单次执行"""
         scheduler_name = time.strftime("%Y%m%d%H%M%S", time.localtime()) + 'schedulers'
         data = {"name": scheduler_name,
-                "flowId": "1f028f3c-fd76-4e89-afa9-9c1d12b14946",
-                "flowName": "gbj_dataflow",
+                "flowId": flow_id,
                 "flowType": "dataflow",
                 "schedulerId": "once",
                 "configurations":
@@ -36,10 +35,9 @@ class Create_schedulers(unittest.TestCase):
         """创建schedulers，周期执行"""
         scheduler_name = time.strftime("%Y%m%d%H%M%S", time.localtime()) + 'scheduler'
         start_time = get_time()+(2*3600*1000)  # starttime设为当前时间2个小时后
-        end_time = get_time()+ (10*24*3600*1000)  # endtime设为当前时间十天后
+        end_time = get_time() + (10*24*3600*1000)  # endtime设为当前时间十天后
         data = {"name": scheduler_name,
-                "flowId": "1f028f3c-fd76-4e89-afa9-9c1d12b14946",
-                "flowName": "gbj_dataflow",
+                "flowId": flow_id,
                 "flowType": "dataflow",
                 "schedulerId": "cron",
                 "source": "rhinos",
@@ -87,7 +85,8 @@ class select_schedulers(unittest.TestCase):
 class query_schedulers(unittest.TestCase):
     def test_case01(self):
         """根据scheduler name模糊查询"""
-        data = {"fieldList": [{"fieldName": "name", "fieldValue": "%gbj%", "comparatorOperator":"LIKE"}],
+        keyword = "%gbj%"
+        data = {"fieldList": [{"fieldName": "name", "fieldValue": keyword, "comparatorOperator":"LIKE"}],
                 "sortObject": {"field": "lastModifiedTime", "orderDirection": "DESC"},
                 "offset": 0,
                 "limit": 8
@@ -108,6 +107,7 @@ class query_schedulers(unittest.TestCase):
 
         # 查询关键词应该包含在查询结果的scheduler name中
         self.assertIn(fieldValue, query_result_name, "查询结果中scheduler的name和查询关键词name不一致")
+
     def test_case02(self):
         """根据flowtype-dataflow查询"""
         data = {"fieldList":

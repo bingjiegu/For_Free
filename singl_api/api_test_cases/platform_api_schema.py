@@ -9,6 +9,7 @@ from basic_info.setting import MySQL_CONFIG,MY_LOGIN_INFO
 ms = MYSQL(MySQL_CONFIG["HOST"], MySQL_CONFIG["USER"], MySQL_CONFIG["PASSWORD"], MySQL_CONFIG["DB"])
 url = '%s/api/schemas' % MY_LOGIN_INFO["HOST"]
 
+
 class Create_schema(unittest.TestCase):
     schema_name = time.strftime("%Y%m%d%H%M%S", time.localtime()) + 'schema'
 
