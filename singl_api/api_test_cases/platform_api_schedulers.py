@@ -4,10 +4,10 @@ import requests
 import json
 import time
 from basic_info.format_res import dict_res, get_time
-from basic_info.setting import MySQL_CONFIG, flow_id
+from basic_info.setting import MySQL_CONFIG, scheduler_id, flow_id
 from basic_info.Open_DB import MYSQL
 from basic_info.url_info import *
-from basic_info.data_from_db import get_flow, get_schedulers, get_new_schedulers
+from basic_info.data_from_db import create_schedulers
 
 # 配置数据库连接
 ms = MYSQL(MySQL_CONFIG["HOST"], MySQL_CONFIG["USER"], MySQL_CONFIG["PASSWORD"], MySQL_CONFIG["DB"])
@@ -22,25 +22,23 @@ class Create_schedulers(unittest.TestCase):
         scheduler_name = time.strftime("%Y%m%d%H%M%S", time.localtime()) + 'schedulers'
         data = {"name": scheduler_name,
                 "flowId": flow_id,
-                "flowName": get_flow()[0][0],
-                "flowType": get_flow()[0][1],
+                "flowType": "dataflow",
                 "schedulerId": "once",
                 "configurations":
                     {"startTime": int((time.time() + 7200)*1000), "arguments": [], "cron": "once", "properties": []}
                 }
         res = requests.post(url=create_scheduler_url, headers=get_headers(), data=json.dumps(data))
-        print(res.status_code, res.text)
+        # print(res.status_code, res.text)
         self.assertEqual(res.status_code, 201, '创建单次执行的scheduler失败')
 
     def test_case02(self):
         """创建schedulers，周期执行"""
         scheduler_name = time.strftime("%Y%m%d%H%M%S", time.localtime()) + 'scheduler'
         start_time = get_time()+(2*3600*1000)  # starttime设为当前时间2个小时后
-        end_time = get_time()+ (10*24*3600*1000)  # endtime设为当前时间十天后
+        end_time = get_time() + (10*24*3600*1000)  # endtime设为当前时间十天后
         data = {"name": scheduler_name,
                 "flowId": flow_id,
-                "flowName": get_flow()[0][0],
-                "flowType": get_flow()[0][1],
+                "flowType": "dataflow",
                 "schedulerId": "cron",
                 "source": "rhinos",
                 "configurations":
@@ -74,20 +72,21 @@ class select_schedulers(unittest.TestCase):
     def test_case01(self):
         """用来id查询scheduler"""
         res = requests.get(url=select_by_schedulerId_url, headers=get_headers())
-        scheduler_id = dict_res(res.text)["id"]
+        schedulerid = dict_res(res.text)["id"]
         # print(scheduler_id)
         # print(type(text), text)
         # 响应码
         self.assertEqual(res.status_code, 200, msg='scheduler查询失败')
         # 查询到的scheduler id 和 用来做查询使用的 scheduler id 做比对
-        self.assertEqual(scheduler_id, get_schedulers(), "通过scheduler ID查询返回的scheduler结果不正确")
+        self.assertEqual(schedulerid, scheduler_id, "通过scheduler ID查询返回的scheduler结果不正确")
 
 
 # 该类用来测试查询schedulers接口 /api/schedulers/query
 class query_schedulers(unittest.TestCase):
     def test_case01(self):
         """根据scheduler name模糊查询"""
-        data = {"fieldList": [{"fieldName": "name", "fieldValue": "%gbj%", "comparatorOperator":"LIKE"}],
+        keyword = "%gbj%"
+        data = {"fieldList": [{"fieldName": "name", "fieldValue": keyword, "comparatorOperator":"LIKE"}],
                 "sortObject": {"field": "lastModifiedTime", "orderDirection": "DESC"},
                 "offset": 0,
                 "limit": 8
@@ -108,6 +107,7 @@ class query_schedulers(unittest.TestCase):
 
         # 查询关键词应该包含在查询结果的scheduler name中
         self.assertIn(fieldValue, query_result_name, "查询结果中scheduler的name和查询关键词name不一致")
+
     def test_case02(self):
         """根据flowtype-dataflow查询"""
         data = {"fieldList":
@@ -146,7 +146,7 @@ class query_schedulers(unittest.TestCase):
         # 响应码应该为200
         self.assertEqual(res.status_code, 200, "查询失败")
         # 对比查询关键字和查询结果中的flowType
-        print("fieldValue", fieldValue, "query_result_flowType", query_result_flowType)
+        # print("fieldValue", fieldValue, "query_result_flowType", query_result_flowType)
         self.assertEqual(fieldValue, query_result_flowType, "查询结果中scheduler关联flowtype和查询关键词flowType不一致")
 
     def test_case04(self):
@@ -167,7 +167,7 @@ class query_schedulers(unittest.TestCase):
         # 响应码应该为200
         self.assertEqual(res.status_code, 200, "查询失败")
         # 对比查询关键字和查询结果中的flowType
-        print("fieldValue", fieldValue, "query_result_flowType", query_result_flowType)
+        # print("fieldValue", fieldValue, "query_result_flowType", query_result_flowType)
         self.assertEqual(fieldValue, query_result_flowType, "查询结果中scheduler关联flowtype和查询关键词flowType不一致")
 
     def test_case05(self):
@@ -181,7 +181,7 @@ class query_schedulers(unittest.TestCase):
             data_name = data["fieldList"][0]["fieldValue"][1:-1]
             data_flowType = data["fieldList"][1]["fieldValue"]
             res = requests.post(url=query_scheduler_url, headers=get_headers(), data=json.dumps(data))
-            print(res.status_code, res.text)
+            # print(res.status_code, res.text)
 
             query_results = dict_res(res.text)
             query_result_name = query_results["content"][0]["name"]
@@ -209,19 +209,18 @@ class query_schedulers(unittest.TestCase):
         query_results = dict_res(res.text)
         # print(res.text, query_results)
         first_Time = query_results["content"][0]["lastModifiedTime"]
-        print('first_one_lastModifiedTime:', first_Time)
+        # print('first_one_lastModifiedTime:', first_Time)
         # 将查询结果中的第一个的lastModifiedTime和查询使用的开始时间，结束时间做对比，应该包含在二者之间
         self.assertEqual(end_time > first_Time > start_time, True,
                          "查询结果的lastModifiedTime不包含在起始时间内，查询结果不正确")
 
 
-# 该类用来测试启用停用计划接口、批量删除计划接口
+# 该类用来测试启用停用计划接口
 class enable_disable(unittest.TestCase):
     """测试启用停用、批量删除schedulers接口"""
     def test_case01(self):
         """启用计划"""
         data = []
-        scheduler_id = get_schedulers()
         data.append(scheduler_id)
         res = requests.post(url=enable_scheduler_url, headers=get_headers(), data=json.dumps(data))
         # print(res.status_code)
@@ -230,7 +229,6 @@ class enable_disable(unittest.TestCase):
     def test_case02(self):
         """停用计划"""
         data = []
-        scheduler_id = get_schedulers()
         data.append(scheduler_id)
         res = requests.post(url=disable_scheduler_url, headers=get_headers(), data=json.dumps(data))
         # print(res.status_code)
@@ -238,10 +236,27 @@ class enable_disable(unittest.TestCase):
 
     def test_case03(self):
         """批量删除计划"""
-        scheduler1 = get_new_schedulers()
-        time.sleep(3)
-        scheduler2 = get_new_schedulers()
-        # data = ["ba2f07ea-8bd5-47b1-b3b3-8756bceb608d","6d74d437-9d31-4cbb-a87b-f71e34e7b616"]
-        res = requests.post(url=delete_schedulers_url, headers=get_headers(), json=[scheduler1, scheduler2])
-        # print(res.status_code, res.text)
-        self.assertEqual(res.status_code, 204, "批量删除失败")
+        scheduler_id1 = create_schedulers()
+        time.sleep(2)
+        scheduler_id2 = create_schedulers()
+        # print(scheduler_id1, scheduler_id2)
+        remove_list_url = "%s/api/schedulers/removeList" % (MY_LOGIN_INFO["HOST"])
+        data = [scheduler_id1, scheduler_id2]
+        res = requests.post(url=remove_list_url, headers=get_headers(), json=data)
+        self.assertEqual(res.status_code, 204, "批量删除接口调用失败")
+
+#该类用来测试update schedulers接口，传参不确定？？？？
+# class update_scheduler(unittest.TestCase):
+#     """测试update计划接口, update name"""
+#     def test_case01(self):
+#         # from basic_info.url_info import update_scheduler_url
+#         update_scheduler_url = "%s/api/schedulers/a1bd03e7-52bc-4816-a02e-f740f49a3e3a" % (MY_LOGIN_INFO["HOST"])
+#         scheduler_name = time.strftime("%Y%m%d%H%M%S", time.localtime()) + 'update_schedulers'
+#         data = {"name": scheduler_name}
+#         res = requests.put(url=update_scheduler_url, headers=get_headers(), json=data)
+#         print(res.status_code, res.text)
+#         # self.assertEqual(res.status_code, 201, '创建单次执行的scheduler失败')
+
+
+if __name__ == '__main__':
+    unittest.main()
