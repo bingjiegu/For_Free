@@ -237,11 +237,13 @@ class enable_disable(unittest.TestCase):
     def test_case03(self):
         """批量删除计划"""
         scheduler_id1 = create_schedulers()
+        scheduler_id1 = dict_res(scheduler_id1)["id"]
         time.sleep(2)
         scheduler_id2 = create_schedulers()
-        # print(scheduler_id1, scheduler_id2)
+        scheduler_id2 = dict_res(scheduler_id2)["id"]
         remove_list_url = "%s/api/schedulers/removeList" % (MY_LOGIN_INFO["HOST"])
         data = [scheduler_id1, scheduler_id2]
+
         res = requests.post(url=remove_list_url, headers=get_headers(), json=data)
         self.assertEqual(res.status_code, 204, "批量删除接口调用失败")
 

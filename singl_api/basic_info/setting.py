@@ -42,9 +42,9 @@ schema_id = "e4101818-189c-486f-9c6d-6a4072f6367e"  # city_schema
 dataset_id = "cf5bb66c-51c0-4a19-8b57-762b466abe17"  # city_dataset
 dataset_for_sink_id = ""
 # 查询scheduler时使用的name
-scheduler_name = "city_flow    2018-11-14 13:51:00:610"
+scheduler_name = "city_for_api_test"
 # 查询schedulers时使用的id（和"city_flow    2018-11-14 13:51:00:610"是同一个）
-scheduler_id = "84e72385-835e-4b66-92c4-f3110117f98b"
+scheduler_id = "63d56a7e-2327-41c0-ad04-745b18e8810b"
 # 查询flow时使用的id： flow_name = city_flow
 flow_id = "c16cbd2b-e42c-433b-88fb-84fbecea98f3"
 # -----------------------------------------------------
