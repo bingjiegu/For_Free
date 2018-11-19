@@ -22,7 +22,7 @@ for test_suite in discover:
 
 report_path = 'E:\Reports\Test_report.html'
 fp = open(report_path, 'wb')
-runner = HTMLTestRunner.HTMLTestRunner(stream=fp, title='API自动化测试报告', description='接口自动化测试用例，目前包括dataset 和 schema')
+runner = HTMLTestRunner.HTMLTestRunner(stream=fp, title='API自动化测试报告', description='测试用例目前覆盖dataset、schema、flow、schedulers部分接口')
 runner.run(testcase)
 fp.close()
 
