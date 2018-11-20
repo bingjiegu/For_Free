@@ -239,29 +239,34 @@ class EnableDisable(unittest.TestCase):
 
     def test_case03(self):
         """批量删除计划"""
+        from basic_info.url_info import remove_list_url
+        data = []
         scheduler_id1 = create_schedulers()
-        scheduler_id1 = dict_res(scheduler_id1)["id"]
+        id1 = dict_res(scheduler_id1)["id"]
         time.sleep(2)
         scheduler_id2 = create_schedulers()
-        scheduler_id2 = dict_res(scheduler_id2)["id"]
-        remove_list_url = "%s/api/schedulers/removeList" % (MY_LOGIN_INFO["HOST"])
-        data = [scheduler_id1, scheduler_id2]
-
+        id2 = dict_res(scheduler_id2)["id"]
+        data.append(id1)
+        data.append(id2)
         res = requests.post(url=remove_list_url, headers=get_headers(), json=data)
         self.assertEqual(res.status_code, 204, "批量删除接口调用失败")
 
-#该类用来测试update schedulers接口，传参不确定？？？？
-# class update_scheduler(unittest.TestCase):
+
+# 该类用来测试update schedulers接口  需要开发做修改，暂不测试该类接口
+# class UpdateScheduler(unittest.TestCase):
 #     """测试update计划接口, update name"""
 #     def test_case01(self):
-#         # from basic_info.url_info import update_scheduler_url
-#         update_scheduler_url = "%s/api/schedulers/a1bd03e7-52bc-4816-a02e-f740f49a3e3a" % (MY_LOGIN_INFO["HOST"])
+#         """schedulers更新为周期执行"""
+#         from basic_info.url_info import update_scheduler_url
 #         scheduler_name = time.strftime("%Y%m%d%H%M%S", time.localtime()) + 'update_schedulers'
-#         data = {"name": scheduler_name}
+#         data = {"id": scheduler_id,
+#                 "name": scheduler_name,
+#                 "schedulerId": "cron",
+#                 "flowId": flow_id, "flowName": get_flows()[0][0], "flowType": get_flows()[0][1],
+#                 "configurations": {"cron": "0 0 19 * * ? ", "arguments": [], "startTime": get_time(), "endTime": get_time()+(2*24*3600*1000), "properties":[{"name":"all.debug","value":"false"},{"name":"all.dataset-nullable","value":"false"},{"name":"all.lineage.enable","value":"true"},{"name":"all.notify-output","value":"false"},{"name":"all.debug-rows","value":"20"},{"name":"dataflow.master","value":"yarn"},{"name":"dataflow.deploy-mode","value":"client"},{"name":"dataflow.queue","value":"default"},{"name":"dataflow.num-executors","value":"2"},{"name":"dataflow.driver-memory","value":"512M"},{"name":"dataflow.executor-memory","value":"1G"},{"name":"dataflow.executor-cores","value":"2"},{"name":"dataflow.verbose","value":"true"},{"name":"dataflow.local-dirs","value":""},{"name":"dataflow.sink.concat-files","value":"true"}]},
+#                 }
 #         res = requests.put(url=update_scheduler_url, headers=get_headers(), json=data)
-#         print(res.status_code, res.text)
-#         # self.assertEqual(res.status_code, 201, '创建单次执行的scheduler失败')
+#         # print(res.status_code, res.text)
+#         self.assertEqual(res.status_code, 204, '调用更新schedulers的接口失败')
 
 
-if __name__ == '__main__':
-    unittest.main()
