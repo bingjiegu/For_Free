@@ -1,7 +1,6 @@
 from basic_info.setting import *
 from basic_info.data_from_db import get_schedulers
 
-
 # 创建schedule的接口
 create_scheduler_url = "%s/api/schedulers" % MY_LOGIN_INFO["HOST"]
 
@@ -25,6 +24,7 @@ query_flowname_version_url = "%s/api/flows/name/%s/%s" % (MY_LOGIN_INFO["HOST"],
 # 查询简化版流程
 query_flow_all_url = '%s/api/flows/all' % (MY_LOGIN_INFO["HOST"])
 # 更新流程
+flow_update_flowid_url = '%s/api/flows/%s/findFlow' % (MY_LOGIN_INFO["HOST"],flow_update_id) #查询需要更新的流程的flowid的url
 flow_update_url = '%s/api/flows/%s' % (MY_LOGIN_INFO["HOST"],flow_update_id)
 # 根据老的版本查询历史流程
 query_flow_history_version_url = '%s/api/flows/history/%s/%s' %(MY_LOGIN_INFO["HOST"],flow_update_id,query_flow_version)

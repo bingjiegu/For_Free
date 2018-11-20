@@ -135,25 +135,23 @@ class API_flows(unittest.TestCase):
 
         self.assertEqual(res.status_code, 200, 'flow查询简化版流程查询返回的status_code不正确')
         time.sleep(3)
-    # def test_case07(self):
-    #     """更新流程"""
-    #     # 还没写完
-    #     res = requests.get(url=query_flow_all_url, headers=get_headers())
-    #
-    #     # print(res.status_code,res.text)
-    #     response_text = json.loads(res.text)
-    #     # print(response_text)
-    #     # 查询创建的flow id, name, type，并组装成一个dict， 和response对比
-    #     # SQL = 'select id, name from merce_flow where name = "%s"' % query_flow_name
-    #     # flow_info = ms.ExecuQuery(SQL)
-    #     # flow_id = flow_info[0][0]
-    #     # flow_Name = flow_info[0][1]
-    #     # print(flow_id, flow_Type)
-    #     # print(type(response_text), response_text)
-    #     self.assertEqual(res.status_code, 200, '更新流程返回的status_code不正确')
-    #     # self.assertEqual(response_text["id"], flow_id, 'flow查询简化版流程后查询ID不相等')
-    #     # self.assertEqual(response_text["name"], flow_Name, 'flow查询简化版流程后name不一致')
-    #     time.sleep(3)
+
+    def test_case07(self):
+        """更新流程"""
+        from basic_info.get_flow_body import get_flow_update_body
+        flow_body = get_flow_update_body()
+        flow_body_id = flow_update_id
+        res = requests.put(url=flow_update_url, data=json.dumps(flow_body), headers=get_headers())
+        print(flow_body,flow_body_id)
+        response_text = json.loads(res.text)
+        # 查询创建的flow version，并组装成一个dict， 和response对比
+        SQL = 'SELECT version from merce_flow where id= "%s"  ORDER BY version desc' % (flow_body_id)
+        flow_info = ms.ExecuQuery(SQL)
+        flow_version = flow_info[0][0]
+        self.assertEqual(res.status_code, 200, '更新流程返回的status_code不正确')
+        self.assertEqual(response_text["version"], flow_version, 'flow更新流程后版本不一致')
+        # print(flow_version,response_text["version"])
+        time.sleep(3)
 
     def test_case08(self):
         """根据老的版本查询历史流程"""
@@ -262,7 +260,29 @@ class API_flows(unittest.TestCase):
     #     self.assertEqual(response_text["id"], flow_id, '根据老的版本查询流程后查询ID不相等')
     #     self.assertEqual(response_text["version"], flow_version, '根据老的版本查询流程后version不一致')
     #     time.sleep(3)
-
+    # def test_case13(self):
+    #     """根据id和版本更新流程"""
+    # #     # 未完成
+    #
+    #     res = requests.get(url=query_flow_version_url, headers=get_headers())
+    #
+    #     print(res.status_code, res.text)
+    #     response_text = json.loads(res.text)
+    #     # print(response_text)
+    #     # 查询创建的flow id, name, type，并组装成一个dict， 和response对比
+    #     SQL = 'SELECT id,version from merce_flow_history where oid= "%s" and version= "%s"' % (
+    #     flow_update_id, query_flow_version)
+    #     print(SQL)
+    #     flow_info = ms.ExecuQuery(SQL)
+    #     flow_id = flow_info[0][0]
+    #     flow_version = flow_info[0][1]
+    #     # print(flow_id, flow_Type)
+    #     # print(type(response_text), response_text)
+    #     # print(response_text[0]["id"])
+    #     self.assertEqual(res.status_code, 200, '根据老的版本查询流程查询返回的status_code不正确')
+    #     self.assertEqual(response_text["id"], flow_id, '根据老的版本查询流程后查询ID不相等')
+    #     self.assertEqual(response_text["version"], flow_version, '根据老的版本查询流程后version不一致')
+    #     time.sleep(3)
 
 # if __name__ == '__main__':
 #     unittest.main()
