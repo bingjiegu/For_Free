@@ -7,14 +7,15 @@ from basic_info.format_res import dict_res, get_time
 from basic_info.setting import MySQL_CONFIG, scheduler_id, flow_id
 from basic_info.Open_DB import MYSQL
 from basic_info.url_info import *
-from basic_info.data_from_db import create_schedulers
+from basic_info.data_from_db import create_schedulers, get_flows
+
 
 # 配置数据库连接
 ms = MYSQL(MySQL_CONFIG["HOST"], MySQL_CONFIG["USER"], MySQL_CONFIG["PASSWORD"], MySQL_CONFIG["DB"])
 
 
 # 该类用来测试创建scheduler接口
-class Create_schedulers(unittest.TestCase):
+class CreateSchedulers(unittest.TestCase):
     """用来测试创建schedulers"""
     # 创建schedulers的API路径
     def test_case01(self):
@@ -22,7 +23,8 @@ class Create_schedulers(unittest.TestCase):
         scheduler_name = time.strftime("%Y%m%d%H%M%S", time.localtime()) + 'schedulers'
         data = {"name": scheduler_name,
                 "flowId": flow_id,
-                "flowType": "dataflow",
+                "flowName": get_flows()[0][0],
+                "flowType": get_flows()[0][1],
                 "schedulerId": "once",
                 "configurations":
                     {"startTime": int((time.time() + 7200)*1000), "arguments": [], "cron": "once", "properties": []}
@@ -38,7 +40,8 @@ class Create_schedulers(unittest.TestCase):
         end_time = get_time() + (10*24*3600*1000)  # endtime设为当前时间十天后
         data = {"name": scheduler_name,
                 "flowId": flow_id,
-                "flowType": "dataflow",
+                "flowName": get_flows()[0][0],
+                "flowType": get_flows()[0][1],
                 "schedulerId": "cron",
                 "source": "rhinos",
                 "configurations":
@@ -67,7 +70,7 @@ class Create_schedulers(unittest.TestCase):
 
 
 # 该类用来测试scheduler查询接口
-class select_schedulers(unittest.TestCase):
+class SelectSchedulers(unittest.TestCase):
     """测试scheduler查询接口"""
     def test_case01(self):
         """用来id查询scheduler"""
@@ -82,7 +85,7 @@ class select_schedulers(unittest.TestCase):
 
 
 # 该类用来测试查询schedulers接口 /api/schedulers/query
-class query_schedulers(unittest.TestCase):
+class QuerySchedulers(unittest.TestCase):
     def test_case01(self):
         """根据scheduler name模糊查询"""
         keyword = "%gbj%"
@@ -216,7 +219,7 @@ class query_schedulers(unittest.TestCase):
 
 
 # 该类用来测试启用停用计划接口
-class enable_disable(unittest.TestCase):
+class EnableDisable(unittest.TestCase):
     """测试启用停用、批量删除schedulers接口"""
     def test_case01(self):
         """启用计划"""
