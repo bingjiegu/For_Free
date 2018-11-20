@@ -43,7 +43,9 @@ query_flowname_version_url = "%s/api/flows/name/%s/%s" % (MY_LOGIN_INFO["HOST"],
 # 查询简化版流程
 query_flow_all_url = '%s/api/flows/all' % (MY_LOGIN_INFO["HOST"])
 # 更新流程
-flow_update_url = '%s/api/flows/%s' % (MY_LOGIN_INFO["HOST"],flow_update_id)
+flow_update_url = '%s/api/flows/%s' % (MY_LOGIN_INFO["HOST"], flow_update_id)
+# 查询需要更新的流程的flowid的url added by pengyuan 1120
+flow_update_flowid_url = '%s/api/flows/%s/findFlow' % (MY_LOGIN_INFO["HOST"], flow_update_id)
 # 根据老的版本查询历史流程
 query_flow_history_version_url = '%s/api/flows/history/%s/%s' %(MY_LOGIN_INFO["HOST"], flow_update_id, query_flow_version)
 # 根据老的id查询历史流程
