@@ -91,8 +91,7 @@ def create_schedulers():
     res = requests.post(url=create_scheduler_url, headers=get_headers(), data=json.dumps(data))
     return res.text
 
-def NewFlow():
-    from basic_info.url_info import create_flows_url
+
 
 
 
