@@ -17,8 +17,9 @@ def get_headers():
     return headers
 
 
-
-
-
-
-
+# 组装headers， 导出流程接口请求时调用
+def get_headers_flow():
+    x_auth_token = get_auth_token()
+    headers1 = {'Content-Type': 'application/json', "X-AUTH-TOKEN": x_auth_token,
+                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8"}
+    return headers1
