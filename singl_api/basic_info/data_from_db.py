@@ -6,6 +6,7 @@ from basic_info.Open_DB import MYSQL
 from basic_info.setting import MySQL_CONFIG, schema_id, scheduler_name,flow_id, MY_LOGIN_INFO
 import traceback
 from basic_info.get_auth_token import get_headers
+from basic_info.format_res import get_time, dict_res
 
 ms = MYSQL(MySQL_CONFIG["HOST"], MySQL_CONFIG["USER"], MySQL_CONFIG["PASSWORD"], MySQL_CONFIG["DB"],)
 
@@ -80,19 +81,50 @@ def create_schedulers():
     scheduler_name = time.strftime("%Y%m%d%H%M%S", time.localtime()) + 'schedulers_delete'
     flow_name = get_flows()[0][0]
     flow_type = get_flows()[0][1]
+    propertys = [{"name": "all.debug", "value": "false"},{"name": "all.dataset-nullable", "value": "false"},{"name": "all.lineage.enable", "value": "true"},
+                 {"name": "all.notify-output", "value": "false"},
+                 {"name": "all.debug-rows", "value": "20"},
+                 {"name": "dataflow.master", "value": "yarn"},
+                 {"name": "dataflow.deploy-mode", "value": "client"},
+                 {"name": "dataflow.queue", "value": "default"},
+                 {"name": "dataflow.num-executors", "value": "2"},
+                 {"name": "dataflow.driver-memory", "value": "512M"},
+                 {"name": "dataflow.executor-memory", "value": "1G"},
+                 {"name": "dataflow.executor-cores", "value": "2"},
+                 {"name": "dataflow.verbose", "value": "true"},
+                 {"name": "dataflow.local-dirs", "value": ""},
+                 {"name": "dataflow.sink.concat-files", "value": "true"}
+                 ]
+    startTime = get_time()
+    corn = "once"
     data = {"name": scheduler_name,
             "flowId": flow_id,
             "flowName": flow_name,
             "flowType": flow_type,
             "schedulerId": "once",
+            "source": "rhinos",
             "configurations":
-                {"startTime": int((time.time() + 7200) * 1000), "arguments": [], "cron": "once", "properties": []}}
-
+                {
+                 "startTime": startTime,
+                 "arguments": [],
+                 "cron": corn,
+                 "properties": propertys
+                }
+            }
     res = requests.post(url=create_scheduler_url, headers=get_headers(), data=json.dumps(data))
-    return res.text
+    # print(res.status_code, res.text)
+    if res.status_code == 201 and res.text:
+        scheduler_id_format = dict_res(res.text)
+        try:
+            scheduler_id = scheduler_id_format["id"]
+        except KeyError as e:
+            print("scheduler_id_format中存在异常%s" % e)
+        else:
+            return scheduler_id
+    else:
+        return None
 
 
 
 
-
-
+print(create_schedulers())
