@@ -3,11 +3,10 @@ import json
 import requests
 import time
 from basic_info.Open_DB import MYSQL
-from basic_info.setting import MySQL_CONFIG, schema_id, scheduler_name,flow_id, MY_LOGIN_INFO
+from basic_info.setting import MySQL_CONFIG, schema_id, scheduler_name, flow_id, MY_LOGIN_INFO, flow_delete_name
 import traceback
 from basic_info.get_auth_token import get_headers
-
-ms = MYSQL(MySQL_CONFIG["HOST"], MySQL_CONFIG["USER"], MySQL_CONFIG["PASSWORD"], MySQL_CONFIG["DB"],)
+ms = MYSQL(MySQL_CONFIG["HOST"], MySQL_CONFIG["USER"], MySQL_CONFIG["PASSWORD"], MySQL_CONFIG["DB"], )
 
 
 # 获取schema基本信息和tenant_id, 作为参数传递给get_tenant()
@@ -44,12 +43,12 @@ def get_datasource():
         storageConfigurations['name'] = datasource_info[0][9]  # datasource name
         storageConfigurations['id'] = datasource_info[0][0]  # datasource id
         storageConfigurations['resType'] = "DB"
-        storageConfigurations['table'] = 'city'   # 指定table
+        storageConfigurations['table'] = 'city'  # 指定table
         DB_info = json.loads(datasource_info[0][13])  # datasource DB info
         print(DB_info)
         for k, v in DB_info.items():  # 将DB信息存入storageConfigurations
             if k != 'properties':
-              storageConfigurations[k] = v
+                storageConfigurations[k] = v
         return storageConfigurations
 
 
@@ -58,7 +57,7 @@ def get_schedulers():
         sql = 'select id, name from merce_flow_schedule where name = "%s"' % scheduler_name
         scheduler_id = ms.ExecuQuery(sql)
     except Exception as e:
-        print("scheduler数据查询出错:%s" %e)
+        print("scheduler数据查询出错:%s" % e)
     else:
         scheduler_id = scheduler_id[0][0]
         return scheduler_id
@@ -93,7 +92,6 @@ def create_schedulers():
 
 def NewFlow():
     from basic_info.url_info import create_flows_url
-
 
 
 

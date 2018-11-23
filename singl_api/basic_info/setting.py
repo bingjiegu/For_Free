@@ -65,4 +65,9 @@ query_flow_version = 3
 flow_update_id = 'cb0a37ea-de4a-495c-bae0-236fcbd08eaf'
 # 根据流程id和计划id查询执行历史
 flow_scheduler_id = '63b0a864-ce40-4f88-a25d-929164198087'
-flow_project_id = '0c23dc27-0b68-45d7-9b37-35e5cbf1ce0d';
+flow_project_id = '0c23dc27-0b68-45d7-9b37-35e5cbf1ce0d'
+# 删除flow使用的name
+flow_delete_name = 'tc_auto_df_delete'
+# 删除project_flow使用的id
+flow_project_id_delete = 'dfac0c50-97db-4c1b-9f9e-ab1b82e2475c'
+flow_project_flow_id = 'a0bc52da-3db1-49b2-b6a3-1850340e5883'

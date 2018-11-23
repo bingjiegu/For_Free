@@ -1,5 +1,5 @@
 from basic_info.setting import *
-
+from basic_info.get_flow_body import create_flow
 from basic_info.setting import scheduler_id
 
 # -------------------------schedulers---------------------------------------------------
@@ -67,3 +67,13 @@ query_flow_id_runP_url = "%s/api/flows/%s/runtime-properties" % (MY_LOGIN_INFO["
 flow_updateByName_url = '%s/api/flows/name/%s' % (MY_LOGIN_INFO["HOST"], query_flow_name)
 # 导出流程
 flow_export_url = '%s/api/flows/export' % (MY_LOGIN_INFO["HOST"])
+# 清理status
+flow_clean_status_url = '%s/api/flows/%s/clean-saved-state' % (MY_LOGIN_INFO["HOST"], flow_update_id)
+# 根据id删除project_flow
+flow_delete_ByProjectId_url = '%s/api/flows/%s/%s' % (
+    MY_LOGIN_INFO["HOST"], flow_project_id_delete, flow_project_flow_id)
+# 根据id批量删除流程
+flow_delete_removeList_url = '%s/api/flows/removeList' % (MY_LOGIN_INFO["HOST"])
+# 根据id批量删除流程-project
+flow_delete_removeListProject_url = '%s/api/flows/removeListProject/%s' % (
+    MY_LOGIN_INFO["HOST"], flow_project_id_delete)
