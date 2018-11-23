@@ -1,6 +1,7 @@
 import pymysql
 import requests
 import json
+import logging
 
 from basic_info.Open_DB import MYSQL
 from basic_info.data_from_db import create_schedulers, get_flows
@@ -17,6 +18,7 @@ class GetCheckout(object):
     def __init__(self):
         self.ms = MYSQL(MySQL_CONFIG["HOST"], MySQL_CONFIG["USER"], MySQL_CONFIG["PASSWORD"], MySQL_CONFIG["DB"])
         # 初始化schedulers
+        # logging.debug("debug logging")
         self.new_scheduler_id = create_schedulers()
         print('初始化scheduler id：', self.new_scheduler_id)
 
@@ -25,12 +27,13 @@ class GetCheckout(object):
         print("开始等待40S")
         time.sleep(40)
         print('等待结束，开始执行数据库查询')
+        # logging.debug("debug logging")
         execution_sql = 'select id, status from merce_flow_execution where flow_scheduler_id = "%s" ' % self.new_scheduler_id
         result = self.ms.ExecuQuery(execution_sql)
-        print("result: %s" % result)
+        # print("result: %s" % result)
         if result:
             # 从查询结果中取值
-
+            result = dict_res(result)
             print("查询结果是：", result)
             try:
                 e_id = result[0][0]
@@ -45,9 +48,6 @@ class GetCheckout(object):
                 return e_id, e_final_status
         else:
             print("根据scheduler id: %s ,没有查找到execution" % self.new_scheduler_id)
-
-
-
 
     def checkoutput(self):
         # print("this is checkoutput")
@@ -81,6 +81,7 @@ class GetCheckout(object):
                     data_json = self.ms.ExecuQuery(data_json_sql)
                     print("最终的状态：", e_final_status)
                     print("状态成功时执行该语句")
+                    # 成功后查询dataset，取出dataset id ， 通过预览接口返回预览的json串
                     return data_json
         else:
             print("execution %s 不存在" % self.new_scheduler_id)

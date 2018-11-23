@@ -49,6 +49,7 @@ def sendEmail(content, title, from_name, from_address, to_address, serverport, s
         #HEFEN_D = pth.abspath(pth.dirname(__file__))
 
 def main2():
+    # from run import filename
     TO = [email_to["gubingjie"], email_to["daming"]]
     config = {
     "from": "ruifan_test@163.com",

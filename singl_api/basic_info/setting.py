@@ -26,7 +26,7 @@ MySQL_CONFIG = {
 MY_LOGIN_INFO = {
  "HEADERS": {'Content-Type': 'application/x-www-form-urlencoded'},
  "URL": "http://192.168.1.189:8515/api/auth/login",
- "DATA": {'name': 'admin', 'password': '123456', 'version': 'Europa-3.0.0.19 - 20180428', 'tenant': 'default'},
+ "DATA": {'name': 'gbj_use', 'password': '123456', 'version': 'Europa-3.0.0.19 - 20180428', 'tenant': 'default'},
  "HOST": "http://192.168.1.189:8515"
 }
 

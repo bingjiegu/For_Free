@@ -241,11 +241,9 @@ class EnableDisable(unittest.TestCase):
         """批量删除计划"""
         from basic_info.url_info import remove_list_url
         data = []
-        scheduler_id1 = create_schedulers()
-        id1 = dict_res(scheduler_id1)["id"]
+        id1 = create_schedulers()
         time.sleep(2)
-        scheduler_id2 = create_schedulers()
-        id2 = dict_res(scheduler_id2)["id"]
+        id2 = create_schedulers()
         data.append(id1)
         data.append(id2)
         res = requests.post(url=remove_list_url, headers=get_headers(), json=data)

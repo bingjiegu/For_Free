@@ -29,6 +29,12 @@ gQuery_execution_url = "%s/api/executions/groupQuery" % MY_LOGIN_INFO["HOST"]
 # 批量删除schedulers
 delete_schedulers_url = "%s/api/schedulers/removeList" % (MY_LOGIN_INFO["HOST"])
 
+# ------------ login url-------------------------
+login_url = "%s/api/auth/login" % (MY_LOGIN_INFO["HOST"])
+
+
+
+
 
 
 
