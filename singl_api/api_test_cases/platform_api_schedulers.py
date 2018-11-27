@@ -88,7 +88,7 @@ class SelectSchedulers(unittest.TestCase):
 class QuerySchedulers(unittest.TestCase):
     def test_case01(self):
         """根据scheduler name模糊查询"""
-        keyword = "%gbj%"
+        keyword = "%student%"
         data = {"fieldList": [{"fieldName": "name", "fieldValue": keyword, "comparatorOperator":"LIKE"}],
                 "sortObject": {"field": "lastModifiedTime", "orderDirection": "DESC"},
                 "offset": 0,

@@ -23,12 +23,23 @@ MySQL_CONFIG = {
     'case_db': 'test'
 }
 
+MySQL_CONFIG_85 = {
+    'HOST': '192.168.1.85',
+    "PORT": 3306,
+    "USER": 'europa',
+    "PASSWORD": 'europa',
+    "DB": 'europa'
+}
+
+
 MY_LOGIN_INFO = {
  "HEADERS": {'Content-Type': 'application/x-www-form-urlencoded'},
  "URL": "http://192.168.1.189:8515/api/auth/login",
  "DATA": {'name': 'gbj_use', 'password': '123456', 'version': 'Europa-3.0.0.19 - 20180428', 'tenant': 'default'},
  "HOST": "http://192.168.1.189:8515"
 }
+
+
 
 
 owner = "2059750c-a300-4b64-84a6-e8b086dbfd42"
@@ -38,15 +49,15 @@ schema_resource = {"id": "9123ca72-ebd1-422b-b8b0-e150b7c69dc5"}
 
 # ----------added by bingjie-----------------------------
 # 创建flow和schedulers时可以使用的schema和dataset
-schema_id = "e4101818-189c-486f-9c6d-6a4072f6367e"  # city_schema
-dataset_id = "cf5bb66c-51c0-4a19-8b57-762b466abe17"  # city_dataset
+schema_id = "6e1cf4b1-da97-4305-afe8-ed567b3ebe68"  # students_schema
+dataset_id = "0f22c4ce-ce02-464d-a0e3-7f9fb430b6b2"  # students_dataset
 dataset_for_sink_id = ""
 # 查询scheduler时使用的name
 scheduler_name = "20181120181139scheduler"
 # 查询schedulers时使用的id（和"20181120181139scheduler"是同一个）
 scheduler_id = "7a64a125-fe39-424b-811e-fdd4cbfd9434"
-# 查询flow时使用的id： flow_name = city_flow
-flow_id = "c16cbd2b-e42c-433b-88fb-84fbecea98f3"
+# 查询flow时使用的id： flow_name = students_flow
+flow_id = "35033c8d-fadc-4628-abf9-6803953fba34"
 # -----------------------------------------------------
 # 查询flow时使用的resource的id
 Flows_resourceid = "8cb5f399-ec5d-4236-98d3-88f0d1d19d2b"

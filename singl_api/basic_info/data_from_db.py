@@ -7,6 +7,7 @@ from basic_info.setting import MySQL_CONFIG, schema_id, scheduler_name,flow_id, 
 import traceback
 from basic_info.get_auth_token import get_headers
 from basic_info.format_res import get_time, dict_res
+import random
 
 ms = MYSQL(MySQL_CONFIG["HOST"], MySQL_CONFIG["USER"], MySQL_CONFIG["PASSWORD"], MySQL_CONFIG["DB"],)
 
@@ -78,39 +79,82 @@ def get_flows():
 
 def create_schedulers():
     from basic_info.url_info import create_scheduler_url
-    scheduler_name = time.strftime("%Y%m%d%H%M%S", time.localtime()) + 'schedulers_delete'
-    flow_name = get_flows()[0][0]
-    flow_type = get_flows()[0][1]
-    propertys = [{"name": "all.debug", "value": "false"},{"name": "all.dataset-nullable", "value": "false"},{"name": "all.lineage.enable", "value": "true"},
-                 {"name": "all.notify-output", "value": "false"},
-                 {"name": "all.debug-rows", "value": "20"},
-                 {"name": "dataflow.master", "value": "yarn"},
-                 {"name": "dataflow.deploy-mode", "value": "client"},
-                 {"name": "dataflow.queue", "value": "default"},
-                 {"name": "dataflow.num-executors", "value": "2"},
-                 {"name": "dataflow.driver-memory", "value": "512M"},
-                 {"name": "dataflow.executor-memory", "value": "1G"},
-                 {"name": "dataflow.executor-cores", "value": "2"},
-                 {"name": "dataflow.verbose", "value": "true"},
-                 {"name": "dataflow.local-dirs", "value": ""},
-                 {"name": "dataflow.sink.concat-files", "value": "true"}
-                 ]
-    startTime = get_time()
-    corn = "once"
-    data = {"name": scheduler_name,
-            "flowId": flow_id,
-            "flowName": flow_name,
-            "flowType": flow_type,
-            "schedulerId": "once",
-            "source": "rhinos",
-            "configurations":
-                {
-                 "startTime": startTime,
-                 "arguments": [],
-                 "cron": corn,
-                 "properties": propertys
-                }
+    flow_name = get_flows()[0]["name"]
+    flow_type = get_flows()[0]["flow_type"]
+    data = {
+    "configurations":{
+        "arguments":[],
+        "properties":[
+            {
+                "name":"all.debug",
+                "value":"false"
+            },
+            {
+                "name":"all.dataset-nullable",
+                "value":"false"
+            },
+            {
+                "name":"all.lineage.enable",
+                "value":"true"
+            },
+            {
+                "name":"all.notify-output",
+                "value":"false"
+            },
+            {
+                "name":"all.debug-rows",
+                "value":"20"
+            },
+            {
+                "name":"dataflow.master",
+                "value":"yarn"
+            },
+            {
+                "name":"dataflow.deploy-mode",
+                "value":"client"
+            },
+            {
+                "name":"dataflow.queue",
+                "value":"a1"
+            },
+            {
+                "name":"dataflow.num-executors",
+                "value":"2"
+            },
+            {
+                "name":"dataflow.driver-memory",
+                "value":"512M"
+            },
+            {
+                "name":"dataflow.executor-memory",
+                "value":"1G"
+            },
+            {
+                "name":"dataflow.executor-cores",
+                "value":"2"
+            },
+            {
+                "name":"dataflow.verbose",
+                "value":"true"
+            },
+            {
+                "name":"dataflow.local-dirs",
+                "value":""
+            },
+            {
+                "name":"dataflow.sink.concat-files",
+                "value":"true"
             }
+        ],
+        "startTime": get_time()
+    },
+    "flowId":flow_id,
+    "flowName": flow_name,
+    "flowType": flow_type,
+    "name":"students_flow" + str(random.randint(0, 99999)),
+    "schedulerId":"once",
+    "source":"rhinos"
+}
     res = requests.post(url=create_scheduler_url, headers=get_headers(), data=json.dumps(data))
     # print(res.status_code, res.text)
     if res.status_code == 201 and res.text:
@@ -124,7 +168,6 @@ def create_schedulers():
     else:
         return None
 
+if __name__ == '__main__':
+    print(create_schedulers())
 
-
-
-print(create_schedulers())

@@ -1,4 +1,5 @@
 import pymysql
+from basic_info.setting import MySQL_CONFIG
 
 # 数据库连接
 class MYSQL:
@@ -11,7 +12,8 @@ class MYSQL:
     def _Getconnect(self):
         if not self.db:
             raise(NameError, '没有设置数据库连接信息')
-        self.conn = pymysql.connect(host=self.host, user=self.user, password=self.pwd, database=self.db, charset='utf8')
+        self.conn = pymysql.connect(host=self.host, user=self.user, password=self.pwd, database=self.db, charset='utf8',
+                                    cursorclass=pymysql.cursors.DictCursor)
         cur = self.conn.cursor()
         if not cur:
             raise (NameError, '数据库连接失败')
@@ -38,7 +40,7 @@ class MYSQL:
 
 
 # if __name__ == '__main__':
-#     ms = MYSQL('192.168.1.189', 'merce', 'merce', 'merce')
+#     ms = ms = MYSQL(MySQL_CONFIG["HOST"], MySQL_CONFIG["USER"], MySQL_CONFIG["PASSWORD"], MySQL_CONFIG["DB"])
 #     sql = 'select name from merce_schema order  by create_time desc limit 1'
 #     res = ms.ExecuQuery(sql)
 #     res = res[0][0]

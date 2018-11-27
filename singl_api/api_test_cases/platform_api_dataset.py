@@ -49,12 +49,14 @@ class Create_DataSet(unittest.TestCase):
 
     def test_case03(self):
         """--正常创建HDFSdataset--"""
-        dataset_name = time.strftime("%Y%m%d%H%M%S", time.localtime()) + 'dataset'
+        dataset_name = time.strftime("%Y%m%d%H%M%S", time.localtime()) + 'HDFSdataset'
         schema_info = schema()  # data_from_db中schema()查询schema
         data = {"name": dataset_name, "schema": schema_info, "storage": "HDFS", "expiredPeriod": 0,
         "storageConfigurations": storageConfigurations, "owner": "2059750c-a300-4b64-84a6-e8b086dbfd42", "resource": {"id": "39386f75-9b28-43a6-a6bf-bd5e0e85d437"}}
         res = requests.post(url=url, headers=get_headers(), data=json.dumps(data))
         # 断言成功时响应状态码为201
+        print("开始创建hdfs")
+        print(res.status_code, res.text)
         self.assertEqual(res.status_code, 201, 'HDFS dataset创建失败')
         text = json.loads(res.text)
         text = text["id"]
