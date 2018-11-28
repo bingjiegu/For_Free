@@ -63,6 +63,8 @@ flow_id = "35033c8d-fadc-4628-abf9-6803953fba34"
 Flows_resourceid = "8cb5f399-ec5d-4236-98d3-88f0d1d19d2b"
 # ------------------------------------------------------
 
+# 给定一个flow_id的列表，使用{"flow_name":"flow_id"}的方式存储，在创建scheduler时循环调用---对比execution result时使用该list
+flow_id_list = ["35033c8d-fadc-4628-abf9-6803953fba34", "f2677db1-6923-42a1-8f18-f8674394580a"]
 # add by pengyuan
 # 创建flow时使用的schema的name和id
 idnameage_schema_name = 'idnameage'

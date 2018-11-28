@@ -168,6 +168,40 @@ def create_schedulers():
     else:
         return None
 
+
+def get_e_finial_status(scheduler_id):
+    if scheduler_id:
+        # print("查询前先等待10S")
+        # time.sleep(10)
+        execution_sql = 'select id, status, flow_id , flow_scheduler_id from merce_flow_execution where flow_scheduler_id = "%s" ' % scheduler_id
+        select_result = ms.ExecuQuery(execution_sql)
+        # print("根据scheduler id %s 查询execution，查询结果 %s: " % (scheduler_id, select_result))
+        if select_result:
+            e_info = {}
+            # 从查询结果中取值
+            try:
+                e_id = select_result[0]["id"]
+                print(e_id)
+                e_info["e_id"] = e_id
+                e_info["flow_id"] = select_result[0]["flow_id"]
+                e_info["flow_scheduler_id"] = select_result[0]["flow_scheduler_id"]
+                e_status = select_result[0]["status"]
+            except IndexError as e:
+                print("取值时报错 %s" % e)
+                raise e
+            else:
+                # 对返回数据格式化
+                e_status_format = dict_res(e_status)
+                e_final_status = e_status_format["type"]
+            e_info["e_final_status"] = e_final_status  #
+            # 将 execution id , flow_id和status组装成字典的形式并返回
+            return e_info
+        else:
+            # print("根据scheduler id: %s ,没有查找到execution" % scheduler_id)
+            return None
+    else:
+        return None
+
 if __name__ == '__main__':
-    print(create_schedulers())
+    print(get_e_finial_status("cb3c3f67-1087-4a39-859e-f79021d30654"))
 
