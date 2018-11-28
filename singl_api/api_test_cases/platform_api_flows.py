@@ -375,7 +375,7 @@ class API_flows(unittest.TestCase):
         data = {"id": flow_update_id}
         res = requests.post(url=flow_clean_status_url, data=json.dumps(data), headers=get_headers())
         # response_text = json.loads(res.text)
-        print(res.status_code, res.url, res.text)
+        # print(res.status_code, res.url, res.text)
         self.assertEqual(res.status_code, 204, '清理status返回的status_code不正确')
         time.sleep(3)
 
@@ -394,6 +394,9 @@ class API_flows(unittest.TestCase):
     def test_case22(self):
         """根据id删除流程-project"""
         # 无返回值
+        from basic_info.get_flow_body import create_flow_project
+        flow_delete_ByProjectId_url = '%s/api/flows/%s/%s' % (
+            MY_LOGIN_INFO["HOST"], Flows_project_resourceId, create_flow_project())
         res = requests.delete(url=flow_delete_ByProjectId_url, headers=get_headers())
         # response_text = json.loads(res.text)
         # print(res.status_code, res.url, res.text)
@@ -407,14 +410,11 @@ class API_flows(unittest.TestCase):
         id1 = create_flow()
         time.sleep(2)
         id2 = create_flow()
-
-        # delete_flow_id2 = create_flow()
-        # delete_flow_id2 = delete_flow_id2['id']
         data = [id1, id2]
-        print(data)
+        # print(data)
         res = requests.post(url=flow_delete_removeList_url, data=json.dumps(data), headers=get_headers())
         # response_text = json.loads(res.text)
-        print(res.status_code, res.url, res.text)
+        # print(res.status_code, res.url, res.text)
         self.assertEqual(res.status_code, 204, '根据id批量删除流程返回的status_code不正确')
         time.sleep(3)
         # 查询数据库的flow_id来判断是否批量删除成功
@@ -432,13 +432,30 @@ class API_flows(unittest.TestCase):
 
     def test_case24(self):
         """根据id批量删除流程-project"""
-        # 无返回值
-        data1 = ['1', '2']
-        res = requests.post(url=flow_delete_removeListProject_url, data=json.dumps(data1), headers=get_headers())
+        # 无返回值,已加判断
+        from basic_info.get_flow_body import create_flow_project
+        id1 = create_flow_project()
+        time.sleep(2)
+        id2 = create_flow_project()
+        data = [id1, id2]
+        # print(data)
+        res = requests.post(url=flow_delete_removeList_url, data=json.dumps(data), headers=get_headers())
         # response_text = json.loads(res.text)
-        print(res.status_code, res.url, res.text)
-        self.assertEqual(res.status_code, 204, '根据id批量删除流程-project返回的status_code不正确')
+        # print(res.status_code, res.url, res.text)
+        self.assertEqual(res.status_code, 204, '根据id批量删除流程返回的status_code不正确')
         time.sleep(3)
+        # 查询数据库的flow_id来判断是否批量删除成功
+        try:
+            sql = 'SELECT id from merce_flow where id in ("%s", "%s")' % (id1, id2)
+            flow_delete_info = ms.ExecuQuery(sql)
+        except Exception as e:
+            print("flow数据查询出错:%s" % e)
+        else:
+            if not flow_delete_info:
+                print('项目目录下批量删除flow成功')
+                # flow_delete_id = list(flow_delete_info[0])
+            else:
+                self.assertEqual(1, 0, '项目目录下批量删除flow失败')
 
 # if __name__ == '__main__':
 #     unittest.main()

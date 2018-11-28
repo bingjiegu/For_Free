@@ -71,3 +71,5 @@ flow_delete_name = 'tc_auto_df_delete'
 # 删除project_flow使用的id
 flow_project_id_delete = 'dfac0c50-97db-4c1b-9f9e-ab1b82e2475c'
 flow_project_flow_id = 'a0bc52da-3db1-49b2-b6a3-1850340e5883'
+# 创建project_flow的resourceId
+Flows_project_resourceId = "dfac0c50-97db-4c1b-9f9e-ab1b82e2475c"
