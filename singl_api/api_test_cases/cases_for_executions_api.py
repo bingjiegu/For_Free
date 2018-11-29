@@ -22,10 +22,10 @@ class query_execution(unittest.TestCase):
                     [{"fieldName": "flowId", "fieldValue": flow_id, "comparatorOperator": "EQUAL"}],
                 "sortObject": {"field": "lastModifiedTime", "orderDirection": "DESC"}}
         res = requests.post(url=query_exectution_url, headers=get_headers(), json=data)
-        print(res.status_code, res.text)
+        # print(res.status_code, res.text)
         executions = dict_res(res.text)
         executions_flowId = executions["content"][0]["flowId"]
-        print(len(executions["content"]))
+        # print(len(executions["content"]))
         self.assertEqual(res.status_code, 200, "execution查询接口调用失败")
         self.assertEqual(flow_id, executions_flowId, "查询得到的execution中的flowId和查询使用的flowId不一致")
 

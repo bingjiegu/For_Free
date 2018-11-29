@@ -6,7 +6,7 @@ from basic_info.setting import MY_LOGIN_INFO
 
 # 该脚本用来查询系统服务状态
 class Check_status(unittest.TestCase):
-    """查询系统服务状态"""
+    """查询系统服务状态接口测试"""
     def test_case01(self):
         """查询系统服务状态"""
         url = '%s/api/component_status' % MY_LOGIN_INFO["HOST"]

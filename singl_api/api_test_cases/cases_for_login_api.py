@@ -5,6 +5,7 @@ import json
 
 
 class CheckLogin(unittest.TestCase):
+    """login 接口测试"""
     """测试登录接口"""
     def setUp(self):
         self.login_info = MY_LOGIN_INFO["DATA"]

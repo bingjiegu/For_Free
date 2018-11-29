@@ -3,8 +3,9 @@ import unittest
 from api_test_cases.get_execution_output_json import GetCheckoutDataSet
 
 
-class TT(unittest.TestCase):
-    def test_1(self):
+class CheckOutPutData(unittest.TestCase):
+    """execution 预期执行结果和实际执行结果对比"""
+    def test_01(self):
         print('\n')
         print("--------开始获取result---------------")
         actual_json = GetCheckoutDataSet().get_json()

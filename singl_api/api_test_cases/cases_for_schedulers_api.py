@@ -8,6 +8,7 @@ from basic_info.setting import MySQL_CONFIG, scheduler_id, flow_id
 from basic_info.Open_DB import MYSQL
 from basic_info.url_info import *
 from basic_info.data_from_db import create_schedulers, get_flows
+import random
 
 
 # 配置数据库连接
@@ -17,14 +18,15 @@ ms = MYSQL(MySQL_CONFIG["HOST"], MySQL_CONFIG["USER"], MySQL_CONFIG["PASSWORD"],
 # 该类用来测试创建scheduler接口
 class CreateSchedulers(unittest.TestCase):
     """用来测试创建schedulers"""
+
     # 创建schedulers的API路径
     def test_case01(self):
         """创建schedulers，单次执行"""
-        scheduler_name = time.strftime("%Y%m%d%H%M%S", time.localtime()) + 'schedulers'
+        scheduler_name = 'schedulers' + str(random.randint(0, 99999))
         data = {"name": scheduler_name,
                 "flowId": flow_id,
-                "flowName": get_flows()[0][0],
-                "flowType": get_flows()[0][1],
+                "flowName": get_flows()[0]["name"],
+                "flowType": get_flows()[0]["flow_type"],
                 "schedulerId": "once",
                 "configurations":
                     {"startTime": int((time.time() + 7200)*1000), "arguments": [], "cron": "once", "properties": []}
@@ -35,13 +37,13 @@ class CreateSchedulers(unittest.TestCase):
 
     def test_case02(self):
         """创建schedulers，周期执行"""
-        scheduler_name = time.strftime("%Y%m%d%H%M%S", time.localtime()) + 'scheduler'
+        scheduler_name = 'schedulers' + str(random.randint(0, 99999))
         start_time = get_time()+(2*3600*1000)  # starttime设为当前时间2个小时后
         end_time = get_time() + (10*24*3600*1000)  # endtime设为当前时间十天后
         data = {"name": scheduler_name,
                 "flowId": flow_id,
-                "flowName": get_flows()[0][0],
-                "flowType": get_flows()[0][1],
+                "flowName": get_flows()[0]["name"],
+                "flowType": get_flows()[0]["flow_type"],
                 "schedulerId": "cron",
                 "source": "rhinos",
                 "configurations":
@@ -66,7 +68,7 @@ class CreateSchedulers(unittest.TestCase):
                      "startTime": start_time}}
         res = requests.post(url=create_scheduler_url, headers=get_headers(), data=json.dumps(data))
         # print(res.status_code, res.text)
-        self.assertEqual(res.status_code, 201, '创建周期执行的scheduler失败')
+        self.assertEqual(res.status_code, 201, '创建周期执行的scheduler失败%s' %res.text)
 
 
 # 该类用来测试scheduler查询接口
@@ -86,6 +88,7 @@ class SelectSchedulers(unittest.TestCase):
 
 # 该类用来测试查询schedulers接口 /api/schedulers/query
 class QuerySchedulers(unittest.TestCase):
+    from basic_info.url_info import query_scheduler_url
     def test_case01(self):
         """根据scheduler name模糊查询"""
         keyword = "%student%"
@@ -96,14 +99,11 @@ class QuerySchedulers(unittest.TestCase):
                 }
         # 提取出参数中的查询关键词
         fieldValue = data["fieldList"][0]["fieldValue"][1:-1]
-
-        res = requests.post(url=query_scheduler_url, headers=get_headers(), data=json.dumps(data))
+        res = requests.post(url=self.query_scheduler_url, headers=get_headers(), data=json.dumps(data))
         # print(res.status_code, res.text)
         query_results = dict_res(res.text)
         # print(type(query_results["content"]))
-
         self.assertEqual(res.status_code, 200, "查询失败")
-
         # 对比查询关键字和查询结果中的scheduler name
         query_results = dict_res(query_results["content"][0])  # 将查询结果中的第一个值进行dictionary格式化
         query_result_name = query_results["name"]
@@ -120,7 +120,7 @@ class QuerySchedulers(unittest.TestCase):
         # 提取出参数中的查询关键词
         fieldValue = data["fieldList"][0]["fieldValue"]
 
-        res = requests.post(url=query_scheduler_url, headers=get_headers(), data=json.dumps(data))
+        res = requests.post(url=self.query_scheduler_url, headers=get_headers(), data=json.dumps(data))
         query_results = dict_res(res.text)
         # print(type(query_results["content"]))
         # 将查询结果中的第一个值进行dictionary格式化
@@ -139,8 +139,7 @@ class QuerySchedulers(unittest.TestCase):
                 }
         # 提取出参数中的查询关键词
         fieldValue = data["fieldList"][0]["fieldValue"]
-
-        res = requests.post(url=query_scheduler_url, headers=get_headers(), data=json.dumps(data))
+        res = requests.post(url=self.query_scheduler_url, headers=get_headers(), data=json.dumps(data))
         query_results = dict_res(res.text)
         # print(type(query_results["content"]))
         # 将查询结果中的第一个值进行dictionary格式化
@@ -161,7 +160,7 @@ class QuerySchedulers(unittest.TestCase):
         # 提取出参数中的查询关键词
         fieldValue = data["fieldList"][0]["fieldValue"]
 
-        res = requests.post(url=query_scheduler_url, headers=get_headers(), data=json.dumps(data))
+        res = requests.post(url=self.query_scheduler_url, headers=get_headers(), data=json.dumps(data))
         query_results = dict_res(res.text)
         # print(type(query_results["content"]))
         # 将查询结果中的第一个值进行dictionary格式化
@@ -183,7 +182,7 @@ class QuerySchedulers(unittest.TestCase):
                    "limit":8}
             data_name = data["fieldList"][0]["fieldValue"][1:-1]
             data_flowType = data["fieldList"][1]["fieldValue"]
-            res = requests.post(url=query_scheduler_url, headers=get_headers(), data=json.dumps(data))
+            res = requests.post(url=self.query_scheduler_url, headers=get_headers(), data=json.dumps(data))
             # print(res.status_code, res.text)
 
             query_results = dict_res(res.text)
@@ -196,7 +195,6 @@ class QuerySchedulers(unittest.TestCase):
 
     def test_case06(self):
         """query:根据上次修改时间查询全部的scheduler"""
-        select_url = "%s/api/schedulers/query" % (MY_LOGIN_INFO["HOST"])
         end_time = get_time()  # lastModifiedTime结束时间是当前时间
         start_time = get_time() - (10 * 24 * 3600 * 1000)  # lastModifiedTime开始时间是当前时间的十天前
         data = {"fieldList": [
@@ -207,7 +205,7 @@ class QuerySchedulers(unittest.TestCase):
             "offset": 0,
             "limit": 8
         }
-        res = requests.post(url=select_url, headers=get_headers(), data=json.dumps(data))
+        res = requests.post(url=self.query_scheduler_url, headers=get_headers(), data=json.dumps(data))
 
         query_results = dict_res(res.text)
         # print(res.text, query_results)
@@ -242,12 +240,12 @@ class EnableDisable(unittest.TestCase):
         from basic_info.url_info import remove_list_url
         data = []
         id1 = create_schedulers()
+        data.append(id1)
         time.sleep(2)
         id2 = create_schedulers()
-        data.append(id1)
         data.append(id2)
         res = requests.post(url=remove_list_url, headers=get_headers(), json=data)
-        self.assertEqual(res.status_code, 204, "批量删除接口调用失败")
+        self.assertEqual(res.status_code, 200, "批量删除接口调用失败")
 
 
 # 该类用来测试update schedulers接口  需要开发做修改，暂不测试该类接口
