@@ -23,18 +23,19 @@ update_scheduler_url = "%s/api/schedulers/%s" % (MY_LOGIN_INFO["HOST"], schedule
 query_exectution_url = "%s/api/executions/query" % MY_LOGIN_INFO["HOST"]
 # 批量查询execution
 gQuery_execution_url = "%s/api/executions/groupQuery" % MY_LOGIN_INFO["HOST"]
-
-
-
 # 批量删除schedulers
 delete_schedulers_url = "%s/api/schedulers/removeList" % (MY_LOGIN_INFO["HOST"])
 
-# ------------ login url-------------------------
+
+# ----------------login-------------------------
 login_url = "%s/api/auth/login" % (MY_LOGIN_INFO["HOST"])
-
-# -------------dataset---------------------------
+# ----------------dataset---------------------------
 priview_url = "%s/api/datasets/%s/preview?rows=50&tenant=2d7ad891-41c5-4fba-9ff2-03aef3c729e5" % (MY_LOGIN_INFO["HOST"],dataset_id)
-
+create_dataset_url = '%s/api/datasets' % MY_LOGIN_INFO["HOST"]
+# ----------------flow-------------------------------
+create_flow_url = "%s/api/flows/create" % MY_LOGIN_INFO["HOST"]
+# ----------------schema-----------------------
+create_schema_url = '%s/api/schemas' % MY_LOGIN_INFO["HOST"]
 
 
 

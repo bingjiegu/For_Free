@@ -11,6 +11,7 @@ url = '%s/api/schemas' % MY_LOGIN_INFO["HOST"]
 
 
 class Create_schema(unittest.TestCase):
+    """测试create schema api"""
     schema_name = time.strftime("%Y%m%d%H%M%S", time.localtime()) + 'schema'
 
     # 正常创建

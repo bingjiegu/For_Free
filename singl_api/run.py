@@ -14,7 +14,7 @@ from send_mail import main2
 # main2()
 #
 testcase = unittest.TestSuite()
-discover = unittest.defaultTestLoader.discover(start_dir='./api_test_cases', pattern='*.py')
+discover = unittest.defaultTestLoader.discover(start_dir='./api_test_cases', pattern='cases*.py')
 for test_suite in discover:
     for test_case in test_suite:
         print(test_case)
@@ -22,7 +22,7 @@ for test_suite in discover:
 # filename = time.strftime("%Y%m%d%H%M%S", time.localtime()) + '_report.html'
 report_path = 'E:\Reports\Test_Report.html'
 fp = open(report_path, 'wb')
-runner = HTMLTestRunner.HTMLTestRunner(stream=fp, title='API自动化测试报告', description='测试用例目前覆盖dataset、schema、flow、schedulers部分接口')
+runner = HTMLTestRunner.HTMLTestRunner(stream=fp, title='API自动化测试报告', description='测试用例目前覆盖接口')
 runner.run(testcase)
 fp.close()
 

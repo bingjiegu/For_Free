@@ -39,10 +39,18 @@ MY_LOGIN_INFO = {
  "HOST": "http://192.168.1.189:8515"
 }
 
+MY_LOGIN_INFO2 = {
+ "HEADERS": {'Content-Type': 'application/x-www-form-urlencoded'},
+ "URL": "http://192.168.1.189:8515/api/auth/login",
+ "DATA": {'name': 'admin', 'password': '123456', 'version': 'Europa-3.0.0.19 - 20180428', 'tenant': 'default'},
+ "HOST": "http://192.168.1.189:8515"
+}
 
+# login user:admin
+owner2 = "2059750c-a300-4b64-84a6-e8b086dbfd42"
+# login user:gbj_use
+owner = "d2fee4a4-d296-4db8-9b62-46bd9bc46a94"
 
-
-owner = "2059750c-a300-4b64-84a6-e8b086dbfd42"
 tenant_id = "2d7ad891-41c5-4fba-9ff2-03aef3c729e5"  # default租戶ID
 dataset_resource = {"id": "39386f75-9b28-43a6-a6bf-bd5e0e85d437"}
 schema_resource = {"id": "9123ca72-ebd1-422b-b8b0-e150b7c69dc5"}
@@ -53,9 +61,9 @@ schema_id = "6e1cf4b1-da97-4305-afe8-ed567b3ebe68"  # students_schema
 dataset_id = "0f22c4ce-ce02-464d-a0e3-7f9fb430b6b2"  # students_dataset
 dataset_for_sink_id = ""
 # 查询scheduler时使用的name
-scheduler_name = "20181120181139scheduler"
-# 查询schedulers时使用的id（和"20181120181139scheduler"是同一个）
-scheduler_id = "7a64a125-fe39-424b-811e-fdd4cbfd9434"
+scheduler_name = "students_flow39806"
+# 查询schedulers时使用的id（和"students_flow39806"是同一个）
+scheduler_id = "d7c30e9b-18a4-4af0-b9c8-b9b70697c19f"
 # 查询flow时使用的id： flow_name = students_flow
 flow_id = "35033c8d-fadc-4628-abf9-6803953fba34"
 # -----------------------------------------------------

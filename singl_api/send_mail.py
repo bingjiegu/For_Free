@@ -51,9 +51,10 @@ def sendEmail(content, title, from_name, from_address, to_address, serverport, s
 def main2():
     # from run import filename
     TO = [email_to["gubingjie"], email_to["daming"]]
+    # TO = [email_to["gubingjie"]]
     config = {
     "from": "ruifan_test@163.com",
-    "from_name": 'bingjie',
+    "from_name": '189环境自动化测试报告',
     "to": TO,
     "serverip": "smtp.163.com",
     "serverport": "465",

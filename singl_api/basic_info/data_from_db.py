@@ -23,8 +23,8 @@ def schema():
     else:
         # 使用字典存储返回的schema id 和 name
         schema = {}
-        schema['id'] = data[0][0]
-        schema['name'] = data[0][9]
+        schema['id'] = data[0]["id"]
+        schema['name'] = data[0]["name"]
         return schema
 
 
@@ -43,11 +43,11 @@ def get_datasource():
     else:
         # 用字典来存储DataSource的基本信息，可以在创建dataset时直接调用
         storageConfigurations = {}
-        storageConfigurations['name'] = datasource_info[0][9]  # datasource name
-        storageConfigurations['id'] = datasource_info[0][0]  # datasource id
+        storageConfigurations['name'] = datasource_info[0]["name"]  # datasource name
+        storageConfigurations['id'] = datasource_info[0]["id"]  # datasource id
         storageConfigurations['resType'] = "DB"
         storageConfigurations['table'] = 'city'   # 指定table
-        DB_info = json.loads(datasource_info[0][13])  # datasource DB info
+        DB_info = json.loads(datasource_info[0]["attributes"])  # datasource DB info
         print(DB_info)
         for k, v in DB_info.items():  # 将DB信息存入storageConfigurations
             if k != 'properties':
@@ -62,7 +62,7 @@ def get_schedulers():
     except Exception as e:
         print("scheduler数据查询出错:%s" %e)
     else:
-        scheduler_id = scheduler_id[0][0]
+        scheduler_id = scheduler_id[0]["id"]
         return scheduler_id
 
 
@@ -70,7 +70,6 @@ def get_flows():
     try:
         sql = 'select name, flow_type from merce_flow where id = "%s"' % flow_id
         flow_info = ms.ExecuQuery(sql)
-
     except Exception as e:
         traceback.print_exc()
     else:
@@ -169,38 +168,7 @@ def create_schedulers():
         return None
 
 
-# def get_e_finial_status(scheduler_id):
-#     if scheduler_id:
-#         # print("查询前先等待10S")
-#         # time.sleep(10)
-#         execution_sql = 'select id, status, flow_id , flow_scheduler_id from merce_flow_execution where flow_scheduler_id = "%s" ' % scheduler_id
-#         select_result = ms.ExecuQuery(execution_sql)
-#         # print("根据scheduler id %s 查询execution，查询结果 %s: " % (scheduler_id, select_result))
-#         if select_result:
-#             e_info = {}
-#             # 从查询结果中取值
-#             try:
-#                 e_id = select_result[0]["id"]
-#                 print(e_id)
-#                 e_info["e_id"] = e_id
-#                 e_info["flow_id"] = select_result[0]["flow_id"]
-#                 e_info["flow_scheduler_id"] = select_result[0]["flow_scheduler_id"]
-#                 e_status = select_result[0]["status"]
-#             except IndexError as e:
-#                 print("取值时报错 %s" % e)
-#                 raise e
-#             else:
-#                 # 对返回数据格式化
-#                 e_status_format = dict_res(e_status)
-#                 e_final_status = e_status_format["type"]
-#             e_info["e_final_status"] = e_final_status  #
-#             # 将 execution id , flow_id和status组装成字典的形式并返回
-#             return e_info
-#         else:
-#             # print("根据scheduler id: %s ,没有查找到execution" % scheduler_id)
-#             return None
-#     else:
-#         return None
+
 
 def get_json(sink_dataset):
     from basic_info.url_info import priview_url
@@ -216,7 +184,4 @@ def get_json(sink_dataset):
 
 
 
-sink_dataset =  [{"flow_id": "35033c8d-fadc-4628-abf9-6803953fba34", "o_dataset": "0c012cd7-c4ad-4c3b-bfa0-5ece5cf293d9"},
-                {"flow_id": "f2677db1-6923-42a1-8f18-f8674394580a","o_dataset":"b896ff9d-691e-4939-a860-38eb828b1ad2"}
-                ]
-print(get_json(sink_dataset))
+
