@@ -32,7 +32,8 @@ delete_schedulers_url = "%s/api/schedulers/removeList" % (MY_LOGIN_INFO["HOST"])
 # ------------ login url-------------------------
 login_url = "%s/api/auth/login" % (MY_LOGIN_INFO["HOST"])
 
-
+# -------------dataset---------------------------
+priview_url = "%s/api/datasets/%s/preview?rows=50&tenant=2d7ad891-41c5-4fba-9ff2-03aef3c729e5" % (MY_LOGIN_INFO["HOST"],dataset_id)
 
 
 

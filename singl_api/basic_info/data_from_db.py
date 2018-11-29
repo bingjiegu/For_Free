@@ -169,39 +169,54 @@ def create_schedulers():
         return None
 
 
-def get_e_finial_status(scheduler_id):
-    if scheduler_id:
-        # print("查询前先等待10S")
-        # time.sleep(10)
-        execution_sql = 'select id, status, flow_id , flow_scheduler_id from merce_flow_execution where flow_scheduler_id = "%s" ' % scheduler_id
-        select_result = ms.ExecuQuery(execution_sql)
-        # print("根据scheduler id %s 查询execution，查询结果 %s: " % (scheduler_id, select_result))
-        if select_result:
-            e_info = {}
-            # 从查询结果中取值
-            try:
-                e_id = select_result[0]["id"]
-                print(e_id)
-                e_info["e_id"] = e_id
-                e_info["flow_id"] = select_result[0]["flow_id"]
-                e_info["flow_scheduler_id"] = select_result[0]["flow_scheduler_id"]
-                e_status = select_result[0]["status"]
-            except IndexError as e:
-                print("取值时报错 %s" % e)
-                raise e
-            else:
-                # 对返回数据格式化
-                e_status_format = dict_res(e_status)
-                e_final_status = e_status_format["type"]
-            e_info["e_final_status"] = e_final_status  #
-            # 将 execution id , flow_id和status组装成字典的形式并返回
-            return e_info
-        else:
-            # print("根据scheduler id: %s ,没有查找到execution" % scheduler_id)
-            return None
-    else:
-        return None
+# def get_e_finial_status(scheduler_id):
+#     if scheduler_id:
+#         # print("查询前先等待10S")
+#         # time.sleep(10)
+#         execution_sql = 'select id, status, flow_id , flow_scheduler_id from merce_flow_execution where flow_scheduler_id = "%s" ' % scheduler_id
+#         select_result = ms.ExecuQuery(execution_sql)
+#         # print("根据scheduler id %s 查询execution，查询结果 %s: " % (scheduler_id, select_result))
+#         if select_result:
+#             e_info = {}
+#             # 从查询结果中取值
+#             try:
+#                 e_id = select_result[0]["id"]
+#                 print(e_id)
+#                 e_info["e_id"] = e_id
+#                 e_info["flow_id"] = select_result[0]["flow_id"]
+#                 e_info["flow_scheduler_id"] = select_result[0]["flow_scheduler_id"]
+#                 e_status = select_result[0]["status"]
+#             except IndexError as e:
+#                 print("取值时报错 %s" % e)
+#                 raise e
+#             else:
+#                 # 对返回数据格式化
+#                 e_status_format = dict_res(e_status)
+#                 e_final_status = e_status_format["type"]
+#             e_info["e_final_status"] = e_final_status  #
+#             # 将 execution id , flow_id和status组装成字典的形式并返回
+#             return e_info
+#         else:
+#             # print("根据scheduler id: %s ,没有查找到execution" % scheduler_id)
+#             return None
+#     else:
+#         return None
 
-if __name__ == '__main__':
-    print(get_e_finial_status("cb3c3f67-1087-4a39-859e-f79021d30654"))
+def get_json(sink_dataset):
+    from basic_info.url_info import priview_url
+    sink_dataset_json = []
+    for i in range(len(sink_dataset)):
+        json_dict = {}
+        json_dict["flow_id"] = sink_dataset[i]["flow_id"]
+        dataset_id = sink_dataset[i]["o_dataset"]
+        result = requests.get(url=priview_url, headers=get_headers())
+        json_dict["dataset_json"] = result.json()
+        sink_dataset_json.append(json_dict)
+    return sink_dataset_json
 
+
+
+sink_dataset =  [{"flow_id": "35033c8d-fadc-4628-abf9-6803953fba34", "o_dataset": "0c012cd7-c4ad-4c3b-bfa0-5ece5cf293d9"},
+                {"flow_id": "f2677db1-6923-42a1-8f18-f8674394580a","o_dataset":"b896ff9d-691e-4939-a860-38eb828b1ad2"}
+                ]
+print(get_json(sink_dataset))

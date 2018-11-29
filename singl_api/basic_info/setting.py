@@ -64,7 +64,46 @@ Flows_resourceid = "8cb5f399-ec5d-4236-98d3-88f0d1d19d2b"
 # ------------------------------------------------------
 
 # 给定一个flow_id的列表，使用{"flow_name":"flow_id"}的方式存储，在创建scheduler时循环调用---对比execution result时使用该list
-flow_id_list = ["35033c8d-fadc-4628-abf9-6803953fba34", "f2677db1-6923-42a1-8f18-f8674394580a"]
+flow_id_list = [{"flow_id": "35033c8d-fadc-4628-abf9-6803953fba34", "o_dataset": "0c012cd7-c4ad-4c3b-bfa0-5ece5cf293d9"},
+                {"flow_id": "f2677db1-6923-42a1-8f18-f8674394580a","o_dataset":"b896ff9d-691e-4939-a860-38eb828b1ad2"}
+                ]
+flow_id_json = [{'flow_id': '35033c8d-fadc-4628-abf9-6803953fba34',
+                     'dataset_json':
+                     [{'subject': 'subject', 'grade': 'grade', 'name': 'name', 'id': 'id'},
+                     {'subject': '语文', 'grade': '89', 'name': '张三', 'id': '1'},
+                     {'subject': '英语', 'grade': '85', 'name': '张三', 'id': '2'},
+                     {'subject': '数学', 'grade': '95', 'name': '李四', 'id': '3'},
+                     {'subject': '英语', 'grade': '65', 'name': '李四', 'id': '4'},
+                     {'subject': '语文', 'grade': '35', 'name': '李四', 'id': '5'},
+                     {'subject': '数学', 'grade': '58', 'name': '小明', 'id': '6'},
+                     {'subject': '英语', 'grade': '96', 'name': '小明', 'id': '7'},
+                     {'subject': '语文', 'grade': '96', 'name': '小明', 'id': '8'},
+                     {'subject': '数学', 'grade': '85', 'name': '小红', 'id': '9'},
+                     {'subject': '英语', 'grade': '95', 'name': '小红', 'id': '10'},
+                     {'subject': '语文', 'grade': '78', 'name': '小红', 'id': '11'},
+                     {'subject': '数学', 'grade': '98', 'name': '小玲', 'id': '12'},
+                     {'subject': '语文', 'grade': '46', 'name': '小玲', 'id': '13'},
+                     {'subject': '英语', 'grade': '78', 'name': '小玲', 'id': '14'},
+                     {'subject': '数学', 'grade': '68', 'name': '张三', 'id': '15'}]},
+                     {'flow_id': 'f2677db1-6923-42a1-8f18-f8674394580a',
+                     'dataset_json':
+                     [{'subject': 'subject', 'grade': 'grade', 'name': 'name', 'id': 'id'},
+                     {'subject': '语文', 'grade': '89', 'name': '张三', 'id': '1'},
+                     {'subject': '英语', 'grade': '85', 'name': '张三', 'id': '2'},
+                     {'subject': '数学', 'grade': '95', 'name': '李四', 'id': '3'},
+                     {'subject': '英语', 'grade': '65', 'name': '李四', 'id': '4'},
+                     {'subject': '语文', 'grade': '35', 'name': '李四', 'id': '5'},
+                     {'subject': '数学', 'grade': '58', 'name': '小明', 'id': '6'},
+                     {'subject': '英语', 'grade': '96', 'name': '小明', 'id': '7'},
+                     {'subject': '语文', 'grade': '96', 'name': '小明', 'id': '8'},
+                     {'subject': '数学', 'grade': '85', 'name': '小红', 'id': '9'},
+                     {'subject': '英语', 'grade': '95', 'name': '小红', 'id': '10'},
+                     {'subject': '语文', 'grade': '78', 'name': '小红', 'id': '11'},
+                     {'subject': '数学', 'grade': '98', 'name': '小玲', 'id': '12'},
+                     {'subject': '语文', 'grade': '46', 'name': '小玲', 'id': '13'},
+                     {'subject': '英语', 'grade': '78', 'name': '小玲', 'id': '14'},
+                     {'subject': '数学', 'grade': '68', 'name': '张三', 'id': '15'}]}
+                ]
 # add by pengyuan
 # 创建flow时使用的schema的name和id
 idnameage_schema_name = 'idnameage'
