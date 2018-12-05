@@ -23,11 +23,13 @@ class GetCheckoutDataSet(object):
         print("------开始执行data_for_create_scheduler(self)------\n")
         data_list = []
         flow_table = xlrd.open_workbook("./api_test_cases/flow_dataset_info.xls")
+        # flow_table = xlrd.open_workbook("flow_dataset_info.xls")
         info_sheet = flow_table.sheet_by_name("flow_info")
         info_sheet_row = info_sheet.nrows
         # print(info_sheet_row)
         for i in range(0, info_sheet_row-1):
             flow_id = info_sheet.cell(i+1, 1).value
+            print('------',flow_id, '--------')
             # print(i, flow_id)
             # print('flow_id', flow_id)
             try:
@@ -283,6 +285,7 @@ class GetCheckoutDataSet(object):
 
         # 第一次打开表，将execution output dataset id通过预览接口返回的数据json串写入表，作为case执行得到的实际结果
         flow_table = xlrd.open_workbook('./api_test_cases/flow_dataset_info.xls')
+        # flow_table = xlrd.open_workbook('flow_dataset_info.xls')
         copy_table = copy(flow_table)
         copy_table_sheet = copy_table.get_sheet(0)
         flow_sheet = flow_table.sheet_by_name("flow_info")
@@ -303,8 +306,10 @@ class GetCheckoutDataSet(object):
                     copy_table_sheet.write(j + 1, 4, sink_dataset[i]["e_final_status"])
                     copy_table_sheet.write(j+1, 6, result.text)
             copy_table.save('./api_test_cases/flow_dataset_info.xls')
+            # copy_table.save('flow_dataset_info.xls')
 
         # 第二次打开表，对比实际结果和预期结果，一致标记为pass，不一致标记为fail
+        # table = xlrd.open_workbook('flow_dataset_info.xls')
         table = xlrd.open_workbook('./api_test_cases/flow_dataset_info.xls')
         table_sheet = table.sheets()[0]
         copy_table = copy(table)
@@ -320,22 +325,23 @@ class GetCheckoutDataSet(object):
                     copy_table_sheet.write(i, 8, "")
                 else:
                     copy_table_sheet.write(i, 7, "fail")
-                    copy_table_sheet.write(i, 8, "execution: %s 预期结果和实际结果不一致 \n预期结果: %s\n实际结果: %s" % (table_sheet.cell(i, 3).value,
+                    copy_table_sheet.write(i, 8, "execution: %s 预期结果实际结果不一致 \n预期结果: %s\n实际结果: %s" % (table_sheet.cell(i, 3).value,
                                                                                             table_sheet.cell(i, 5).value, table_sheet.cell(i, 6).value))
             elif table_sheet.cell(i, 4).value == "FAILED":
                 copy_table_sheet.write(i, 7, "fail")
                 copy_table_sheet.write(i, 8, "execution: %s 执行状态为 %s" % (table_sheet.cell(i, 3).value, table_sheet.cell(i, 4).value ))
 
             copy_table.save('./api_test_cases/flow_dataset_info.xls')
+            # copy_table.save('flow_dataset_info.xls')
         # print("表操作结束，并保存")
 
 
 if __name__ == '__main__':
-    # sink_dataet_json = [{'flow_id': '35033c8d-fadc-4628-abf9-6803953fba34', 'execution_id': '39954be8-900a-4466-bc2e-05e379697fef', 'flow_scheduler_id': '8cf78c22-a561-4e5b-9c1c-b709ae8a51fe', 'e_final_status': 'SUCCEEDED', 'o_dataset': 'b896ff9d-691e-4939-a860-38eb828b1ad2'}, {'flow_id': 'f2677db1-6923-42a1-8f18-f8674394580a', 'execution_id': 'a38d303f-5bf5-441b-831c-92df5a9b7299', 'flow_scheduler_id': '65d1ca0a-4f0d-4680-b667-291ca412bdb2', 'e_final_status': 'SUCCEEDED', 'o_dataset': 'b896ff9d-691e-4939-a860-38eb828b1ad2'}]
-    # GetCheckoutDataSet()
+    # sink_dataet_json = [{'flow_id': '35033c8d-fadc-4628-abf9-6803953fba34', 'execution_id': '39954be8-900a-4466-bc2e-05e379697fef', 'flow_scheduler_id': '8cf78c22-a561-4e5b-9c1c-b709ae8a51fe', 'e_final_status': 'FAILED', 'o_dataset': ''}, {'flow_id': 'f2677db1-6923-42a1-8f18-f8674394580a', 'execution_id': 'a38d303f-5bf5-441b-831c-92df5a9b7299', 'flow_scheduler_id': '65d1ca0a-4f0d-4680-b667-291ca412bdb2', 'e_final_status': 'SUCCEEDED', 'o_dataset': 'b896ff9d-691e-4939-a860-38eb828b1ad2'}]
     GetCheckoutDataSet()
-    # sink_dataset = obj.check_out_put()
-    # sink_dataet_json = obj.get_json(sink_dataset=sink_dataet_json)
+    # flow = obj.data_for_create_scheduler()
+    # print(flow)
+    # sink_dataet_json = obj.get_json()
     # print(sink_dataet_json)
 
 
