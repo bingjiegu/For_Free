@@ -101,9 +101,16 @@ def main3(report_path):
             succeed += 1
     # 邮件的正文内容
     filename = time.strftime("%Y%m%d%H", time.localtime()) + '_report.html'
-    mail_content = '各位好:'+'\n' + '\n' + \
-                '非execution的测试用例测试结果请参考附件<<%s>>' % filename + '\n'\
-                + ' execution执行相关测试场景共 %d 个，成功%d个, 失败 %d个 \n失败详情如下： ' % ( total, succeed, failed) + '\n' + '\n' + detail_msg
+    if failed:
+        mail_content = '各位好:'+'\n' + '\n' + \
+                    '非execution的测试用例测试结果请参考附件<<%s>>' % filename + '\n'\
+                    + ' execution执行相关测试场景共 %d 个，成功%d个, 失败 %d个 \n失败详情如下： ' % ( total, succeed, failed) + '\n' + '\n' + detail_msg
+    else:
+        mail_content = '各位好:' + '\n' + '\n' + \
+                       '非execution的测试用例测试结果请参考附件<<%s>>' % filename + '\n' \
+                       + ' execution执行相关测试场景共 %d 个，成功%d个, 失败 %d个 \n ' % (
+                       total, succeed, failed) + '\n' + '\n' + detail_msg
+
     # 邮件标题
     mail_title = 'API自动化测试报告'
     # 添加邮件正文，格式 MIMEText:
