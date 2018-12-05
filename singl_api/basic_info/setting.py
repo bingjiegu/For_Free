@@ -47,9 +47,9 @@ MY_LOGIN_INFO2 = {
 }
 
 # login user:admin
-owner2 = "2059750c-a300-4b64-84a6-e8b086dbfd42"
+owner = "2059750c-a300-4b64-84a6-e8b086dbfd42"
 # login user:gbj_use
-owner = "d2fee4a4-d296-4db8-9b62-46bd9bc46a94"
+owner2 = "d2fee4a4-d296-4db8-9b62-46bd9bc46a94"
 
 tenant_id = "2d7ad891-41c5-4fba-9ff2-03aef3c729e5"  # default租戶ID
 dataset_resource = {"id": "39386f75-9b28-43a6-a6bf-bd5e0e85d437"}
