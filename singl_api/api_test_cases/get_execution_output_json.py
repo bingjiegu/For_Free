@@ -79,7 +79,7 @@ class GetCheckoutDataSet(object):
                         },
                         {
                             "name": "dataflow.queue",
-                            "value": "a1"
+                            "value": "merce.normal"
                         },
                         {
                             "name": "dataflow.num-executors",
@@ -317,7 +317,7 @@ class GetCheckoutDataSet(object):
 
         c_rows = table_sheet.nrows
 
-        # 实际结果写入表后，对比预期结果和实际结果
+        # mode = overwrite:实际结果写入表后，对比预期结果和实际结果,并把失败详情存在 fail_detail
         for i in range(1, c_rows):
             if table_sheet.cell(i, 6).value and table_sheet.cell(i, 4).value == "SUCCEEDED":  # 实际结果存在
                 if table_sheet.cell(i, 5).value == table_sheet.cell(i, 6).value:  # 实际结果和预期结果相等
