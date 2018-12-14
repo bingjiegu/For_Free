@@ -626,9 +626,13 @@ class HTMLTestRunner(Template_mixin):
         "Run the given test case or test suite."
         result = _TestResult(self.verbosity)
         test(result)
+        print('测试结果result 结果\n',result)
+        print('result.error_count 结果',result.error_count)
+        print('result.failure_count 结果', result.failure_count)
+        # print('result 类型', result)
         self.stopTime = datetime.datetime.now()
         self.generateReport(test, result)
-        print (sys.stderr, '\nTime Elapsed: %s' % (self.stopTime-self.startTime))
+        print(sys.stderr, '\n耗时: %s' % (self.stopTime-self.startTime))
         return result
 
 
@@ -655,13 +659,14 @@ class HTMLTestRunner(Template_mixin):
         startTime = str(self.startTime)[:19]
         duration = str(self.stopTime - self.startTime)
         status = []
-        if result.success_count: status.append('Pass %s'    % result.success_count)
+        if result.success_count: status.append('Pass %s' % result.success_count)
         if result.failure_count: status.append('Failure %s' % result.failure_count)
-        if result.error_count:   status.append('Error %s'   % result.error_count  )
+        if result.error_count:   status.append('Error %s' % result.error_count  )
         if status:
             status = ' '.join(status)
         else:
             status = 'none'
+        print(status)
         return [
             ('Start Time', startTime),
             ('Duration', duration),
