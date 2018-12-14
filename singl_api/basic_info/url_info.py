@@ -37,6 +37,8 @@ create_flow_url = "%s/api/flows/create" % MY_LOGIN_INFO["HOST"]
 # ----------------schema-----------------------
 create_schema_url = '%s/api/schemas' % MY_LOGIN_INFO["HOST"]
 
+# ----------------collector-------------------------
+collector_table_url = '%s/api/woven/collectors/c1/resource/2b5ff16f-ca1b-465e-8a6d-69b8b39f8d61/tables?' % MY_LOGIN_INFO["HOST"]
 
 
 

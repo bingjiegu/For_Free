@@ -112,6 +112,10 @@ flow_id_json = [{'flow_id': '35033c8d-fadc-4628-abf9-6803953fba34',
                      {'subject': '英语', 'grade': '78', 'name': '小玲', 'id': '14'},
                      {'subject': '数学', 'grade': '68', 'name': '张三', 'id': '15'}]}
                 ]
+
+#  used by cases_for_collectors.py
+datasource_id = '2b5ff16f-ca1b-465e-8a6d-69b8b39f8d61&offset'  # datasource name : students_collector
+
 # add by pengyuan
 # 创建flow时使用的schema的name和id
 idnameage_schema_name = 'idnameage'
