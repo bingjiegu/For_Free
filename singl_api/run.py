@@ -1,13 +1,12 @@
 import unittest
 import time
-import HTMLTestRunnerCN
 import HTMLTestRunner
 from send_mail import main2, main3
 from api_test_cases.get_execution_output_json import GetCheckoutDataSet
+# from newSuite import NewSuite
 
 testcase = unittest.TestSuite()
-
-discover = unittest.defaultTestLoader.discover(start_dir='./api_test_cases', pattern='cases_for*.py')
+discover = unittest.defaultTestLoader.discover(start_dir='./api_test_cases', pattern='cases_for_login_api.py')
 
 for test_suite in discover:
     for test_case in test_suite:
@@ -19,8 +18,6 @@ fp = open(report_path, 'wb')
 runner = HTMLTestRunner.HTMLTestRunner(stream=fp, title='API自动化测试报告', description='覆盖dataset,schema,schedulers,execution等测试场景')
 runner.run(testcase)
 fp.close()
-
-
 
 # 需要执行的脚本
 obj = GetCheckoutDataSet()

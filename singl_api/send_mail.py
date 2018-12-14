@@ -82,7 +82,7 @@ def main3(report_path):
     # 发件人的邮箱
     sender_163_mail = "ruifan_test@163.com"
     # 收件人邮箱
-    receivers = ['bingjie.gu@inforefiner.com', 'zhiming.wang@inforefiner.com', 'yuan.peng@inforefiner.com']
+    receivers = ['bingjie.gu@inforefiner.com']
     msg = MIMEMultipart()
     # 邮件的正文内容
     f = xlrd.open_workbook("./api_test_cases/flow_dataset_info.xls")
