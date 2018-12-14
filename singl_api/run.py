@@ -6,7 +6,7 @@ from api_test_cases.get_execution_output_json import GetCheckoutDataSet
 # from newSuite import NewSuite
 
 testcase = unittest.TestSuite()
-discover = unittest.defaultTestLoader.discover(start_dir='./api_test_cases', pattern='cases_for_login_api.py')
+discover = unittest.defaultTestLoader.discover(start_dir='./api_test_cases', pattern='cases_for*.py')
 
 for test_suite in discover:
     for test_case in test_suite:
