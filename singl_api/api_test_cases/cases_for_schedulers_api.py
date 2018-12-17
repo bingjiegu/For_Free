@@ -4,11 +4,10 @@ import requests
 import json
 import time
 from basic_info.format_res import dict_res, get_time
-from basic_info.setting import MySQL_CONFIG, scheduler_id, flow_id
 from basic_info.Open_DB import MYSQL
 from basic_info.url_info import *
-from basic_info.data_from_db import create_schedulers, get_flows
-import random
+from basic_info.data_from_db import create_schedulers
+import random, xlrd
 
 
 # 配置数据库连接
@@ -21,33 +20,43 @@ class CreateSchedulers(unittest.TestCase):
     # 创建schedulers的API路径
     def test_case01(self):
         """创建schedulers，单次执行"""
-        scheduler_name = 'schedulers' + str(random.randint(0, 99999))
+        scheduler_name = 'students_schedulers' + str(random.randint(0, 99999))
+        # flow_table = xlrd.open_workbook("./api_test_cases/flow_dataset_info.xls")
+        flow_table = xlrd.open_workbook("flow_dataset_info.xls")
+        info_sheet = flow_table.sheet_by_name("flow_info")
+        flow_id = info_sheet.cell(1, 1).value
+        flow_name = info_sheet.cell(1, 2).value
         data = {"name": scheduler_name,
                 "flowId": flow_id,
-                "flowName": get_flows()[0]["name"],
-                "flowType": get_flows()[0]["flow_type"],
+                "flowName": flow_name,
+                "flowType": 'dataflow',
                 "schedulerId": "once",
                 "configurations":
-                    {"startTime": int((time.time() + 7200)*1000), "arguments": [], "cron": "once", "properties": []}
+                    {"startTime": get_time(), "arguments": [], "cron": "once", "properties": []}
                 }
-        res = requests.post(url=create_scheduler_url, headers=get_headers(), data=json.dumps(data))
-        # print(res.status_code, res.text)
+        res = requests.post(url=create_scheduler_url, headers=get_headers(), json=data)
+        print(res.status_code, res.text)
         self.assertEqual(res.status_code, 201, '创建单次执行的scheduler失败: %s' % res.text)
 
     def test_case02(self):
         """创建schedulers，周期执行"""
-        scheduler_name = 'schedulers' + str(random.randint(0, 99999))
-        start_time = get_time()+(2*3600*1000)  # starttime设为当前时间2个小时后
-        end_time = get_time() + (10*24*3600*1000)  # endtime设为当前时间十天后
+        scheduler_name = 'students_schedulers_cron' + str(random.randint(0, 99999))
+        # start_time = get_time()+(600*1000)  # starttime设为当前时间10分钟后
+        start_time = get_time()  # starttime设为当前时间
+        end_time = get_time() + (24*3600*1000)  # endtime设为当前时间1天后
+        flow_table = xlrd.open_workbook("flow_dataset_info.xls")
+        info_sheet = flow_table.sheet_by_name("flow_info")
+        flow_id = info_sheet.cell(1, 1).value
+        flow_name = info_sheet.cell(1, 2).value
         data = {"name": scheduler_name,
                 "flowId": flow_id,
-                "flowName": get_flows()[0]["name"],
-                "flowType": get_flows()[0]["flow_type"],
+                "flowName": flow_name,
+                "flowType": 'dataflow',
                 "schedulerId": "cron",
                 "source": "rhinos",
                 "configurations":
                     {"arguments": [],
-                     "cron": "0 0 12 * * ? ",
+                     "cron": "0 0 8 * * ? ",
                      "cronType": "simple",
                      "endTime": end_time,
                      "properties":
@@ -65,10 +74,9 @@ class CreateSchedulers(unittest.TestCase):
                           {"name":"dataflow.local-dirs","value":""},
                           {"name":"dataflow.sink.concat-files","value":"true"}],
                      "startTime": start_time}}
-        res = requests.post(url=create_scheduler_url, headers=get_headers(), data=json.dumps(data))
-        # print(res.status_code, res.text)
+        res = requests.post(url=create_scheduler_url, headers=get_headers(), json=data)
+        print(res.status_code, res.text)
         self.assertEqual(res.status_code, 201, '创建周期执行的scheduler失败:%s' % res.text)
-
 
 # 该类用来测试scheduler查询接口
 class SelectSchedulers(unittest.TestCase):
@@ -161,9 +169,9 @@ class QuerySchedulers(unittest.TestCase):
         fieldValue = data["fieldList"][0]["fieldValue"]
 
         res = requests.post(url=self.query_scheduler_url, headers=get_headers(), data=json.dumps(data))
-        # query_results = dict_res(res.text)
-        # # print(type(query_results["content"]))
-        # # 将查询结果中的第一个值进行dictionary格式化
+        query_results = dict_res(res.text)
+        # print(type(query_results["content"]))
+        # 将查询结果中的第一个值进行dictionary格式化
         # query_results = dict_res(query_results["content"][0])
         # query_result_flowType = query_results["flowType"]
         # 响应码应该为200
@@ -184,7 +192,7 @@ class QuerySchedulers(unittest.TestCase):
             data_flowType = data["fieldList"][1]["fieldValue"]
             res = requests.post(url=self.query_scheduler_url, headers=get_headers(), data=json.dumps(data))
             # print(res.status_code, res.text)
-
+            #
             # query_results = dict_res(res.text)
             # query_result_name = query_results["content"][0]["name"]
             # query_result_flowType = query_results["content"][0]["flowType"]
@@ -193,6 +201,7 @@ class QuerySchedulers(unittest.TestCase):
             # self.assertIn(data_name, query_result_name, "查询出的scheduler name 不包含查询关键词")
             # print(data_flowType, query_result_flowType)
             # self.assertEqual(data_flowType, query_result_flowType,  "查询出的scheduler flowType和查询条件不一致")
+
 
     def test_case06(self):
         """query:根据上次修改时间查询全部的scheduler"""
