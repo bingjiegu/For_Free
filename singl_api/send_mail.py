@@ -82,8 +82,11 @@ def main3(report_path):
     # 发件人的邮箱
     sender_163_mail = "ruifan_test@163.com"
     # 收件人邮箱
-    receivers = ['bingjie.gu@inforefiner.com', 'zhiming.wang@inforefiner.com', 'yuan.peng@inforefiner.com', 'anchong.wang@inforefiner.com']
-    # receivers = ['bingjie.gu@inforefiner.com']
+<<<<<<< HEAD
+=======
+    receivers = ['bingjie.gu@inforefiner.com', 'zhiming.wang@inforefiner.com', 'yuan.peng@inforefiner.com', 'anchong.wang@inforefiner.com'] # 定时任务使用
+    # receivers = ['bingjie.gu@inforefiner.com']  # 调试使用
+>>>>>>> master
     msg = MIMEMultipart()
     # 邮件的正文内容
     f = xlrd.open_workbook("D:\git\\for_free\singl_api\\excel_data\\flow_dataset_info.xls")
