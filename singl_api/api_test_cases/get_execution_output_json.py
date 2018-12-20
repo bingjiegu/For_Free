@@ -5,6 +5,10 @@ from basic_info.format_res import dict_res, get_time
 from basic_info.get_auth_token import MY_LOGIN_INFO
 import time, random, requests, xlrd
 from xlutils.copy import copy
+import json
+import os
+abs_dir = lambda n: os.path.abspath(os.path.join(os.path.dirname(__file__), n))
+
 
 
 class GetCheckoutDataSet(object):
@@ -14,6 +18,17 @@ class GetCheckoutDataSet(object):
         """初始化数据库连接"""
         self.ms = MYSQL(MySQL_CONFIG["HOST"], MySQL_CONFIG["USER"], MySQL_CONFIG["PASSWORD"], MySQL_CONFIG["DB"])
 
+    def file_flowid_count(self):
+        # ------读取xsl表中的flow_id，然后把它装到list里返回------
+        flow_table = xlrd.open_workbook(abs_dir("flow_dataset_info.xls"))
+        info_sheet = flow_table.sheet_by_name("flow_info")
+        info_sheet_row = info_sheet.nrows
+        flowid_list = []
+        for i in range(1, info_sheet_row):
+            if len(info_sheet.cell(i, 1).value) > 10:
+                flowid_list.append(info_sheet.cell(i, 1).value)
+        return flowid_list
+
 
     def data_for_create_scheduler(self):
         """获取setting.py中的flow_id_list
@@ -22,13 +37,9 @@ class GetCheckoutDataSet(object):
         """
         print("------开始执行data_for_create_scheduler(self)------\n")
         data_list = []
-        flow_table = xlrd.open_workbook("./api_test_cases/flow_dataset_info.xls")
-        # flow_table = xlrd.open_workbook("flow_dataset_info.xls")
-        info_sheet = flow_table.sheet_by_name("flow_info")
-        info_sheet_row = info_sheet.nrows
         # print(info_sheet_row)
-        for i in range(0, info_sheet_row-1):
-            flow_id = info_sheet.cell(i+1, 1).value
+        flowid_count = self.file_flowid_count()
+        for flow_id in flowid_count:
             print('------',flow_id, '--------')
             # print(i, flow_id)
             # print('flow_id', flow_id)
@@ -212,7 +223,8 @@ class GetCheckoutDataSet(object):
         e_info_list = self.get_execution_info()
         print("------check_out_put中得到的e_info:------\n", type(e_info_list), e_info_list)
         # 返回的len(e_info)和 len(flow_id_list)相等时，数据无缺失，进行后续的判断
-        if len(e_info_list) == len(flow_id_list):
+        # if len(e_info_list) == len(flow_id_list):  # 表行-1
+        if len(e_info_list) == len(self.file_flowid_count()):  # 与填入表的flowid数一样______________要改_____________________ ____________________________________________________________
             sink_dataset_list = []
             for i in range(len(e_info_list)):
                 sink_dataset_dict = {}
@@ -257,11 +269,14 @@ class GetCheckoutDataSet(object):
                         data_json_sql = 'select b.dataset_json from merce_flow_execution as a  LEFT JOIN merce_flow_execution_output as b on a.id = b.execution_id where a.id ="%s"' % e_id
                         data_json = self.ms.ExecuQuery(data_json_sql)
                         # print("打印data_json:", data_json)
-                        sink_dataset = data_json[0]["dataset_json"]  # 返回结果为元祖
-                        # print(sink_dataset)
-                        sink_dataset_id = dict_res(sink_dataset)["id"]  # 取出json串中的dataset id
-                        sink_dataset_dict["o_dataset"] = sink_dataset_id
-                        sink_dataset_list.append(sink_dataset_dict)
+                        for n in range(len(data_json)):
+                            sink_dataset = data_json[n]["dataset_json"]  # 返回结果为元祖
+                            # print(sink_dataset)
+                            sink_dataset_id = dict_res(sink_dataset)["id"]  # 取出json串中的dataset id
+                            sink_dataset_dict["o_dataset"] = sink_dataset_id
+                            d = json.loads(json.dumps(sink_dataset_dict))
+                            sink_dataset_list.append(d)
+
                         print('第%d次的sink_dataset_list %s' % (i, sink_dataset_list))
                     else:
                         print("返回的execution 执行状态不正确")
@@ -284,8 +299,8 @@ class GetCheckoutDataSet(object):
         sink_dataset_json = []
 
         # 第一次打开表，将execution output dataset id通过预览接口返回的数据json串写入表，作为case执行得到的实际结果
-        flow_table = xlrd.open_workbook('./api_test_cases/flow_dataset_info.xls')
-        # flow_table = xlrd.open_workbook('flow_dataset_info.xls')
+        flow_table = xlrd.open_workbook(abs_dir("flow_dataset_info.xls"))
+        # flow_table = xlrd.open_workbook(abs_dir("flow_dataset_info.xls"))
         copy_table = copy(flow_table)
         copy_table_sheet = copy_table.get_sheet(0)
         flow_sheet = flow_table.sheet_by_name("flow_info")
@@ -299,18 +314,18 @@ class GetCheckoutDataSet(object):
             # print(result.url, '\n', result.text)
             # 如果flow_id相等，# 将output_dataset 的预览数据json串写入实际结果中
             for j in range(0, sheet_rows-1):
-                if sink_dataset[i]["flow_id"] == flow_sheet.cell(j+1, 1).value:
+                if sink_dataset[i]["o_dataset"] == flow_sheet.cell(j+1, 3).value:
                     # print(sink_dataset[i]["flow_id"])
                     # print(flow_sheet.cell(j+1, 1).value)
-                    copy_table_sheet.write(j + 1, 3, sink_dataset[i]["execution_id"])
-                    copy_table_sheet.write(j + 1, 4, sink_dataset[i]["e_final_status"])
-                    copy_table_sheet.write(j+1, 6, result.text)
-            copy_table.save('./api_test_cases/flow_dataset_info.xls')
-            # copy_table.save('flow_dataset_info.xls')
+                    copy_table_sheet.write(j + 1, 4, sink_dataset[i]["execution_id"])
+                    copy_table_sheet.write(j + 1, 5, sink_dataset[i]["e_final_status"])
+                    copy_table_sheet.write(j+1, 7, result.text)
+            copy_table.save(abs_dir("flow_dataset_info.xls"))
+            # copy_table.save(abs_dir("flow_dataset_info.xls"))
 
         # 第二次打开表，对比实际结果和预期结果，一致标记为pass，不一致标记为fail
-        # table = xlrd.open_workbook('flow_dataset_info.xls')
-        table = xlrd.open_workbook('./api_test_cases/flow_dataset_info.xls')
+        # table = xlrd.open_workbook(abs_dir("flow_dataset_info.xls"))
+        table = xlrd.open_workbook(abs_dir("flow_dataset_info.xls"))
         table_sheet = table.sheets()[0]
         copy_table = copy(table)
         copy_table_sheet = copy_table.get_sheet(0)
@@ -319,26 +334,28 @@ class GetCheckoutDataSet(object):
 
         # mode = overwrite:实际结果写入表后，对比预期结果和实际结果,并把失败详情存在 fail_detail
         for i in range(1, c_rows):
-            if table_sheet.cell(i, 6).value and table_sheet.cell(i, 4).value == "SUCCEEDED":  # 实际结果存在
-                if table_sheet.cell(i, 5).value == table_sheet.cell(i, 6).value:  # 实际结果和预期结果相等
-                    copy_table_sheet.write(i, 7, "pass")
-                    copy_table_sheet.write(i, 8, "")
+            copy_table_sheet.write(i, 0, i)
+            if table_sheet.cell(i, 7).value and table_sheet.cell(i, 5).value == "SUCCEEDED":  # 实际结果存在
+                if table_sheet.cell(i, 6).value == table_sheet.cell(i, 7).value:  # 实际结果和预期结果相等
+                    copy_table_sheet.write(i, 8, "pass")
+                    copy_table_sheet.write(i, 9, "")
                 else:
-                    copy_table_sheet.write(i, 7, "fail")
-                    copy_table_sheet.write(i, 8, "execution: %s 预期结果实际结果不一致 \n预期结果: %s\n实际结果: %s" % (table_sheet.cell(i, 3).value,
-                                                                                            table_sheet.cell(i, 5).value, table_sheet.cell(i, 6).value))
-            elif table_sheet.cell(i, 4).value == "FAILED":
-                copy_table_sheet.write(i, 7, "fail")
-                copy_table_sheet.write(i, 8, "execution: %s 执行状态为 %s" % (table_sheet.cell(i, 3).value, table_sheet.cell(i, 4).value ))
+                    copy_table_sheet.write(i, 8, "fail")
+                    copy_table_sheet.write(i, 9, "execution: %s 预期结果实际结果不一致 \n预期结果: %s\n实际结果: %s" % (table_sheet.cell(i, 4).value,
+                                                                                            table_sheet.cell(i, 6).value, table_sheet.cell(i, 7).value))
+            elif table_sheet.cell(i, 5).value == "FAILED":
+                copy_table_sheet.write(i, 8, "fail")
+                copy_table_sheet.write(i, 9, "execution: %s 执行状态为 %s" % (table_sheet.cell(i, 4).value, table_sheet.cell(i, 5).value ))
 
-            copy_table.save('./api_test_cases/flow_dataset_info.xls')
-            # copy_table.save('flow_dataset_info.xls')
+            copy_table.save(abs_dir("flow_dataset_info.xls"))
+            # copy_table.save(abs_dir("flow_dataset_info.xls"))
         # print("表操作结束，并保存")
 
 
 if __name__ == '__main__':
     # sink_dataet_json = [{'flow_id': '35033c8d-fadc-4628-abf9-6803953fba34', 'execution_id': '39954be8-900a-4466-bc2e-05e379697fef', 'flow_scheduler_id': '8cf78c22-a561-4e5b-9c1c-b709ae8a51fe', 'e_final_status': 'FAILED', 'o_dataset': ''}, {'flow_id': 'f2677db1-6923-42a1-8f18-f8674394580a', 'execution_id': 'a38d303f-5bf5-441b-831c-92df5a9b7299', 'flow_scheduler_id': '65d1ca0a-4f0d-4680-b667-291ca412bdb2', 'e_final_status': 'SUCCEEDED', 'o_dataset': 'b896ff9d-691e-4939-a860-38eb828b1ad2'}]
-    GetCheckoutDataSet()
+    g = GetCheckoutDataSet()
+    g.get_json()
     # flow = obj.data_for_create_scheduler()
     # print(flow)
     # sink_dataet_json = obj.get_json()
