@@ -8,7 +8,7 @@ from basic_info.get_auth_token import get_headers
 class ForCollector(unittest.TestCase):
     """验证limit值和total的关系"""
     def test_01(self):
-        limit = 50
+        limit = 50  # 根据业务调整，目前业务需求为50
         par = {'id': datasource_id, 'limit': limit}
         response = requests.get(url=collector_table_url, headers=get_headers(), params=par)
         response_json = response.json()

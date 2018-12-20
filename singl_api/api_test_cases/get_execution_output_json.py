@@ -22,7 +22,7 @@ class GetCheckoutDataSet(object):
         """
         print("------开始执行data_for_create_scheduler(self)------\n")
         data_list = []
-        flow_table = xlrd.open_workbook("./api_test_cases/flow_dataset_info.xls")
+        flow_table = xlrd.open_workbook("D:\git\\for_free\singl_api\\excel_data\\flow_dataset_info.xls")
         # flow_table = xlrd.open_workbook("flow_dataset_info.xls")
         info_sheet = flow_table.sheet_by_name("flow_info")
         info_sheet_row = info_sheet.nrows
@@ -188,12 +188,13 @@ class GetCheckoutDataSet(object):
         print("------开始执行get_execution_info(self)------\n")
         scheduler_id_list = self.create_new_scheduler()
         # scheduler_id_list = ["182a8ca9-6540-4cdc-9d6a-3e3583532067","e5c5362a-09d4-4975-b5ab-a5f0ae39c6e6"]
+        # 等待40S后查询
+        time.sleep(60)
         if scheduler_id_list:
             e_info_list = []
             for scheduler_id in scheduler_id_list:
                 # print('第 %d 个 scheduler_id %s  ' % (count, scheduler_id))
-                # 等待40S后查询
-                time.sleep(40)
+
                 # print('调用get_e_finial_status(scheduler_id)，查询e_info')
                 # 若没有查到execution id， 需要再次查询
                 e_info = self.get_e_finial_status(scheduler_id)
@@ -212,70 +213,70 @@ class GetCheckoutDataSet(object):
         e_info_list = self.get_execution_info()
         print("------check_out_put中得到的e_info:------\n", type(e_info_list), e_info_list)
         # 返回的len(e_info)和 len(flow_id_list)相等时，数据无缺失，进行后续的判断
-        if len(e_info_list) == len(flow_id_list):
-            sink_dataset_list = []
-            for i in range(len(e_info_list)):
-                sink_dataset_dict = {}
-                e_id = e_info_list[i]["e_id"]
-                e_final_status = e_info_list[i]["e_final_status"]
-                e_scheduler_id = e_info_list[i]["flow_scheduler_id"]
-                e_flow_id = e_info_list[i]["flow_id"]
-                sink_dataset_dict["flow_id"] = e_flow_id
-                sink_dataset_dict["execution_id"] = e_id
+        # if len(e_info_list) == len(flow_id_list):
+        sink_dataset_list = []
+        for i in range(len(e_info_list)):
+            sink_dataset_dict = {}
+            e_id = e_info_list[i]["e_id"]
+            e_final_status = e_info_list[i]["e_final_status"]
+            e_scheduler_id = e_info_list[i]["flow_scheduler_id"]
+            e_flow_id = e_info_list[i]["flow_id"]
+            sink_dataset_dict["flow_id"] = e_flow_id
+            sink_dataset_dict["execution_id"] = e_id
 
-                sink_dataset_dict["flow_scheduler_id"] = e_scheduler_id
-                if e_id:
-                    print("------开始对%s 进行状态的判断------\n" % e_id)
-                    while e_final_status in ("READY", "RUNNING"):
-                        print("------进入while循环------\n")
-                        # 状态为 ready 或者 RUNNING时，再次查询e_final_status            #
-                        print("------开始等待20S------\n")
-                        time.sleep(20)
-                        # 调用get_e_finial_status(e_scheduler_id)再次查询状态
-                        e_info = self.get_e_finial_status(e_scheduler_id)
-                        # 对e_final_status 重新赋值
-                        e_final_status = e_info["e_final_status"]
-                        print("------再次查询后的e_final_status: %s------\n" %e_final_status)
-                        # time.sleep(50)
-                    if e_final_status == "FAILED":
-                        print("execution %s 执行失败" % e_id)
-                        sink_dataset_dict["e_final_status"] = e_final_status
-                        sink_dataset_dict["o_dataset"] = ""
-                        sink_dataset_list.append(sink_dataset_dict)
-                        # continue
-                    elif e_final_status == "KILLED":
-                        print("execution %s 被杀死" % e_id)
-                        sink_dataset_dict["e_final_status"] = e_final_status
-                        sink_dataset_dict["o_dataset"] = ""
-                        sink_dataset_list.append(sink_dataset_dict)
-                        # continue
-                    elif e_final_status == "SUCCEEDED":
-                        # 成功后查询flow_execution_output表中的dataset, 即sink对应的输出dataset，取出dataset id 并返回该ID，后续调用预览接口查看数据
-                        print("-----execution %s 执行状态为------\n %s" % (e_id, e_final_status))
-                        # print("查询data_json_sql:")
-                        sink_dataset_dict["e_final_status"] = e_final_status
-                        data_json_sql = 'select b.dataset_json from merce_flow_execution as a  LEFT JOIN merce_flow_execution_output as b on a.id = b.execution_id where a.id ="%s"' % e_id
-                        data_json = self.ms.ExecuQuery(data_json_sql)
-                        # print("打印data_json:", data_json)
-                        sink_dataset = data_json[0]["dataset_json"]  # 返回结果为元祖
-                        # print(sink_dataset)
-                        sink_dataset_id = dict_res(sink_dataset)["id"]  # 取出json串中的dataset id
-                        sink_dataset_dict["o_dataset"] = sink_dataset_id
-                        sink_dataset_list.append(sink_dataset_dict)
-                        print('第%d次的sink_dataset_list %s' % (i, sink_dataset_list))
-                    else:
-                        print("返回的execution 执行状态不正确")
-                        return
+            sink_dataset_dict["flow_scheduler_id"] = e_scheduler_id
+            if e_id:
+                print("------开始对%s 进行状态的判断------\n" % e_id)
+                while e_final_status in ("READY", "RUNNING"):
+                    print("------进入while循环------\n")
+                    # 状态为 ready 或者 RUNNING时，再次查询e_final_status            #
+                    print("------开始等待20S------\n")
+                    time.sleep(20)
+                    # 调用get_e_finial_status(e_scheduler_id)再次查询状态
+                    e_info = self.get_e_finial_status(e_scheduler_id)
+                    # 对e_final_status 重新赋值
+                    e_final_status = e_info["e_final_status"]
+                    print("------再次查询后的e_final_status: %s------\n" %e_final_status)
+                    # time.sleep(50)
+                if e_final_status == "FAILED":
+                    print("execution %s 执行失败" % e_id)
+                    sink_dataset_dict["e_final_status"] = e_final_status
+                    sink_dataset_dict["o_dataset"] = ""
+                    sink_dataset_list.append(sink_dataset_dict)
+                    # continue
+                elif e_final_status == "KILLED":
+                    print("execution %s 被杀死" % e_id)
+                    sink_dataset_dict["e_final_status"] = e_final_status
+                    sink_dataset_dict["o_dataset"] = ""
+                    sink_dataset_list.append(sink_dataset_dict)
+                    # continue
+                elif e_final_status == "SUCCEEDED":
+                    # 成功后查询flow_execution_output表中的dataset, 即sink对应的输出dataset，取出dataset id 并返回该ID，后续调用预览接口查看数据
+                    print("-----execution %s 执行状态为------\n %s" % (e_id, e_final_status))
+                    # print("查询data_json_sql:")
+                    sink_dataset_dict["e_final_status"] = e_final_status
+                    data_json_sql = 'select b.dataset_json from merce_flow_execution as a  LEFT JOIN merce_flow_execution_output as b on a.id = b.execution_id where a.id ="%s"' % e_id
+                    data_json = self.ms.ExecuQuery(data_json_sql)
+                    # print("打印data_json:", data_json)
+                    sink_dataset = data_json[0]["dataset_json"]  # 返回结果为元祖
+                    # print(sink_dataset)
+                    sink_dataset_id = dict_res(sink_dataset)["id"]  # 取出json串中的dataset id
+                    sink_dataset_dict["o_dataset"] = sink_dataset_id
+                    sink_dataset_list.append(sink_dataset_dict)
+                    print('第%d次的sink_dataset_list %s' % (i, sink_dataset_list))
                 else:
-                    print("execution不存在")
+                    print("返回的execution 执行状态不正确")
                     return
-            print('最后返回的sink_dataset_list\n', sink_dataset_list)
-            print("------check_out_put(self)执行结束------\n")
-            # 调用get_json()方法获取dataset_json
-            return sink_dataset_list
-        else:
-            print("返回的scheduler_id_list值缺失")
-            return
+            else:
+                print("execution不存在")
+                return
+        print('最后返回的sink_dataset_list\n', sink_dataset_list)
+        print("------check_out_put(self)执行结束------\n")
+        # 调用get_json()方法获取dataset_json
+        return sink_dataset_list
+        # else:
+        #     print("返回的scheduler_id_list值缺失")
+        #     return
 
     def get_json(self):
         print("------开始执行get_json()------\n")
@@ -284,7 +285,7 @@ class GetCheckoutDataSet(object):
         sink_dataset_json = []
 
         # 第一次打开表，将execution output dataset id通过预览接口返回的数据json串写入表，作为case执行得到的实际结果
-        flow_table = xlrd.open_workbook('./api_test_cases/flow_dataset_info.xls')
+        flow_table = xlrd.open_workbook('D:\git\\for_free\singl_api\\excel_data\\flow_dataset_info.xls')
         # flow_table = xlrd.open_workbook('flow_dataset_info.xls')
         copy_table = copy(flow_table)
         copy_table_sheet = copy_table.get_sheet(0)
@@ -305,43 +306,66 @@ class GetCheckoutDataSet(object):
                     copy_table_sheet.write(j + 1, 3, sink_dataset[i]["execution_id"])
                     copy_table_sheet.write(j + 1, 4, sink_dataset[i]["e_final_status"])
                     copy_table_sheet.write(j+1, 6, result.text)
-            copy_table.save('./api_test_cases/flow_dataset_info.xls')
+            copy_table.save('flow_dataset_info.xls')
             # copy_table.save('flow_dataset_info.xls')
 
         # 第二次打开表，对比实际结果和预期结果，一致标记为pass，不一致标记为fail
         # table = xlrd.open_workbook('flow_dataset_info.xls')
-        table = xlrd.open_workbook('./api_test_cases/flow_dataset_info.xls')
+        table = xlrd.open_workbook('D:\git\\for_free\singl_api\\excel_data\\flow_dataset_info.xls')
         table_sheet = table.sheets()[0]
         copy_table = copy(table)
         copy_table_sheet = copy_table.get_sheet(0)
 
         c_rows = table_sheet.nrows
 
-        # mode = overwrite:实际结果写入表后，对比预期结果和实际结果,并把失败详情存在 fail_detail
+        # 实际结果写入表后，对比预期结果和实际结果,并把失败详情存在 fail_detail
         for i in range(1, c_rows):
-            if table_sheet.cell(i, 6).value and table_sheet.cell(i, 4).value == "SUCCEEDED":  # 实际结果存在
-                if table_sheet.cell(i, 5).value == table_sheet.cell(i, 6).value:  # 实际结果和预期结果相等
-                    copy_table_sheet.write(i, 7, "pass")
-                    copy_table_sheet.write(i, 8, "")
-                else:
+            if table_sheet.cell(i, 9).value == 'overwrite':
+                if table_sheet.cell(i, 6).value and table_sheet.cell(i, 4).value == "SUCCEEDED":  # 实际结果存在
+                    if table_sheet.cell(i, 5).value == table_sheet.cell(i, 6).value:  # 实际结果和预期结果相等
+                        copy_table_sheet.write(i, 7, "pass")
+                        copy_table_sheet.write(i, 8, "")
+                    else:
+                        copy_table_sheet.write(i, 7, "fail")
+                        copy_table_sheet.write(i, 8, "execution: %s 预期结果实际结果不一致 \n预期结果: %s\n实际结果: %s" % (table_sheet.cell(i, 3).value,
+                                                                                                table_sheet.cell(i, 5).value, table_sheet.cell(i, 6).value))
+                elif table_sheet.cell(i, 4).value == "FAILED":
                     copy_table_sheet.write(i, 7, "fail")
-                    copy_table_sheet.write(i, 8, "execution: %s 预期结果实际结果不一致 \n预期结果: %s\n实际结果: %s" % (table_sheet.cell(i, 3).value,
-                                                                                            table_sheet.cell(i, 5).value, table_sheet.cell(i, 6).value))
-            elif table_sheet.cell(i, 4).value == "FAILED":
-                copy_table_sheet.write(i, 7, "fail")
-                copy_table_sheet.write(i, 8, "execution: %s 执行状态为 %s" % (table_sheet.cell(i, 3).value, table_sheet.cell(i, 4).value ))
+                    copy_table_sheet.write(i, 8, "execution: %s 执行状态为 %s" % (table_sheet.cell(i, 3).value, table_sheet.cell(i, 4).value ))
+                else:
+                    print('execution: %s执行状态为空，请核查' % table_sheet.cell(i, 3).value)
+                # copy_table.save('flow_dataset_info.xls')
+            elif table_sheet.cell(i, 9).value == 'append':
+                if table_sheet.cell(i, 6).value and table_sheet.cell(i, 4).value == "SUCCEEDED":  # 实际结果存在
+                    expect_result_list = list(eval(table_sheet.cell(i, 5).value))
+                    expect_len = len(expect_result_list)
+                    actual_result_list = list(eval(table_sheet.cell(i, 6).value))
 
-            copy_table.save('./api_test_cases/flow_dataset_info.xls')
-            # copy_table.save('flow_dataset_info.xls')
-        # print("表操作结束，并保存")
+                    if expect_result_list == actual_result_list[-expect_len:]:  # 实际结果切片和预期结果长度一致的数据，判断和预期结果是否相等
+                        print('expect_result_list:', expect_result_list)
+                        print('actual_result_list:', actual_result_list)
+                        print(expect_result_list == actual_result_list[-expect_len:])
+                        copy_table_sheet.write(i, 7, "pass")
+                        copy_table_sheet.write(i, 8, "")
+                    else:
+                        copy_table_sheet.write(i, 7, "fail")
+                        copy_table_sheet.write(i, 8, "execution: %s 预期结果实际结果不一致 \n预期结果: %s\n实际结果: %s" % (table_sheet.cell(i, 3).value,
+                                                                                                table_sheet.cell(i, 5).value, table_sheet.cell(i, 6).value))
+                elif table_sheet.cell(i, 4).value == "FAILED":  # execution执行失败
+                    copy_table_sheet.write(i, 7, "fail")
+                    copy_table_sheet.write(i, 8, "execution: %s 执行状态为 %s" % (table_sheet.cell(i, 3).value, table_sheet.cell(i, 4).value ))
+            else:
+                pass
+        copy_table.save('D:\git\\for_free\singl_api\\excel_data\\flow_dataset_info.xls')
+
 
 
 if __name__ == '__main__':
     # sink_dataet_json = [{'flow_id': '35033c8d-fadc-4628-abf9-6803953fba34', 'execution_id': '39954be8-900a-4466-bc2e-05e379697fef', 'flow_scheduler_id': '8cf78c22-a561-4e5b-9c1c-b709ae8a51fe', 'e_final_status': 'FAILED', 'o_dataset': ''}, {'flow_id': 'f2677db1-6923-42a1-8f18-f8674394580a', 'execution_id': 'a38d303f-5bf5-441b-831c-92df5a9b7299', 'flow_scheduler_id': '65d1ca0a-4f0d-4680-b667-291ca412bdb2', 'e_final_status': 'SUCCEEDED', 'o_dataset': 'b896ff9d-691e-4939-a860-38eb828b1ad2'}]
-    GetCheckoutDataSet()
+    obj = GetCheckoutDataSet()
     # flow = obj.data_for_create_scheduler()
     # print(flow)
-    # sink_dataet_json = obj.get_json()
-    # print(sink_dataet_json)
+    sink_dataet_json = obj.get_json()
+    print(sink_dataet_json)
 
 

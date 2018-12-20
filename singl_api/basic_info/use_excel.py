@@ -15,7 +15,7 @@ def set_style(name, height, bold=False):
 
 
 # 写Excel
-def write_excel():
+def add_new_table():
     f = xlwt.Workbook()
     sheet1 = f.add_sheet('flow_info', cell_overwrite_ok=True)
     row0 = ["id", "flow_id", "except_result", "actual", "test_result"]
@@ -33,15 +33,10 @@ def write_excel():
 
 
 # 读
-def read_execl():
-    data = xlrd.open_workbook("flow_dataset_info.xls")
-    table1 = data.sheets()[0]
-    table2 = data.sheet_by_name("flow_info")
-    data1 = table1.ncols
-    data2 = table1.nrows
-    data3 = table1.cell(0, 2).value
-    print(table1)
-    return data1, data2, data3
+def read_execl(table_name, index_num):
+    data = xlrd.open_workbook(table_name)
+    table1 = data.sheets()[index_num]
+    return table1
 
 
 # 改
@@ -77,4 +72,9 @@ def check():
 
 
 if __name__ == '__main__':
-    print(check())
+    table_name = 'flow_dataset_info.xls'
+    # sheet_name = 'append2'
+    index_num = 1
+    append = read_execl(table_name, 1)
+    print(append.nrows, append.ncols)
+    print(append.cell(1,1))
