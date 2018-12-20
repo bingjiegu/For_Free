@@ -86,7 +86,7 @@ def main3(report_path):
     # receivers = ['bingjie.gu@inforefiner.com']
     msg = MIMEMultipart()
     # 邮件的正文内容
-    f = xlrd.open_workbook("./api_test_cases/flow_dataset_info.xls")
+    f = xlrd.open_workbook("D:\git\\for_free\singl_api\\excel_data\\flow_dataset_info.xls")
     f_sheet = f.sheet_by_name("flow_info")
     cols = f_sheet.ncols
     rows = f_sheet.nrows
