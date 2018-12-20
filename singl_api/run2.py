@@ -5,7 +5,7 @@ from send_mail import main2, main3
 from api_test_cases.get_execution_output_json import GetCheckoutDataSet
 from newSuite import NewSuite
 
-#
+# test
 # suit = NewSuite.Suite()
 # discover = unittest.defaultTestLoader.discover(start_dir='./api_test_cases', pattern='cases_for_login_api.py')
 # start_time = time.strftime('%Y%m%d_%H_%M_%S', time.localtime())
