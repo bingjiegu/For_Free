@@ -21,11 +21,11 @@ class CreateSchedulers(unittest.TestCase):
     def test_case01(self):
         """创建schedulers，单次执行"""
         scheduler_name = 'students_schedulers' + str(random.randint(0, 99999))
-<<<<<<< HEAD
-=======
+
+
         flow_table = xlrd.open_workbook("D:\git\\for_free\singl_api\excel_data\\flow_dataset_info.xls")
         # flow_table = xlrd.open_workbook("flow_dataset_info.xls")
->>>>>>> master
+
         info_sheet = flow_table.sheet_by_name("flow_info")
         flow_id = info_sheet.cell(1, 1).value
         flow_name = info_sheet.cell(1, 2).value
@@ -47,13 +47,13 @@ class CreateSchedulers(unittest.TestCase):
         # start_time = get_time()+(600*1000)  # starttime设为当前时间10分钟后
         start_time = get_time()  # starttime设为当前时间
         end_time = get_time() + (24*3600*1000)  # endtime设为当前时间1天后
-<<<<<<< HEAD
+
         flow_table = xlrd.open_workbook("D:\git\\for_free\singl_api\\excel_data\\flow_dataset_info.xls")  # 定时任务使用
         # flow_table = xlrd.open_workbook("flow_dataset_info.xls")  # 单文件调试用
-=======
-        flow_table = xlrd.open_workbook("./api_test_cases/flow_dataset_info.xls")
+
+        # flow_table = xlrd.open_workbook("./api_test_cases/flow_dataset_info.xls")
         # flow_table = xlrd.open_workbook("flow_dataset_info.xls")
->>>>>>> master
+
         info_sheet = flow_table.sheet_by_name("flow_info")
         flow_id = info_sheet.cell(1, 1).value
         flow_name = info_sheet.cell(1, 2).value
