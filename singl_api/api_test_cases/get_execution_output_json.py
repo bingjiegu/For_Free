@@ -308,7 +308,7 @@ class GetCheckoutDataSet(object):
         # 通过dataset预览接口取得数据的预览json串 result.text
         for i in range(0, len(sink_dataset)):
             dataset_id = sink_dataset[i]["o_dataset"]
-            priview_url = "%s/api/datasets/%s/preview?rows=50&tenant=2d7ad891-41c5-4fba-9ff2-03aef3c729e5" % (MY_LOGIN_INFO2["HOST"], dataset_id)
+            priview_url = "%s/api/datasets/%s/preview?rows=5000&tenant=2d7ad891-41c5-4fba-9ff2-03aef3c729e5" % (MY_LOGIN_INFO2["HOST"], dataset_id)
             result = requests.get(url=priview_url, headers=get_headers())
             # print(result.url, '\n', result.text)
             # 如果flow_id相等，# 将output_dataset 的预览数据json串写入实际结果中
@@ -334,25 +334,59 @@ class GetCheckoutDataSet(object):
         # mode = overwrite:实际结果写入表后，对比预期结果和实际结果,并把失败详情存在 fail_detail
         for i in range(1, c_rows):
             copy_table_sheet.write(i, 0, i)
-            if table_sheet.cell(i, 7).value and table_sheet.cell(i, 5).value == "SUCCEEDED":  # 实际结果存在
-                if table_sheet.cell(i, 6).value == table_sheet.cell(i, 7).value:  # 实际结果和预期结果相等
-                    copy_table_sheet.write(i, 8, "pass")
-                    copy_table_sheet.write(i, 9, "")
+            if table_sheet.cell(i, 10).value == 'overwrite':
+                if table_sheet.cell(i, 7).value and table_sheet.cell(i, 5).value == "SUCCEEDED":  # 实际结果存在
+                    if table_sheet.cell(i, 6).value == table_sheet.cell(i, 7).value:  # 实际结果和预期结果相等
+                        copy_table_sheet.write(i, 8, "pass")
+                        copy_table_sheet.write(i, 9, "")
+                    else:
+                        copy_table_sheet.write(i, 8, "fail")
+                        copy_table_sheet.write(i, 9, "execution: %s 预期结果实际结果不一致 \n预期结果: %s\n实际结果: %s" % (
+                            table_sheet.cell(i, 4).value,
+                            table_sheet.cell(i, 6).value, table_sheet.cell(i, 7).value))
+                elif table_sheet.cell(i, 5).value == "FAILED":
+                    copy_table_sheet.write(i, 8, "fail")
+                    copy_table_sheet.write(i, 9, "execution: %s 执行状态为 %s" % (
+                        table_sheet.cell(i, 3).value, table_sheet.cell(i, 4).value))
+                    # else:
+                    # print('execution: %s执行状态为空，请核查' % table_sheet.cell(i, 3).value)
+                    # copy_table.save('flow_dataset_info.xls')
                 else:
                     copy_table_sheet.write(i, 8, "fail")
-                    copy_table_sheet.write(i, 9, "execution: %s 预期结果实际结果不一致 \n预期结果: %s\n实际结果: %s" % (table_sheet.cell(i, 4).value,
-                                                                                            table_sheet.cell(i, 6).value, table_sheet.cell(i, 7).value))
-            elif table_sheet.cell(i, 5).value == "FAILED":
-                copy_table_sheet.write(i, 8, "fail")
-                copy_table_sheet.write(i, 9, "execution: %s 执行状态为 %s" % (table_sheet.cell(i, 4).value, table_sheet.cell(i, 5).value ))
+                    copy_table_sheet.write(i, 9, "用例参数或datasetID填写错误")
 
-            elif table_sheet.cell(i, 5).value == "":
-                copy_table_sheet.write(i, 8, "fail")
-                copy_table_sheet.write(i, 9, "用例参数或datasetID填写错误" )
+            elif table_sheet.cell(i, 10).value == 'append':
+                if table_sheet.cell(i, 7).value and table_sheet.cell(i, 5).value == "SUCCEEDED":  # 实际结果存在
+                    expect_result_list = list(eval(table_sheet.cell(i, 6).value))
+                    expect_len = len(expect_result_list)
+                    actual_result_list = list(eval(table_sheet.cell(i, 7).value))
 
-            copy_table.save(abs_dir("flow_dataset_info.xls"))
-            # copy_table.save(abs_dir("flow_dataset_info.xls"))
-        # print("表操作结束，并保存")
+                    if expect_result_list == actual_result_list[-expect_len:]:  # 实际结果切片和预期结果长度一致的数据，判断和预期结果是否相等
+                        print('expect_result_list:', expect_result_list)
+                        print('actual_result_list:', actual_result_list)
+                        print(expect_result_list == actual_result_list[-expect_len:])
+                        copy_table_sheet.write(i, 8, "pass")
+                        copy_table_sheet.write(i, 9, "")
+                    else:
+                        copy_table_sheet.write(i, 8, "fail")
+                        copy_table_sheet.write(i, 9,
+                                               "execution: %s 预期结果实际结果不一致 \n预期结果: %s\n实际结果: %s" % (
+                                               table_sheet.cell(i, 3).value,
+                                               table_sheet.cell(i, 5).value,
+                                               table_sheet.cell(i, 6).value))
+                elif table_sheet.cell(i, 5).value == "FAILED":  # execution执行失败
+                    copy_table_sheet.write(i, 8, "fail")
+                    copy_table_sheet.write(i, 9,
+                                           "execution: %s 执行状态为 %s" % (
+                                           table_sheet.cell(i, 3).value, table_sheet.cell(i, 4).value))
+                else:
+                    copy_table_sheet.write(i, 8, "fail")
+                    copy_table_sheet.write(i, 9, "用例参数或datasetID填写错误")
+
+            else:
+                copy_table_sheet.write(i, 8, "fail")
+                copy_table_sheet.write(i, 9, "请确认flow的mode")
+        copy_table.save(abs_dir("flow_dataset_info.xls"))
 
 
 if __name__ == '__main__':
