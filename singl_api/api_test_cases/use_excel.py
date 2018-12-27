@@ -1,4 +1,6 @@
 import xlrd, xlwt
+from openpyxl import workbook
+from openpyxl import load_workbook
 from xlutils.copy import copy
 
 
@@ -74,7 +76,15 @@ def check():
                 c_table_sheet.write(i, 4, "fail")
 
     c_table.save("flow_dataset_info.xls")
-
+def openpyxl_read():
+    wb = load_workbook('test.xlsx')
+    sheetnames = wb.get_sheet_names()
+    flow_info = wb.get_sheet_by_name(sheetnames[0])
+    rows = flow_info.max_row
+    columns = flow_info.max_column
+    flow_info.cell(row=2,column=12,value=8888)
+    print(flow_info.cell(row=1, column=3).value, rows, columns)
+    print(flow_info.cell(row=2, column=12).value)
 
 if __name__ == '__main__':
-    print(check())
+    print(openpyxl_read())
