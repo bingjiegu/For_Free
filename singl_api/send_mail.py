@@ -9,6 +9,8 @@ from email.utils import parseaddr, formataddr
 from email.mime.base import MIMEBase
 from basic_info.setting import email_to
 from smtplib import SMTP_SSL
+from openpyxl import load_workbook
+from api_test_cases.get_execution_output_json import abs_dir, GetCheckoutDataSet
 import xlrd
 
 
@@ -82,35 +84,55 @@ def main3(report_path):
     # 发件人的邮箱
     sender_163_mail = "ruifan_test@163.com"
     # 收件人邮箱
-    receivers = ['bingjie.gu@inforefiner.com', 'zhiming.wang@inforefiner.com', 'yuan.peng@inforefiner.com', 'anchong.wang@inforefiner.com'] # 定时任务使用
-    # receivers = ['bingjie.gu@inforefiner.com']  # 调试使用
+    # receivers = ['bingjie.gu@inforefiner.com', 'zhiming.wang@inforefiner.com', 'yuan.peng@inforefiner.com', 'anchong.wang@inforefiner.com'] # 定时任务使用
+    receivers = ['bingjie.gu@inforefiner.com']  # 调试使用
     msg = MIMEMultipart()
     # 邮件的正文内容
-    f = xlrd.open_workbook("./api_test_cases/flow_dataset_info.xls")
-    f_sheet = f.sheet_by_name("flow_info")
-    cols = f_sheet.ncols
-    rows = f_sheet.nrows
+    # f = xlrd.open_workbook("./api_test_cases/flow_dataset_info.xls")
+    f = load_workbook(abs_dir("flow_dataset_info.xlsx"))
+    # f_sheet = f.sheet_by_name("flow_info")
+    f_sheet = f.get_sheet_by_name("flow_info")
+    # cols = f_sheet.ncols
+    cols = f_sheet.max_column
+    # rows = f_sheet.nrows
+    rows = f_sheet.max_row
     succeed = 0
+    succeed_flow= []
     failed = 0
-    total = rows - 1
+    failed_flow = []
+    total = len(GetCheckoutDataSet().file_flowid_count())
+    print('total flow:', total)
     detail_msg = ''' '''
-    for row in range(1, rows):
-        detail_msg += '\n' + f_sheet.cell(row, 8).value + '\n'
-        if f_sheet.cell(row, 7).value == "fail":
+    for row in range(2, rows+1):
+        if f_sheet.cell(row=row, column=9).value == "fail":
             failed += 1
-        elif f_sheet.cell(row, 7).value == "pass":
+            detail_msg += '\n' + f_sheet.cell(row=row, column=10).value + '\n'
+            fail_flow_id = f_sheet.cell(row=row, column=2).value
+            if fail_flow_id:
+                failed_flow.append(fail_flow_id)
+            else:
+                fail_flow_id = f_sheet.cell(row=row-1, column=2).value
+                failed_flow.append(fail_flow_id)
+
+        elif f_sheet.cell(row=row, column=9).value == "pass":
             succeed += 1
+            success_flow_id = f_sheet.cell(row=row, column=2).value
+            if success_flow_id:
+                failed_flow.append(success_flow_id)
+            else:
+                success_flow_id = f_sheet.cell(row=row - 1, column=2).value
+                failed_flow.append(success_flow_id)
     # 邮件的正文内容
     filename = time.strftime("%Y%m%d%H", time.localtime()) + '_report.html'
-    if failed:
+    if len(failed_flow) > 0:
         mail_content = '\n各位好:'+'\n' + '\n' + \
                     '非execution的测试用例测试结果请参考附件<<%s>>' % filename + '\n'\
-                    + ' execution执行相关测试场景共 %d 个，成功%d个, 失败 %d个 \n失败详情如下： ' % ( total, succeed, failed) + '\n' + '\n' + detail_msg
+                    + ' execution执行相关测试场景共 %d 个，成功%d个, 失败 %d个 \n失败详情如下： ' % ( total, len(succeed_flow), len(failed_flow)) + '\n' + '\n' + detail_msg
     else:
         mail_content = '各位好:' + '\n' + '\n' + \
                        '非execution的测试用例测试结果请参考附件<<%s>>' % filename + '\n' \
                        + ' execution执行相关测试场景共 %d 个，成功%d个, 失败 %d个 \n ' % (
-                       total, succeed, failed) + '\n' + '\n' + detail_msg
+                           total, len(succeed_flow), len(failed_flow)) + '\n' + '\n' 
 
     # 邮件标题
     mail_title = 'API自动化测试报告'
