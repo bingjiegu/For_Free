@@ -363,8 +363,7 @@ class GetCheckoutDataSet(object):
                         table_sheet.cell(row=i, column=10, value="")
                     else:
                         table_sheet.cell(row=i, column=9, value="fail")
-                        table_sheet.cell(row=i, column=10, value="execution: %s 预期结果实际结果不一致 \n预期结果: %s\n实际结果: %s" % (
-                            table_sheet.cell(row=i, column=5).value, table_sheet.cell(row=i, column=7).value, table_sheet.cell(row=i, column=8).value))
+                        table_sheet.cell(row=i, column=10, value="execution: %s 预期结果实际结果不一致 " % (table_sheet.cell(row=i, column=5).value))
                 elif table_sheet.cell(row=i, column=6).value == "FAILED":
                     table_sheet.cell(row=i, column=9, value="fail")
                     table_sheet.cell(row=i, column=10, value="execution: %s 执行状态为 %s" % (
