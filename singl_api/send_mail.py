@@ -84,8 +84,8 @@ def main3(report_path):
     # 发件人的邮箱
     sender_163_mail = "ruifan_test@163.com"
     # 收件人邮箱
-    # receivers = ['bingjie.gu@inforefiner.com', 'zhiming.wang@inforefiner.com', 'yuan.peng@inforefiner.com', 'anchong.wang@inforefiner.com'] # 定时任务使用
-    receivers = ['bingjie.gu@inforefiner.com']  # 调试使用
+    receivers = ['bingjie.gu@inforefiner.com', 'zhiming.wang@inforefiner.com', 'yuan.peng@inforefiner.com', 'anchong.wang@inforefiner.com'] # 定时任务使用
+    # receivers = ['bingjie.gu@inforefiner.com']  # 调试使用
     msg = MIMEMultipart()
     # 邮件的正文内容
     # f = xlrd.open_workbook("./api_test_cases/flow_dataset_info.xls")
@@ -106,6 +106,8 @@ def main3(report_path):
     detail_msg = ''' '''
     for row in range(2, rows+1):
         if f_sheet.cell(row=row, column=9).value == "fail":
+            # detail_msg = f_sheet.cell(row=row, column=10).value
+            detail_msg += '\n' + f_sheet.cell(row=row, column=10).value + '\n'
             if f_sheet.cell(row=row, column=2).value:
                 failed_flow.append(f_sheet.cell(row=row, column=2).value)
             else:
@@ -135,9 +137,8 @@ def main3(report_path):
     if len(failed_flow_s) > 0:
         mail_content = '\n各位好:'+'\n' + '\n' + \
                     '非execution的测试用例测试结果请参考附件<<%s>>' % filename + '\n'\
-                    + ' execution执行相关测试场景共 %d 个，成功%d个, 失败 %d个\n成功的flow id为 %s\n失败的flow id为 %s\n失败原因为： ' \
-                       % (total, len(succeed_flow_s), len(failed_flow_s), succeed_flow_s, failed_flow_s) + '\n' + '\n' \
-                       + detail_msg
+                    + ' execution执行相关测试场景共 %d 个，成功%d个, 失败 %d个\n成功的flow id为 %s\n失败的flow id为 %s\n\n失败原因为： ' \
+                       % (total, len(succeed_flow_s), len(failed_flow_s), succeed_flow_s, failed_flow_s) + detail_msg
     else:
         mail_content = '\n各位好:' + '\n' + \
                        '非execution的测试用例测试结果请参考附件<<%s>>' % filename + '\n' \
@@ -180,5 +181,5 @@ def main3(report_path):
     print('%s----发送邮件成功' % time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
     smtp.quit()
 
-report_path = 'E:\Reports\\2018122813_report.html'
-main3(report_path)
+# report_path = 'E:\Reports\\2018122813_report.html'
+# main3(report_path)
