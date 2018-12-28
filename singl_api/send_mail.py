@@ -100,40 +100,51 @@ def main3(report_path):
     succeed_flow = []
     failed = 0
     failed_flow = []
-    total = len(GetCheckoutDataSet().file_flowid_count())
-    print('total flow:', total)
+    flow_id_list = GetCheckoutDataSet().file_flowid_count()
+    total = len(flow_id_list)
+    # print('total flow:', total)
     detail_msg = ''' '''
     for row in range(2, rows+1):
         if f_sheet.cell(row=row, column=9).value == "fail":
-            failed += 1
-            detail_msg += '\n' + f_sheet.cell(row=row, column=10).value + '\n'
-            fail_flow_id = f_sheet.cell(row=row, column=2).value
-            if fail_flow_id:
-                failed_flow.append(fail_flow_id)
+            if f_sheet.cell(row=row, column=2).value:
+                failed_flow.append(f_sheet.cell(row=row, column=2).value)
             else:
-                fail_flow_id = f_sheet.cell(row=row-1, column=2).value
-                failed_flow.append(fail_flow_id)
-
+                for i in range(row, 2, -1):
+                    if f_sheet.cell(row=i-1, column=2).value:
+                        failed_flow.append(f_sheet.cell(row=i-1, column=2).value)
+                        break
         elif f_sheet.cell(row=row, column=9).value == "pass":
-            succeed += 1
-            success_flow_id = f_sheet.cell(row=row, column=2).value
-            if success_flow_id:
-                failed_flow.append(success_flow_id)
+            if f_sheet.cell(row=row, column=2).value:
+                succeed_flow.append(f_sheet.cell(row=row, column=2).value)
             else:
-                success_flow_id = f_sheet.cell(row=row - 1, column=2).value
-                failed_flow.append(success_flow_id)
+                for i in range(row, 2, -1):
+                    if f_sheet.cell(row=i-1, column=2).value:
+                        succeed_flow.append(f_sheet.cell(row=i-1, column=2).value)
+                        break
+
+    failed_flow_s = list(set(failed_flow))
+    succeed_flow_s = list(set(succeed_flow))
+    print('succeed_flow_s: ', succeed_flow_s)
+    print('len(succeed_flow_s:',len(succeed_flow_s))
+    for disct_id in (disct_ids for disct_ids in failed_flow_s if disct_ids in succeed_flow_s):
+        succeed_flow_s.remove(disct_id)
+    print('去重后succeed_flow_s: ', succeed_flow_s)
+    print('去重后len(succeed_flow_s:', len(succeed_flow_s))
     # 邮件的正文内容
     filename = time.strftime("%Y%m%d%H", time.localtime()) + '_report.html'
-    if len(failed_flow) > 0:
+    if len(failed_flow_s) > 0:
         mail_content = '\n各位好:'+'\n' + '\n' + \
                     '非execution的测试用例测试结果请参考附件<<%s>>' % filename + '\n'\
-                    + ' execution执行相关测试场景共 %d 个，成功%d个, 失败 %d个 \n失败详情如下： ' % ( total, len(succeed_flow), len(failed_flow)) + '\n' + '\n' + detail_msg
+                    + ' execution执行相关测试场景共 %d 个，成功%d个, 失败 %d个\n成功的flow id为 %s\n失败的flow id为 %s\n失败原因为： ' \
+                       % (total, len(succeed_flow_s), len(failed_flow_s), succeed_flow_s, failed_flow_s) + '\n' + '\n' \
+                       + detail_msg
     else:
-        mail_content = '各位好:' + '\n' + '\n' + \
+        mail_content = '\n各位好:' + '\n' + \
                        '非execution的测试用例测试结果请参考附件<<%s>>' % filename + '\n' \
-                       + ' execution执行相关测试场景共 %d 个，成功%d个, 失败 %d个 \n ' % (
-                           total, len(succeed_flow), len(failed_flow)) + '\n' + '\n' 
+                   + ' execution执行相关测试场景共 %d 个，成功%d个, 失败 %d个\n成功的flow id为 %s\n' \
+                   % (total, len(succeed_flow_s), len(failed_flow_s), succeed_flow_s)
 
+    print(mail_content)
     # 邮件标题
     mail_title = 'API自动化测试报告'
     # 添加邮件正文，格式 MIMEText:
@@ -169,5 +180,5 @@ def main3(report_path):
     print('%s----发送邮件成功' % time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
     smtp.quit()
 
-# report_path = 'E:\Reports\\20181204174902_report.html'
-# main3(report_path)
+report_path = 'E:\Reports\\2018122813_report.html'
+main3(report_path)
