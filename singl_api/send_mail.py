@@ -97,7 +97,7 @@ def main3(report_path):
     # rows = f_sheet.nrows
     rows = f_sheet.max_row
     succeed = 0
-    succeed_flow= []
+    succeed_flow = []
     failed = 0
     failed_flow = []
     total = len(GetCheckoutDataSet().file_flowid_count())
