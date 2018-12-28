@@ -137,12 +137,12 @@ def main3(report_path):
     if len(failed_flow_s) > 0:
         mail_content = '\n各位好:'+'\n' + '\n' + \
                     '非execution的测试用例测试结果请参考附件<<%s>>' % filename + '\n'\
-                    + ' execution执行相关测试场景共 %d 个，成功%d个, 失败 %d个\n成功的flow id为 %s\n失败的flow id为 %s\n\n失败原因为： ' \
+                    + ' execution执行相关测试场景共 %d 个\n成功%d个, 失败 %d个\n成功的flow id为 %s\n\n失败的flow id为 %s\n\n失败原因为： ' \
                        % (total, len(succeed_flow_s), len(failed_flow_s), succeed_flow_s, failed_flow_s) + detail_msg
     else:
         mail_content = '\n各位好:' + '\n' + \
                        '非execution的测试用例测试结果请参考附件<<%s>>' % filename + '\n' \
-                   + ' execution执行相关测试场景共 %d 个，成功%d个, 失败 %d个\n成功的flow id为 %s\n' \
+                   + ' execution执行相关测试场景共 %d 个\n成功%d个, 失败 %d个\n成功的flow id为 %s' \
                    % (total, len(succeed_flow_s), len(failed_flow_s), succeed_flow_s)
 
     print(mail_content)
@@ -181,5 +181,5 @@ def main3(report_path):
     print('%s----发送邮件成功' % time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
     smtp.quit()
 
-# report_path = 'E:\Reports\\2018122813_report.html'
-# main3(report_path)
+report_path = 'E:\Reports\\2018122813_report.html'
+main3(report_path)
