@@ -63,7 +63,7 @@ dataset_for_sink_id = ""
 # 查询scheduler时使用的name
 scheduler_name = "students_flow39806"
 # 查询schedulers时使用的id（和"students_flow39806"是同一个）
-scheduler_id = "d7c30e9b-18a4-4af0-b9c8-b9b70697c19f"
+scheduler_id = "7988fdfe-df93-4249-9fdf-fe734f2b384c"
 # 查询flow时使用的id： flow_name = students_flow
 flow_id = "35033c8d-fadc-4628-abf9-6803953fba34"
 # -----------------------------------------------------
