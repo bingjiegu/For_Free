@@ -2,7 +2,9 @@ import unittest
 import time
 import HTMLTestRunner
 from send_mail import main2, main3
+from basic_info.get_auth_token import get_headers
 from api_test_cases.get_execution_output_json import GetCheckoutDataSet
+import threading
 # from newSuite import NewSuite
 
 testcase = unittest.TestSuite()
@@ -23,6 +25,7 @@ fp.close()
 obj = GetCheckoutDataSet()
 sink_dataet_json = obj.get_json()
 main3(report_path=report_path)
+threading.Timer(1500, get_headers()).start()
 
 
 
