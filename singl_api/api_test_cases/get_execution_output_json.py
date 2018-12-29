@@ -53,6 +53,7 @@ class GetCheckoutDataSet(object):
             try:
                 sql = 'select name, flow_type from merce_flow where id = "%s"' % flow_id
                 flow_info = self.ms.ExecuQuery(sql)
+                print('flow_info:',flow_info)
             except Exception as e:
                 raise e
             else:
@@ -149,6 +150,7 @@ class GetCheckoutDataSet(object):
         from basic_info.url_info import create_scheduler_url
         scheduler_id_list = []
         for data in self.data_for_create_scheduler():
+            time.sleep(60)
             res = requests.post(url=create_scheduler_url, headers=get_headers(), json=data)
             # print(res.status_code, res.text)
             if res.status_code == 201 and res.text:
@@ -169,8 +171,8 @@ class GetCheckoutDataSet(object):
         """ 根据get_execution_info(self)返回的scheduler  id, 查询该scheduler的execution 状态"""
         print("------开始执行get_e_finial_status(self, scheduler_id)------\n")
         if scheduler_id:
-            # 查询前先等待3S
-            # time.sleep(3)
+            # 查询前先等待5S
+            time.sleep(5)
             execution_sql = 'select id, status, flow_id , flow_scheduler_id from merce_flow_execution where flow_scheduler_id = "%s" ' % scheduler_id
             select_result = self.ms.ExecuQuery(execution_sql)
             # print("根据scheduler id %s 查询execution，查询结果 %s: " % (scheduler_id, select_result))
@@ -249,7 +251,7 @@ class GetCheckoutDataSet(object):
                         print("------进入while循环------\n")
                         # 状态为 ready 或者 RUNNING时，再次查询e_final_status
                         print("------开始等待20S------\n")
-                        time.sleep(20)
+                        time.sleep(10)
                         # 调用get_e_finial_status(e_scheduler_id)再次查询状态
                         e_info = self.get_e_finial_status(e_scheduler_id)
                         # 对e_final_status 重新赋值
@@ -415,8 +417,8 @@ class GetCheckoutDataSet(object):
 
 if __name__ == '__main__':
     # sink_dataet_json = [{'flow_id': '35033c8d-fadc-4628-abf9-6803953fba34', 'execution_id': '39954be8-900a-4466-bc2e-05e379697fef', 'flow_scheduler_id': '8cf78c22-a561-4e5b-9c1c-b709ae8a51fe', 'e_final_status': 'FAILED', 'o_dataset': ''}, {'flow_id': 'f2677db1-6923-42a1-8f18-f8674394580a', 'execution_id': 'a38d303f-5bf5-441b-831c-92df5a9b7299', 'flow_scheduler_id': '65d1ca0a-4f0d-4680-b667-291ca412bdb2', 'e_final_status': 'SUCCEEDED', 'o_dataset': 'b896ff9d-691e-4939-a860-38eb828b1ad2'}]
-    g = GetCheckoutDataSet()
-    g.get_json()
+    GetCheckoutDataSet()
+    # g.data_for_create_scheduler()
 
 
 
