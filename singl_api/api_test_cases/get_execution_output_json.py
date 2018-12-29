@@ -323,12 +323,13 @@ class GetCheckoutDataSet(object):
         # 通过dataset预览接口取得数据的预览json串 result.text
         for i in range(0, len(sink_dataset)):
             dataset_id = sink_dataset[i]["o_dataset"]
+            # 通过dataset预览接口，获取dataset json串
             priview_url = "%s/api/datasets/%s/preview?rows=5000&tenant=2d7ad891-41c5-4fba-9ff2-03aef3c729e5" % (MY_LOGIN_INFO2["HOST"], dataset_id)
             result = requests.get(url=priview_url, headers=get_headers())
             # print(result.url, '\n', result.text)
             # 如果dataset_id相等，# 将output_dataset 的预览数据json串写入实际结果中
             for j in range(2, sheet_rows+1):  # 按照行数进行循环
-                if sink_dataset[i]["o_dataset"] == flow_sheet.cell(row=j, column=4).value:
+                if sink_dataset[i]["flow_id"] == flow_sheet.cell(row=j, column=2).value:
                     # print(sink_dataset[i]["flow_id"])
                     # print(flow_sheet.cell(j+1, 1).value)
                     # copy_table_sheet.write(j + 1, 4, sink_dataset[i]["execution_id"])
@@ -336,7 +337,15 @@ class GetCheckoutDataSet(object):
                     # copy_table_sheet.write(j+1, 7, result.text)
                     flow_sheet.cell(row=j, column=5, value=sink_dataset[i]["execution_id"])
                     flow_sheet.cell(row=j, column=6, value=sink_dataset[i]["e_final_status"])
-                    flow_sheet.cell(row=j, column=8, value=result.text)  # 实际结果
+                    flow_sheet.cell(row=j, column=8, value=result.text)  # 实际结果写入表格
+                else:
+                    for t in range(j, 2, -1):
+                        if sink_dataset[i]["flow_id"] == flow_sheet.cell(row=t-1, column=2).value:
+                            flow_sheet.cell(row=j, column=5, value=sink_dataset[i]["execution_id"])
+                            flow_sheet.cell(row=j, column=6, value=sink_dataset[i]["e_final_status"])
+                            flow_sheet.cell(row=j, column=8, value=result.text)  # 实际结果写入表格
+                            break
+
         flow_table.save(abs_dir("flow_dataset_info.xlsx"))
             # copy_table.save(abs_dir("flow_dataset_info.xlsx"))
 
@@ -361,7 +370,7 @@ class GetCheckoutDataSet(object):
                 if table_sheet.cell(row=i, column=8).value and table_sheet.cell(row=i, column=6).value == "SUCCEEDED":  # 实际结果存在
                     if table_sheet.cell(row=i, column=7).value == table_sheet.cell(row=i, column=8).value:  # 实际结果和预期结果相等
                         table_sheet.cell(row=i, column=9, value="pass")
-                        print('test_result:',table_sheet.cell(row=i, column=9).value)
+                        print('test_result:', table_sheet.cell(row=i, column=9).value)
                         table_sheet.cell(row=i, column=10, value="")
                     else:
                         table_sheet.cell(row=i, column=9, value="fail")
@@ -417,7 +426,8 @@ class GetCheckoutDataSet(object):
 
 if __name__ == '__main__':
     # sink_dataet_json = [{'flow_id': '35033c8d-fadc-4628-abf9-6803953fba34', 'execution_id': '39954be8-900a-4466-bc2e-05e379697fef', 'flow_scheduler_id': '8cf78c22-a561-4e5b-9c1c-b709ae8a51fe', 'e_final_status': 'FAILED', 'o_dataset': ''}, {'flow_id': 'f2677db1-6923-42a1-8f18-f8674394580a', 'execution_id': 'a38d303f-5bf5-441b-831c-92df5a9b7299', 'flow_scheduler_id': '65d1ca0a-4f0d-4680-b667-291ca412bdb2', 'e_final_status': 'SUCCEEDED', 'o_dataset': 'b896ff9d-691e-4939-a860-38eb828b1ad2'}]
-    GetCheckoutDataSet()
+    g = GetCheckoutDataSet()
+    g.get_json()
     # g.data_for_create_scheduler()
 
 
