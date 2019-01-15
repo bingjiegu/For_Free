@@ -8,7 +8,7 @@ from xlutils.copy import copy
 from openpyxl import load_workbook
 from xlutils.copy import copy
 import json
-import os
+import os,threading
 abs_dir = lambda n: os.path.abspath(os.path.join(os.path.dirname(__file__), n))
 
 
@@ -233,7 +233,7 @@ class GetCheckoutDataSet(object):
         print("------check_out_put中得到的e_info:------\n", type(e_info_list), e_info_list)
         # 返回的len(e_info)和 len(flow_id_list)相等时，数据无缺失，进行后续的判断
         # if len(e_info_list) == len(flow_id_list):  # 表行-1
-        if len(e_info_list) == len(self.file_flowid_count()):  # 与填入表的flowid数一样______________要改_____________________ ____________________________________________________________
+        if len(e_info_list) == len(self.file_flowid_count()):  # 与填入表的flowid数一样
             sink_dataset_list = []
             for i in range(len(e_info_list)):
                 sink_dataset_dict = {}
@@ -305,15 +305,6 @@ class GetCheckoutDataSet(object):
         sink_dataset = self.check_out_put()
         print('打印sink_dataset', sink_dataset)
         sink_dataset_json = []
-
-        # 第一次打开表，将execution output dataset id通过预览接口返回的数据json串写入表，作为case执行得到的实际结果
-        # flow_table = xlrd.open_workbook(abs_dir("flow_dataset_info.xlsx"))
-        # # flow_table = xlrd.open_workbook(abs_dir("flow_dataset_info.xlsx"))
-        # copy_table = copy(flow_table)
-        # copy_table_sheet = copy_table.get_sheet(0)
-        # flow_sheet = flow_table.sheet_by_name("flow_info")
-        # sheet_rows = flow_sheet.nrows  # 表的行数
-
         # ---使用openpyxl处理表格 12.26update---
         flow_table = load_workbook(abs_dir("flow_dataset_info.xlsx"))
         # info_sheet_names = flow_table.get_sheet_names()
@@ -328,35 +319,27 @@ class GetCheckoutDataSet(object):
             result = requests.get(url=priview_url, headers=get_headers())
             # print(result.url, '\n', result.text)
             # 如果dataset_id相等，# 将output_dataset 的预览数据json串写入实际结果中
-            for j in range(2, sheet_rows+1):  # 按照行数进行循环
+            # 按照行数进行循环
+            for j in range(2, sheet_rows+1):
                 if sink_dataset[i]["flow_id"] == flow_sheet.cell(row=j, column=2).value:
                     # print(sink_dataset[i]["flow_id"])
-                    # print(flow_sheet.cell(j+1, 1).value)
-                    # copy_table_sheet.write(j + 1, 4, sink_dataset[i]["execution_id"])
-                    # copy_table_sheet.write(j + 1, 5, sink_dataset[i]["e_final_status"])
-                    # copy_table_sheet.write(j+1, 7, result.text)
                     flow_sheet.cell(row=j, column=5, value=sink_dataset[i]["execution_id"])
                     flow_sheet.cell(row=j, column=6, value=sink_dataset[i]["e_final_status"])
-                    flow_sheet.cell(row=j, column=8, value=result.text)  # 实际结果写入表格
+
                 else:
                     for t in range(j, 2, -1):
                         if sink_dataset[i]["flow_id"] == flow_sheet.cell(row=t-1, column=2).value:
                             flow_sheet.cell(row=j, column=5, value=sink_dataset[i]["execution_id"])
                             flow_sheet.cell(row=j, column=6, value=sink_dataset[i]["e_final_status"])
-                            flow_sheet.cell(row=j, column=8, value=result.text)  # 实际结果写入表格
+                            # flow_sheet.cell(row=j, column=8, value=result.text)  # 实际结果写入表格
                             break
+                # 如果dataset id相等就写入，不相等就向下找
+                for n in range(j, sheet_rows+1):
+                    if dataset_id == flow_sheet.cell(row=j, column=4).value:
+                        flow_sheet.cell(row=j, column=8, value=result.text)  # dataset id 相等，实际结果写入表格
 
         flow_table.save(abs_dir("flow_dataset_info.xlsx"))
-            # copy_table.save(abs_dir("flow_dataset_info.xlsx"))
-
-        # 第二次打开表，对比实际结果和预期结果，一致标记为pass，不一致标记为fail
-        # table = xlrd.open_workbook(abs_dir("flow_dataset_info.xlsx"))
-        # table = xlrd.open_workbook(abs_dir("flow_dataset_info.xlsx"))
-        # table_sheet = table.sheets()[0]
-        # copy_table = copy(table)
-        # copy_table_sheet = copy_table.get_sheet(0)
-        # c_rows = table_sheet.nrows
-
+        # copy_table.save(abs_dir("flow_dataset_info.xlsx"))
         # ---使用openpyxl处理表格 12.26update---
         table = load_workbook(abs_dir("flow_dataset_info.xlsx"))
         table_sheet = table.get_sheet_by_name('flow_info')
@@ -366,15 +349,22 @@ class GetCheckoutDataSet(object):
         print('-----开始对比结果----')
         for i in range(2, c_rows+1):
             table_sheet.cell(row=i, column=1, value=i-1)
-            if table_sheet.cell(row=i, column=11).value == 'overwrite':
-                if table_sheet.cell(row=i, column=8).value and table_sheet.cell(row=i, column=6).value == "SUCCEEDED":  # 实际结果存在
-                    if table_sheet.cell(row=i, column=7).value == table_sheet.cell(row=i, column=8).value:  # 实际结果和预期结果相等
+            if table_sheet.cell(row=i, column=11).value == 'overwrite':  # 判断mode
+                # 实际结果存在
+                if table_sheet.cell(row=i, column=8).value and table_sheet.cell(row=i, column=6).value == "SUCCEEDED":
+                    # 实际结果和预期结果相等
+                    va7 = list(eval(table_sheet.cell(row=11, column=7).value))
+                    va8 = list(eval(table_sheet.cell(row=11, column=8).value))
+                    S_va7 = sorted(va7, key=lambda item: item["id"], reverse=True)
+                    S_va8 = sorted(va8, key=lambda item: item["id"], reverse=True)
+                    if S_va7 == S_va8:
                         table_sheet.cell(row=i, column=9, value="pass")
                         print('test_result:', table_sheet.cell(row=i, column=9).value)
                         table_sheet.cell(row=i, column=10, value="")
                     else:
                         table_sheet.cell(row=i, column=9, value="fail")
-                        table_sheet.cell(row=i, column=10, value="execution: %s 预期结果实际结果不一致 " % (table_sheet.cell(row=i, column=5).value))
+                        table_sheet.cell(row=i, column=10, value="execution: %s 预期结果实际结果不一致 " %
+                                                                 (table_sheet.cell(row=i, column=5).value))
                 elif table_sheet.cell(row=i, column=6).value == "FAILED":
                     table_sheet.cell(row=i, column=9, value="fail")
                     table_sheet.cell(row=i, column=10, value="execution: %s 执行状态为 %s" % (
@@ -393,8 +383,8 @@ class GetCheckoutDataSet(object):
                     actual_result_list = list(eval(table_sheet.cell(row=i, column=8).value))
 
                     if expect_result_list == actual_result_list[-expect_len:]:  # 实际结果切片和预期结果长度一致的数据，判断和预期结果是否相等
-                        print('expect_result_list:', expect_result_list)
-                        print('actual_result_list:', actual_result_list)
+                        # print('expect_result_list:', expect_result_list)
+                        # print('actual_result_list:', actual_result_list)
                         print(expect_result_list == actual_result_list[-expect_len:])
                         table_sheet.cell(row=i, column=9, value="pass")
                         table_sheet.cell(row=i, column=10, value="")
@@ -428,6 +418,7 @@ if __name__ == '__main__':
     # sink_dataet_json = [{'flow_id': '35033c8d-fadc-4628-abf9-6803953fba34', 'execution_id': '39954be8-900a-4466-bc2e-05e379697fef', 'flow_scheduler_id': '8cf78c22-a561-4e5b-9c1c-b709ae8a51fe', 'e_final_status': 'FAILED', 'o_dataset': ''}, {'flow_id': 'f2677db1-6923-42a1-8f18-f8674394580a', 'execution_id': 'a38d303f-5bf5-441b-831c-92df5a9b7299', 'flow_scheduler_id': '65d1ca0a-4f0d-4680-b667-291ca412bdb2', 'e_final_status': 'SUCCEEDED', 'o_dataset': 'b896ff9d-691e-4939-a860-38eb828b1ad2'}]
     g = GetCheckoutDataSet()
     g.get_json()
+    # threading.Timer(1500, get_headers()).start()
     # g.data_for_create_scheduler()
 
 
