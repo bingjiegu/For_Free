@@ -8,11 +8,12 @@ from basic_info.Open_DB import MYSQL
 from basic_info.url_info import *
 from basic_info.data_from_db import create_schedulers
 import random, xlrd
+from openpyxl import load_workbook
 
 
 # 配置数据库连接
 ms = MYSQL(MySQL_CONFIG["HOST"], MySQL_CONFIG["USER"], MySQL_CONFIG["PASSWORD"], MySQL_CONFIG["DB"])
-
+abs_dir = lambda n: os.path.abspath(os.path.join(os.path.dirname(__file__), n))
 
 # 该类用来测试创建scheduler接口
 class CreateSchedulers(unittest.TestCase):
@@ -21,11 +22,10 @@ class CreateSchedulers(unittest.TestCase):
     def test_case01(self):
         """创建schedulers，单次执行"""
         scheduler_name = 'students_schedulers' + str(random.randint(0, 99999))
-        flow_table = xlrd.open_workbook("./api_test_cases/flow_dataset_info.xls")
-        # flow_table = xlrd.open_workbook("flow_dataset_info.xls")
-        info_sheet = flow_table.sheet_by_name("flow_info")
-        flow_id = info_sheet.cell(1, 1).value
-        flow_name = info_sheet.cell(1, 2).value
+        flow_table = load_workbook(abs_dir("flow_dataset_info.xlsx"))
+        info_sheet = flow_table.get_sheet_by_name("flow_info")
+        flow_id = info_sheet.cell(row=2, column=2).value
+        flow_name = info_sheet.cell(row=2, column=3).value
         data = {"name": scheduler_name,
                 "flowId": flow_id,
                 "flowName": flow_name,
@@ -44,11 +44,10 @@ class CreateSchedulers(unittest.TestCase):
         # start_time = get_time()+(600*1000)  # starttime设为当前时间10分钟后
         start_time = get_time()  # starttime设为当前时间
         end_time = get_time() + (24*3600*1000)  # endtime设为当前时间1天后
-        flow_table = xlrd.open_workbook("./api_test_cases/flow_dataset_info.xls")
-        # flow_table = xlrd.open_workbook("flow_dataset_info.xls")
-        info_sheet = flow_table.sheet_by_name("flow_info")
-        flow_id = info_sheet.cell(1, 1).value
-        flow_name = info_sheet.cell(1, 2).value
+        flow_table = load_workbook(abs_dir("flow_dataset_info.xlsx"))
+        info_sheet = flow_table.get_sheet_by_name("flow_info")
+        flow_id = info_sheet.cell(row=2, column=2).value
+        flow_name = info_sheet.cell(row=2, column=3).value
         data = {"name": scheduler_name,
                 "flowId": flow_id,
                 "flowName": flow_name,
