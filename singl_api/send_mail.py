@@ -102,7 +102,7 @@ def main3(report_path):
     failed_flow = []
     flow_id_list = GetCheckoutDataSet().file_flowid_count()
     total = len(flow_id_list)
-    # print('total flow:', total)
+    print('flow总数total:', total)
     detail_msg = ''' '''
     for row in range(2, rows+1):
         if f_sheet.cell(row=row, column=9).value == "fail":
@@ -118,20 +118,25 @@ def main3(report_path):
         elif f_sheet.cell(row=row, column=9).value == "pass":
             if f_sheet.cell(row=row, column=2).value:
                 succeed_flow.append(f_sheet.cell(row=row, column=2).value)
+                # print(succeed_flow)
             else:
                 for i in range(row, 2, -1):
                     if f_sheet.cell(row=i-1, column=2).value:
                         succeed_flow.append(f_sheet.cell(row=i-1, column=2).value)
                         break
-
+    print(succeed_flow)
+    print('\n')
+    print(len(succeed_flow))
     failed_flow_s = list(set(failed_flow))
     succeed_flow_s = list(set(succeed_flow))
-    print('succeed_flow_s: ', succeed_flow_s)
-    print('len(succeed_flow_s:',len(succeed_flow_s))
+    # print('succeed_flow_s: ', succeed_flow_s)
+    # print('len(succeed_flow_s:', len(succeed_flow_s))
     for disct_id in (disct_ids for disct_ids in failed_flow_s if disct_ids in succeed_flow_s):
         succeed_flow_s.remove(disct_id)
-    print('去重后succeed_flow_s: ', succeed_flow_s)
-    print('去重后len(succeed_flow_s:', len(succeed_flow_s))
+    # print('去重后succeed_flow_s: ', succeed_flow_s)
+    # print('去重后len(succeed_flow_s:', len(succeed_flow_s))
+    # print('去重后failed_flow_s: ', failed_flow_s)
+    # print('去重后len(failed_flow_s:', len(failed_flow_s))
     # 邮件的正文内容
     filename = time.strftime("%Y%m%d%H", time.localtime()) + '_report.html'
     if len(failed_flow_s) > 0:
@@ -145,7 +150,7 @@ def main3(report_path):
                    + ' execution执行相关测试场景共 %d 个\n成功%d个, 失败 %d个\n成功的flow id为 %s' \
                    % (total, len(succeed_flow_s), len(failed_flow_s), succeed_flow_s)
 
-    print(mail_content)
+    # print(mail_content)
     # 邮件标题
     mail_title = 'API自动化测试报告'
     # 添加邮件正文，格式 MIMEText:
@@ -181,5 +186,5 @@ def main3(report_path):
     print('%s----发送邮件成功' % time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
     smtp.quit()
 
-report_path = 'E:\Reports\\2018122813_report.html'
-main3(report_path)
+# report_path = 'E:\Reports\\2018122813_report.html'
+# main3(report_path)
