@@ -16,7 +16,7 @@ class ForCollector(unittest.TestCase):
         content = response_json["content"]
         content_len = len(content)
         last = response_json["last"]
-        print(response.json())
+        # print(response.json())
         self.assertEqual(response.status_code, 200, '请求失败')
         if total > limit:
             self.assertEqual(last, False, 'total>limit时，last应该为false, 但是结果为true')
