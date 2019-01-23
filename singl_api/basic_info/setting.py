@@ -1,5 +1,6 @@
 import os
 
+
 BASE_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__name__)))
 DATA_PATH = os.path.join(BASE_PATH, 'test_cases')
 REPORT_PATH = os.path.join(BASE_PATH, 'report')
@@ -130,3 +131,8 @@ flow_update_id = 'cb0a37ea-de4a-495c-bae0-236fcbd08eaf'
 # 根据流程id和计划id查询执行历史
 flow_scheduler_id = '63b0a864-ce40-4f88-a25d-929164198087'
 
+# add by bingjie 2019-01-23
+# 创建分析模板使用的flow和dataset
+preProcessFlowId = "f2677db1-6923-42a1-8f18-f8674394580a"
+preProcessFlowName = "students_flow_filter"
+processDataId = "students_dataset"
