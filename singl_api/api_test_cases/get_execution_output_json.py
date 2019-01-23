@@ -47,13 +47,13 @@ class GetCheckoutDataSet(object):
         # print(info_sheet_row)
         flowid_count = self.file_flowid_count()
         for flow_id in flowid_count:
-            print('------',flow_id, '--------')
+            # print('------',flow_id, '--------')
             # print(i, flow_id)
             # print('flow_id', flow_id)
             try:
                 sql = 'select name, flow_type from merce_flow where id = "%s"' % flow_id
                 flow_info = self.ms.ExecuQuery(sql)
-                print('flow_info:',flow_info)
+                # print('flow_info:',flow_info)
             except Exception as e:
                 raise e
             else:
@@ -134,7 +134,7 @@ class GetCheckoutDataSet(object):
                 "flowId": flow_id,
                 "flowName": flow_name,
                 "flowType": flow_type,
-                "name": "students_flow" + str(random.randint(0, 99999)),
+                "name": "students_flow" + str(random.randint(0, 9999))+str(random.randint(0, 9999)),
                 "schedulerId": "once",
                 "source": "rhinos"
             }
@@ -142,6 +142,7 @@ class GetCheckoutDataSet(object):
             data_list.append(data)
         # print(len(data_list))
         print("------data_for_create_scheduler(self)执行结束------\n")
+        print(len(data_list))
         return data_list
 
     def create_new_scheduler(self):
@@ -150,9 +151,9 @@ class GetCheckoutDataSet(object):
         from basic_info.url_info import create_scheduler_url
         scheduler_id_list = []
         for data in self.data_for_create_scheduler():
-            time.sleep(60)
+            time.sleep(30)
             res = requests.post(url=create_scheduler_url, headers=get_headers(), json=data)
-            # print(res.status_code, res.text)
+            print(res.status_code, res.text)
             if res.status_code == 201 and res.text:
                 scheduler_id_format = dict_res(res.text)
                 try:
@@ -163,8 +164,10 @@ class GetCheckoutDataSet(object):
                     scheduler_id_list.append(scheduler_id)
 
             else:
-                return None
+                print("flow: %s scheduler创建失败" % data["flowid"])
+                # return None
         print("------create_new_scheduler(self)执行结束, 返回scheduler_id_list------\n")
+        print(len(scheduler_id_list))
         return scheduler_id_list
 
     def get_e_finial_status(self, scheduler_id):
@@ -417,7 +420,7 @@ class GetCheckoutDataSet(object):
 if __name__ == '__main__':
     # sink_dataet_json = [{'flow_id': '35033c8d-fadc-4628-abf9-6803953fba34', 'execution_id': '39954be8-900a-4466-bc2e-05e379697fef', 'flow_scheduler_id': '8cf78c22-a561-4e5b-9c1c-b709ae8a51fe', 'e_final_status': 'FAILED', 'o_dataset': ''}, {'flow_id': 'f2677db1-6923-42a1-8f18-f8674394580a', 'execution_id': 'a38d303f-5bf5-441b-831c-92df5a9b7299', 'flow_scheduler_id': '65d1ca0a-4f0d-4680-b667-291ca412bdb2', 'e_final_status': 'SUCCEEDED', 'o_dataset': 'b896ff9d-691e-4939-a860-38eb828b1ad2'}]
     GetCheckoutDataSet()
-    # g.get_json()
+
     # threading.Timer(1500, get_headers()).start()
     # g.data_for_create_scheduler()
 
