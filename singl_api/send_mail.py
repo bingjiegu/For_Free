@@ -152,7 +152,7 @@ def main3(report_path):
 
     # print(mail_content)
     # 邮件标题
-    mail_title = 'API自动化测试报告'
+    mail_title = 'BayMax API自动化测试报告'
     # 添加邮件正文，格式 MIMEText:
     msg.attach(MIMEText(mail_content, "plain", 'utf-8'))
 
