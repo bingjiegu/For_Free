@@ -37,6 +37,7 @@ class CreateSchedulers(unittest.TestCase):
         res = requests.post(url=create_scheduler_url, headers=get_headers(), json=data)
         print(res.status_code, res.text)
         self.assertEqual(res.status_code, 201, '创建单次执行的scheduler失败: %s' % res.text)
+        time.sleep(5)
 
     def test_case02(self):
         """创建schedulers，周期执行"""
@@ -77,6 +78,7 @@ class CreateSchedulers(unittest.TestCase):
         res = requests.post(url=create_scheduler_url, headers=get_headers(), json=data)
         print(res.status_code, res.text)
         self.assertEqual(res.status_code, 201, '创建周期执行的scheduler失败:%s' % res.text)
+        time.sleep(5)
 
 # 该类用来测试scheduler查询接口
 class SelectSchedulers(unittest.TestCase):
