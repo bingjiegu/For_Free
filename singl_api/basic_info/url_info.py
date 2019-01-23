@@ -57,10 +57,16 @@ flow_update_url = '%s/api/flows/%s' % (MY_LOGIN_INFO["HOST"], flow_update_id)
 # 查询需要更新的流程的flowid的url added by pengyuan 1120
 flow_update_flowid_url = '%s/api/flows/%s/findFlow' % (MY_LOGIN_INFO["HOST"], flow_update_id)
 # 根据老的版本查询历史流程
-query_flow_history_version_url = '%s/api/flows/history/%s/%s' %(MY_LOGIN_INFO["HOST"], flow_update_id, query_flow_version)
+query_flow_history_version_url = '%s/api/flows/history/%s/%s' % (MY_LOGIN_INFO["HOST"], flow_update_id, query_flow_version)
 # 根据老的id查询历史流程
 query_flow_history_id_url = '%s/api/flows/history/list/%s' %(MY_LOGIN_INFO["HOST"], flow_update_id)
 # 根据流程id和计划id查询执行历史
 query_flow_flowAscheduler_id_url = '%s/api/flows/%s/schedulers/%s/executions' % (MY_LOGIN_INFO["HOST"], flow_update_id, flow_scheduler_id)
 # 根据老的版本查询流程
 query_flow_version_url = '%s/api/flows/%s/%s' % (MY_LOGIN_INFO["HOST"], flow_update_id, query_flow_version)
+
+
+#------质量分析接口------
+create_analysis_model = "%s/api/woven/zmod" % (MY_LOGIN_INFO["HOST"])
+# query_zmod_rule = "%s/api/woven/zmodrules/%s/detailslist" % (MY_LOGIN_INFO["HOST"], zmod_id)
+zmod_removeList_url = "%s/api/woven/zmod/removeList" % (MY_LOGIN_INFO["HOST"])
