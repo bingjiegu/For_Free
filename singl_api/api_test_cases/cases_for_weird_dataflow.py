@@ -18,32 +18,36 @@ class ExecuteWeirdDataflow(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def create_scheduler(self):
+    def test_create_scheduler(self):
+        print("开始执行test_create_scheduler(self)")
         data = get_dataflow_data('tc_auto_df_sink_hdfs_path使用$进行分区、使用sliceTimeColumn1545633382888')
         res = requests.post(url=create_scheduler_url, headers=get_headers(), json=data)
         self.assertEqual(res.status_code, 201)
         self.assertNotEqual(res.json().get('id', 'scheduler创建可能失败了'), 'scheduler创建可能失败了')
-        scheduler_id = res.json()['id']
-        print('---------scheduler_id-------', scheduler_id)
-        return scheduler_id
+        # scheduler_id = res.json()['id']
+        # print('---------scheduler_id-------', scheduler_id)
+        # print(res.json()["id"])
+        return res.json()['id']
 
-    def get_execution_info(self):
-        scheduler_id = self.create_scheduler()
-        time.sleep(5)
+    def test_get_execution_info(self):
+        print("开始执行get_execution_info(self)")
+        scheduler_id = self.test_create_scheduler()
         e_status_format = {'type': 'READY'}
-        while e_status_format['type'] in ("READY", "RUNNING"):
+        while e_status_format["type"] in ("READY", "RUNNING"):
             time.sleep(5)
-            execution_sql = 'select id, status, flow_id , flow_scheduler_id from merce_flow_execution where flow_scheduler_id = "%s" ' % scheduler_id
+            execution_sql = 'select id, status, flow_id, flow_scheduler_id from merce_flow_execution where flow_scheduler_id = "%s"' % scheduler_id
+            time.sleep(30)
             select_result = self.ms.ExecuQuery(execution_sql)
             e_status = select_result[0]["status"]
             e_status_format = dict_res(e_status)
-            print(e_status_format)
+
         self.assertEqual(e_status_format['type'], 'SUCCEEDED')
+        print(select_result)
         return select_result
 
-    def get_dataset_id(self):
+    def test_get_dataset_id(self):
         """获取execution的id和状态, 最终返回execution执行成功后的dataset id """
-        e_info = self.get_execution_info()
+        e_info = self.test_get_execution_info()
         data_json_sql = 'select b.dataset_json from merce_flow_execution as a  LEFT JOIN merce_flow_execution_output as b on a.id = b.execution_id where a.id ="%s"' % e_info[0]["id"]
         data_json = self.ms.ExecuQuery(data_json_sql)
         sink_dataset_list = []
@@ -54,9 +58,9 @@ class ExecuteWeirdDataflow(unittest.TestCase):
         print('----------sink_dataset_list----------', sink_dataset_list)
         return sink_dataset_list
 
-    def test_check_result(self):
+    def test_test_check_result(self):
         ''' 返回多dataset且ID会变，对该flow的校验 '''
-        sink_dataset_list = self.get_dataset_id()
+        sink_dataset_list = self.test_get_dataset_id()
         L = []
         for dataset_id in sink_dataset_list:
             priview_url = "%s/api/datasets/%s/preview?rows=5000&tenant=2d7ad891-41c5-4fba-9ff2-03aef3c729e5" % (MY_LOGIN_INFO2["HOST"], dataset_id)
