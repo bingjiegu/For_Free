@@ -133,6 +133,6 @@ flow_scheduler_id = '63b0a864-ce40-4f88-a25d-929164198087'
 
 # add by bingjie 2019-01-23
 # 创建分析模板使用的flow和dataset
-preProcessFlowId = "f2677db1-6923-42a1-8f18-f8674394580a"
-preProcessFlowName = "students_flow_filter"
-processDataId = "students_dataset"
+preProcessFlowId = "aa5f83c6-aff0-4405-8473-8c09c0f167e4"
+preProcessFlowName = "students_int_flow_filter"
+processDataId = "students_dataset_copy_int"
