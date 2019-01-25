@@ -1,4 +1,6 @@
 import os
+from basic_info import Open_DB
+
 
 
 BASE_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__name__)))
@@ -136,3 +138,18 @@ flow_scheduler_id = '63b0a864-ce40-4f88-a25d-929164198087'
 preProcessFlowId = "aa5f83c6-aff0-4405-8473-8c09c0f167e4"
 preProcessFlowName = "students_int_flow_filter"
 processDataId = "students_dataset_copy_int"
+
+ms = Open_DB.MYSQL(MySQL_CONFIG["HOST"], MySQL_CONFIG["USER"], MySQL_CONFIG["PASSWORD"], MySQL_CONFIG["DB"])
+# 查询最新创建的sql分析规则id
+# # sql_rule_id_sql = 'select id from merce_zrule where build_type = "Custom" and custom_type = "SQL" and ' \
+# #                   'name like "rule_for_SQL_students_copy%"  order by create_time desc limit 1  '
+# # sql_rule_id_list = ms.ExecuQuery(sql_rule_id_sql)
+# # sql_rule_id = [item[key] for item in sql_rule_id_list for key in item]
+# sql_rule_id = cases_for_analysis_model.CasesForRule().test_create_rule_SQL()
+# print(sql_rule_id)
+
+# 查询最新创建的分析规则id
+rule_id_sql = 'select id from merce_zrule ORDER BY create_time desc limit 1'
+rule_id_list = ms.ExecuQuery(rule_id_sql)
+rule_id = rule_id_list[0]["id"]
+print(rule_id_list)
