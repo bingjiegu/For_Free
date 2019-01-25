@@ -66,7 +66,20 @@ query_flow_flowAscheduler_id_url = '%s/api/flows/%s/schedulers/%s/executions' % 
 query_flow_version_url = '%s/api/flows/%s/%s' % (MY_LOGIN_INFO["HOST"], flow_update_id, query_flow_version)
 
 
-#------质量分析接口------
+# ------质量分析接口------
+# 创建分析模板
 create_analysis_model = "%s/api/woven/zmod" % (MY_LOGIN_INFO["HOST"])
 # query_zmod_rule = "%s/api/woven/zmodrules/%s/detailslist" % (MY_LOGIN_INFO["HOST"], zmod_id)
+# 删除分析模板
 zmod_removeList_url = "%s/api/woven/zmod/removeList" % (MY_LOGIN_INFO["HOST"])
+# 创建rule
+create_rule_url = "%s/api/woven/rule" % (MY_LOGIN_INFO["HOST"])
+# 查询规则
+rule_query_url = "%s/api/woven/rule/query" % (MY_LOGIN_INFO["HOST"])
+# 查询任务
+zdaf_query_url = "%s/api/zdaf/query" % (MY_LOGIN_INFO["HOST"])
+
+# 查询规则详情页
+# query_rule_detail_url = "%s/api/woven/rule/%s" % (MY_LOGIN_INFO["HOST"], sql_rule_id)
+# 批量删除rule
+rule_removeList_url = "%s/api/woven/rule/removeList" % (MY_LOGIN_INFO["HOST"])
