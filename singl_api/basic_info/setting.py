@@ -42,6 +42,7 @@ MY_LOGIN_INFO = {
  "HOST": "http://192.168.1.189:8515"
 }
 
+# 目前登录使用该账户 admin
 MY_LOGIN_INFO2 = {
  "HEADERS": {'Content-Type': 'application/x-www-form-urlencoded'},
  "URL": "http://192.168.1.189:8515/api/auth/login",
@@ -152,4 +153,9 @@ ms = Open_DB.MYSQL(MySQL_CONFIG["HOST"], MySQL_CONFIG["USER"], MySQL_CONFIG["PAS
 rule_id_sql = 'select id from merce_zrule ORDER BY create_time desc limit 1'
 rule_id_list = ms.ExecuQuery(rule_id_sql)
 rule_id = rule_id_list[0]["id"]
-print(rule_id_list)
+# print(rule_id_list)
+
+# 创建分析任务使用的分析模板
+zmod_id = ["e2dbfd88-0e2d-4fa2-b145-75c1a13ab455"]
+# 分析任务执行信息execution
+zmod_exectuion_id = "c462b867-db09-4adc-b49f-005c646960a6"
