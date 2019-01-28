@@ -1,24 +1,86 @@
 from basic_info.get_auth_token import get_headers
-import unittest, time, json, requests, random
-from basic_info.setting import preProcessFlowId, preProcessFlowName, processDataId
+import unittest
+import requests
 from basic_info.Open_DB import MYSQL
-from basic_info.setting import MySQL_CONFIG, MY_LOGIN_INFO
-from basic_info.format_res import get_time
-from basic_info.timestamp_13 import timestamp_to_13
+from basic_info.setting import MySQL_CONFIG, zmod_id
 
 ms = MYSQL(MySQL_CONFIG["HOST"], MySQL_CONFIG["USER"], MySQL_CONFIG["PASSWORD"], MySQL_CONFIG["DB"])
 
 
 class CasesForZmod(unittest.TestCase):
-    def test_create_Zmod(self):
-        """创建分析任务"""
-        from basic_info.url_info import create_zmod_flow_url
-        data = ["4d13b76c-d023-4705-a9e9-c51fcf162ef3"]  # 分析模板id
-        response = requests.post(url=create_zmod_flow_url, headers=get_headers(), json=data)
-        print(response.status_code, response.url)
-        print(response.json())
+    from basic_info.url_info import query_zdaf
+    """分析任务信息接口"""
+    # def test_create_Zdaf_flow(self):
+    #     """创建分析任务-flow"""
+    #     from basic_info.url_info import create_zmod_flow_url
+    #     # data = ["e2dbfd88-0e2d-4fa2-b145-75c1a13ab455"]  # 分析模板id
+    #     response = requests.post(url=create_zmod_flow_url, headers=get_headers(), json=zmod_id)
+    #     self.assertEqual(200, response.status_code, '分析任务创建失败')
+    #     self.assertEqual(zmod_id[0], response.json()["modelId"], "分析任务的modelId不一致")
 
-# {'modelId': '4d13b76c-d023-4705-a9e9-c51fcf162ef3', 'flowId': 'b7f322bf-e23c-4198-aa98-bc42db7282be', 'flowDesc': {'id': 'b7f322bf-e23c-4198-aa98-bc42db7282be', 'name': 'qa_api_test_analysis_model4287_20190125_172153_417', 'description': 'modelId:4d13b76c-d023-4705-a9e9-c51fcf162ef3', 'flowType': 'dataflow', 'source': 'zebra', 'steps': [{'id': 's1', 'name': 'qa_source_s1', 'type': 'source', 'x': 10, 'y': 10, 'otherConfigurations': {'schema': 'students_copy_int', 'datasetId': '421ddc46-e059-49df-b425-a0c09397b247', 'dataset': 'students_dataset_copy_int', 'schemaId': '6bf38009-9d5b-4bd5-aacf-ea7bca46f939'}, 'outputConfigurations': [{'name': 'output', 'id': 'output', 'fields': [{'column': 'id'}, {'column': 'name'}, {'column': 'subject'}, {'column': 'grade'}]}]}, {'id': 's2', 'name': 'qa_analysis', 'type': 'analysis_qa', 'x': 260, 'y': 150, 'otherConfigurations': {'modelDetail': [{'owner': '2059750c-a300-4b64-84a6-e8b086dbfd42', 'modelId': '4d13b76c-d023-4705-a9e9-c51fcf162ef3', 'inputParams': {'inputGroup': {'0': {'name': 'inputELColumns', 'value': '*'}, '1': {'name': 'customExpression', 'value': '/\\d/'}}, 'outputGroup': {'0': {'name': 'outputFields', 'value': '*'}, '1': {'name': 'qualityType', 'value': 'normal'}, '2': {'name': 'outputLimit', 'value': '1000000'}}}, 'priority': '1', 'version': 1, 'enabled': 1, 'dataId': '*', 'inputParamesDB': '{"inputGroup":{"0":{"name":"inputELColumns","value":"*"},"1":{"name":"customExpression","value":"/\\\\d/"}},"outputGroup":{"0":{"name":"outputFields","value":"*"},"1":{"name":"qualityType","value":"normal"},"2":{"name":"outputLimit","value":"1000000"}}}', 'name': 'model-rule1548400204000', 'ruleName': 'digit format', 'id': 'eac0edbf-9f98-4faa-b5d3-7ede49a80974', 'ruleId': 'e0d2c763-0196-4b71-9e33-da44f3cd5c1d'}], 'sampleFraction': '#{sampleFraction:0.01}', 'outputDatasetDir': '#{outputDatasetDir:/tmp/qaoutput}', 'sourceDataCount': 0, 'model': {'owner': '2059750c-a300-4b64-84a6-e8b086dbfd42', 'processDataType': 'Dataset', 'version': 1, 'enabled': 1, 'name': 'api_test_analysis_model4287', 'id': '4d13b76c-d023-4705-a9e9-c51fcf162ef3', 'processDataId': 'students_dataset_copy_int'}, 'rulesMap': {'e0d2c763-0196-4b71-9e33-da44f3cd5c1d': {'id': 'e0d2c763-0196-4b71-9e33-da44f3cd5c1d', 'name': 'digit format', 'owner': '2059750c-a300-4b64-84a6-e8b086dbfd42', 'version': 1, 'enabled': 1, 'buildType': 'Custom', 'customType': 'Extend', 'ruleClass': 'com.merce.woven.app.metadata.rule.RuleCustomEL', 'customValue': '/(\\d{1,3}/', 'priority': 1, 'aggType': 'None', 'dataScope': 'Row', 'fieldValueType': 'Any', 'ruleOption': {'paramsMap': {'inputGroup': [{'name': 'inputELColumns', 'vtype': 'MultiField', 'defaultValue': '*', 'displayStr': '表达式输入字段', 'required': True}, {'name': 'customExpression', 'vtype': 'string', 'defaultValue': '', 'displayStr': '自定义表达式', 'required': True}], 'outputGroup': [{'name': 'outputFields', 'vtype': 'MultiField', 'defaultValue': '*', 'displayStr': '输出字段', 'required': True}, {'name': 'qualityType', 'vtype': 'string', 'defaultValue': 'normal', 'displayStr': '打分方式', 'required': True, 'valueOptions': ['normal', 'ignore']}, {'name': 'outputLimit', 'vtype': 'BigInt', 'defaultValue': '1000000', 'displayStr': '坏数据行数限制', 'required': False}]}, 'outValueType': 'Any', 'outputFields': []}, 'regex': '.*', 'regexFlag': 0}}, 'sampleType': '#{sampleType:none}'}, 'inputConfigurations': [{'name': 'input', 'id': 'input', 'fields': [{'column': 'id'}, {'column': 'name'}, {'column': 'subject'}, {'column': 'grade'}]}], 'outputConfigurations': [{'name': 'output', 'id': 'output', 'fields': [{'column': 'executionId'}, {'column': 'flowId'}, {'column': 'modelId'}, {'column': 'modelName'}, {'column': 'detailId'}, {'column': 'name'}, {'column': 'processDataType'}, {'column': 'processDataId'}, {'column': 'ruleId'}, {'column': 'outputLimit'}, {'column': 'qualityType'}, {'column': 'qualityRank'}, {'column': 'badRatio'}, {'column': 'priority'}, {'column': 'sourceRowCount'}, {'column': 'analysisRowCount'}, {'column': 'rowCount'}, {'column': 'outputId'}, {'column': 'outputData'}]}]}, {'id': 's3_sink', 'name': 'qa_sink', 'type': 'sink_analysis_qa', 'x': 600, 'y': 260, 'otherConfigurations': {'schema': 'qa_analysis_schema_2018_v1_001', 'format': '#{format:parquet}', 'datasetName': 'qa_sink_dataset_qa_api_test_analysis_model4287_20190125_172153_417', 'sourceDataCount': 0, 'storage': '#{storage:hdfs}', 'schemaName': 'qa_analysis_schema_2018_v1_001', 'outputBaseDir': '#{outputBaseDir:qaoutput}', 'sliceTime': None, 'expiredTime': '#{expiredTime:0}', 'schemaId': '30defc5f-e137-4cd2-9f4e-42ef3cfc04f4', 'outputDatasetDir': '#{outputDatasetDir:/tmp/qaoutput}', 'withOriginalFields': '#{withOriginalFields:true}', 'datasetId': '40837451-70af-493b-9d5f-fe6cc03195b1', 'sourceDataSize': 0, 'sourceData': 'students_dataset_copy_int', 'sliceType': 'H'}, 'inputConfigurations': [{'name': 'input', 'id': 'input', 'fields': [{'column': 'executionId'}, {'column': 'flowId'}, {'column': 'modelId'}, {'column': 'modelName'}, {'column': 'detailId'}, {'column': 'name'}, {'column': 'processDataType'}, {'column': 'processDataId'}, {'column': 'ruleId'}, {'column': 'outputLimit'}, {'column': 'qualityType'}, {'column': 'qualityRank'}, {'column': 'badRatio'}, {'column': 'priority'}, {'column': 'sourceRowCount'}, {'column': 'analysisRowCount'}, {'column': 'rowCount'}, {'column': 'outputId'}, {'column': 'outputData'}]}], 'outputConfigurations': []}], 'links': [{'name': 's1-s2', 'source': 's1', 'sourceOutput': 'output', 'target': 's2', 'targetInput': 'input', 'input': 'input'}, {'name': 's2-s3_sink', 'source': 's2', 'sourceOutput': 'output', 'target': 's3_sink', 'targetInput': 'input', 'input': 'input'}], 'oid': '$null', 'creator': 'admin', 'createTime': 1548408113447, 'lastModifier': 'admin', 'lastModifiedTime': 1548408113447, 'owner': '2059750c-a300-4b64-84a6-e8b086dbfd42', 'version': 1, 'enabled': 1, 'moduleVersion': 0, 'tenant': {'id': '2d7ad891-41c5-4fba-9ff2-03aef3c729e5', 'name': 'default', 'creator': 'root', 'createTime': 1532942318000, 'lastModifier': 'f8aff341-9303-4135-b393-1d322e4638e2', 'lastModifiedTime': 1544078372000, 'owner': 'f8aff341-9303-4135-b393-1d322e4638e2', 'version': 0, 'moduleVersion': 0, 'enabled': 1, 'resourceQueues': ['default', 'merce.normal'], 'hdfsSpaceQuota': 0, 'zid': '', 'expiredPeriod': 0}, 'tableName': 'merce_flow', 'isHide': 1, 'parameters': [{'name': 'sampleType', 'category': 'var', 'refs': ['sampleType'], 'defaultVal': 'none', 'value': ['none', 'bernoulli', 'poisson'], 'description': '采样方式;options?none,bernoulli,poisson'}, {'name': 'sampleFraction', 'category': 'var', 'refs': ['sampleFraction'], 'defaultVal': '0.01', 'value': ['0.001', '0.01', '0.1', '10000', '100000'], 'description': "采样率;options?0.001,0.01,0.1,10000,100000;dependon?sampleType.value=='none'"}, {'name': 'outputEngine', 'category': 'var', 'refs': ['outputEngine', 'storage'], 'defaultVal': 'hdfs', 'description': '文件系统;disabled?true'}, {'name': 'outputFormat', 'category': 'var', 'refs': ['outputFormat', 'format'], 'defaultVal': 'parquet', 'value': ['parquet', 'csv'], 'description': '数据格式;options?parquet,csv'}, {'name': 'expiredTime', 'category': 'var', 'refs': ['expiredTime'], 'defaultVal': '30', 'description': '失效天数'}, {'name': 'outputDatasetDir', 'category': 'var', 'refs': ['outputDatasetDir'], 'defaultVal': 'woven/qaoutput', 'description': '数据集路径'}, {'name': 'outputBaseDir', 'category': 'var', 'refs': ['outputBaseDir'], 'defaultVal': '/tmp/qaoutput', 'description': '输出路径'}], 'resource': {'id': '1a73946f-8509-4db9-9ea9-44273c400e7a', 'name': 'Qa_flow', 'resType': 'flow_dir', 'attributes': {}, 'index': 0, 'sharedUsers': [], 'creator': 'admin', 'createTime': 1545189691000, 'lastModifier': 'admin', 'lastModifiedTime': 1545189691000, 'owner': '2059750c-a300-4b64-84a6-e8b086dbfd42', 'enabled': 1, 'order': 0, 'isHide': 0, 'version': 0, 'moduleVersion': 0, 'tenant': {'id': '2d7ad891-41c5-4fba-9ff2-03aef3c729e5', 'name': 'default', 'creator': 'root', 'createTime': 1532942318000, 'lastModifier': 'f8aff341-9303-4135-b393-1d322e4638e2', 'lastModifiedTime': 1544078372000, 'owner': 'f8aff341-9303-4135-b393-1d322e4638e2', 'version': 0, 'moduleVersion': 0, 'enabled': 1, 'resourceQueues': ['default', 'merce.normal'], 'hdfsSpaceQuota': 0, 'zid': '', 'expiredPeriod': 0}, 'parent': {'id': '8cb5f399-ec5d-4236-98d3-88f0d1d19d2b', 'name': 'Flows', 'resType': 'flow_dir', 'attributes': {}, 'index': 0, 'sharedUsers': [], 'creator': 'admin', 'createTime': 1532945891000, 'lastModifier': 'admin', 'lastModifiedTime': 1532945891000, 'owner': '2059750c-a300-4b64-84a6-e8b086dbfd42', 'enabled': 1, 'order': 0, 'isHide': 0, 'version': 0, 'moduleVersion': 0, 'tenant': {'id': '2d7ad891-41c5-4fba-9ff2-03aef3c729e5', 'name': 'default', 'creator': 'root', 'createTime': 1532942318000, 'lastModifier': 'f8aff341-9303-4135-b393-1d322e4638e2', 'lastModifiedTime': 1544078372000, 'owner': 'f8aff341-9303-4135-b393-1d322e4638e2', 'version': 0, 'moduleVersion': 0, 'enabled': 1, 'resourceQueues': ['default', 'merce.normal'], 'hdfsSpaceQuota': 0, 'zid': '', 'expiredPeriod': 0}, 'expiredPeriod': 0}, 'children': [], 'expiredPeriod': 0}, 'expiredPeriod': 0}}
+    # def test_query_zdaf_all(self):
+    #     """查询所有的分析任务"""
+    #     from basic_info.url_info import query_zdaf
+    #     data = {"fieldList":[],"sortObject":{"field":"lastModifiedTime","orderDirection":"DESC"},"offset":0,"limit":8}
+    #     response = requests.post(url=query_zdaf, headers=get_headers(), json=data)
+    #     self.assertEqual(200, response.status_code, '分析任务查询接口调用失败')
+    #     # 数据库查询得到最新的8条分析任务id
+    #     zdaf_data_limit8 = 'select id from merce_zdaf order by create_time desc limit 8'
+    #     zdaf8 = ms.ExecuQuery(zdaf_data_limit8)
+    #     zdaf_ids = [item[key] for item in zdaf8 for key in item]
+    #     zdaf_ids.sort()
+    #     # 接口查询返回8条分析任务id
+    #     content_ids = []
+    #     for id in response.json()["content"]:
+    #         content_ids.append(id["id"])
+    #
+    #     content_ids.sort()
+    #     self.assertEqual(content_ids, zdaf_ids, '分析任务查询接口返回的查询结果和数据库数据不一致')
+
+    # def test_query_zdaf_by_name(self):
+    #     """按照分析模板名称查询分析任务"""
+    #     data = {"fieldList":[{"fieldName":"name","fieldValue":"%api_test_use%","comparatorOperator":"LIKE"}],"sortObject":{"field":"lastModifiedTime","orderDirection":"DESC"},"offset":0,"limit":8}
+    #     keywords = 'api_test_use'
+    #     response = requests.post(url=self.query_zdaf, headers=get_headers(), json=data)
+    #     self.assertEqual(200, response.status_code, '分析任务查询接口调用失败')
+    #     if response.json()["content"]:
+    #         self.assertIn(keywords, response.json()["content"][0]["name"], '查询得到的分析任务name中没有包含查询关键字keyword')
+    #
+    # def test_query_zdaf_by_time(self):
+    #     """根据时间段查询规则 2019-1-1/1-24"""
+    #     begin_time = 1546272000000
+    #     end_time = 1548777599000
+    #     data = {"fieldList":[{"fieldName":"lastModifiedTime","fieldValue": begin_time,"comparatorOperator":"GREATER_THAN"},
+    #                          {"fieldName":"lastModifiedTime","fieldValue": end_time,"comparatorOperator":"LESS_THAN"}
+    #                          ],
+    #             "sortObject":{"field":"lastModifiedTime","orderDirection":"DESC"},"offset":0,"limit":8}
+    #     response = requests.post(url=self.query_zdaf, headers=get_headers(), json=data)
+    #     self.assertEqual(200, response.status_code, 'SQL规则查询失败')
+    #     if response.json()["content"]:
+    #         self.assertIsNotNone(response.json()["content"], '分析任务查询结果为空')
+    #     # print(contents,'\n' , type(contents))
+    #     for content in response.json()["content"]:
+    #         # print(content["lastModifiedTime"])
+    #         self.assertGreaterEqual(content["lastModifiedTime"], begin_time,
+    #                                 '按照lastModifiedTime查询规则时，返回的查询结果中，lastModifiedTime未包含在查询时间段内')
+    #         self.assertGreaterEqual(end_time, content["lastModifiedTime"],
+    #                                 '按照lastModifiedTime查询规则时，返回的查询结果中，lastModifiedTime未包含在查询时间段内')
+    #
+    # def test_query_zmod_model_detail(self):
+    #     """查看任务关联模板详情"""
+    #     from basic_info.url_info import query_zmod_model_detail_url
+    #
+    #     response = requests.get(url=query_zmod_model_detail_url, headers=get_headers())
+    #     self.assertEqual(200, response.status_code, '查看任务关联模板详情接口调用失败')
+    #     self.assertEqual(zmod_id[0], response.json()["id"], '任务详情查询结果中id不一致')
+
+    def test_query_zmod_exectuion(self):
+        """查看任务执行信息"""
+        from basic_info.url_info import query_zmod_exectuion_url
+        response = requests.get(url=query_zmod_exectuion_url, headers=get_headers())
+        self.assertEqual(200, response.status_code, '查看任务执行信息接口调用失败')
+
+
 
 if __name__ == '__main__':
     unittest.main()
