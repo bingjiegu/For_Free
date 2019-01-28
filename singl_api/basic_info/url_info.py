@@ -1,6 +1,6 @@
 from basic_info.setting import *
 
-from basic_info.setting import scheduler_id
+from basic_info.setting import scheduler_id, zmod_id, zmod_exectuion_id
 
 # -------------------------schedulers---------------------------------------------------
 # 创建scheduler的接口
@@ -83,3 +83,13 @@ zdaf_query_url = "%s/api/zdaf/query" % (MY_LOGIN_INFO["HOST"])
 # query_rule_detail_url = "%s/api/woven/rule/%s" % (MY_LOGIN_INFO["HOST"], sql_rule_id)
 # 批量删除rule
 rule_removeList_url = "%s/api/woven/rule/removeList" % (MY_LOGIN_INFO["HOST"])
+# 创建zmod flow，分析任务创建scheduler使用
+create_zmod_flow_url = "%s/api/woven/zmod/createFlow" % (MY_LOGIN_INFO["HOST"])
+# 查询分析任务
+query_zdaf = "%s/api/woven/zdaf/query" % (MY_LOGIN_INFO["HOST"])
+# 查看任务关联模板详情
+query_zmod_model_detail_url = "%s/api/woven/zmod/%s" % (MY_LOGIN_INFO["HOST"], zmod_id[0])
+# 查看任务执行信息
+query_zmod_exectuion_url = "%s/api/woven/zdaf/%s/%s" % (MY_LOGIN_INFO["HOST"], zmod_id[0], zmod_exectuion_id)
+# 查看执行结果
+query_zmod_execution_dataset = "%s/api/datasets/334ebaae-b7a0-415d-b149-2bf3e16846a1/preview?rows=100"
