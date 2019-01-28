@@ -93,3 +93,5 @@ query_zmod_model_detail_url = "%s/api/woven/zmod/%s" % (MY_LOGIN_INFO["HOST"], z
 query_zmod_exectuion_url = "%s/api/woven/zdaf/%s/%s" % (MY_LOGIN_INFO["HOST"], zmod_id[0], zmod_exectuion_id)
 # 查看执行结果
 query_zmod_execution_dataset = "%s/api/datasets/334ebaae-b7a0-415d-b149-2bf3e16846a1/preview?rows=100"
+# 查看统计结果
+query_zdaf_result_url = "%s/api/woven/zdaf/stats/qualityRank,badRatio/Total" % (MY_LOGIN_INFO["HOST"])
