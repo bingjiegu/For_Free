@@ -350,12 +350,15 @@ class GetCheckoutDataSet(object):
         print('-----开始对比结果----')
         for i in range(2, c_rows+1):
             table_sheet.cell(row=i, column=1, value=i-1)
+            # 判断mode为overwrite
             if table_sheet.cell(row=i, column=11).value == 'overwrite':  # 判断mode
-                # 实际结果存在
+                # 实际结果存在并且执行结果为succeeded
                 if table_sheet.cell(row=i, column=8).value and table_sheet.cell(row=i, column=6).value == "SUCCEEDED":
-                    # 实际结果和预期结果相等
-                    va7 = list(eval(table_sheet.cell(row=11, column=7).value))
-                    va8 = list(eval(table_sheet.cell(row=11, column=8).value))
+                    # va7为预期结果，va8为实际结果，将二者先排序后对比是否相等
+                    va7 = list(eval(table_sheet.cell(row=i, column=7).value))
+                    print('va7', va7)
+                    print(table_sheet.cell(row=i, column=7).value)
+                    va8 = list(eval(table_sheet.cell(row=i, column=8).value))
                     S_va7 = sorted(va7, key=lambda item: item["id"], reverse=True)
                     S_va8 = sorted(va8, key=lambda item: item["id"], reverse=True)
                     if S_va7 == S_va8:
@@ -376,7 +379,7 @@ class GetCheckoutDataSet(object):
                 else:
                     table_sheet.cell(row=i, column=9, value="fail")
                     table_sheet.cell(row=i, column=10, value="用例参数或datasetID填写错误")
-
+            # 判断mode为append
             elif table_sheet.cell(row=i, column=11).value == 'append':
                 if table_sheet.cell(row=i, column=8).value and table_sheet.cell(row=i, column=6).value == "SUCCEEDED":  # 实际结果存在
                     expect_result_list = list(eval(table_sheet.cell(row=i, column=7).value))
