@@ -34,6 +34,7 @@ MySQL_CONFIG_85 = {
     "DB": 'europa'
 }
 
+HOST_189 = "http://192.168.1.189:8515"
 
 MY_LOGIN_INFO = {
  "HEADERS": {'Content-Type': 'application/x-www-form-urlencoded'},
