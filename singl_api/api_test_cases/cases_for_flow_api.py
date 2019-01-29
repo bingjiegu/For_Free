@@ -3,12 +3,10 @@ import unittest
 import requests
 import json
 import time
-from basic_info.setting import MySQL_CONFIG, MY_LOGIN_INFO, Flows_resourceid, idnameage_schema_name, \
-    idnameage_schema_id, tenant_id, \
-    left_age_dataset_name, left_age_dataset_id, query_flow_name, query_flow_version, flow_update_id
+from basic_info.setting import MySQL_CONFIG,  Flows_resourceid, idnameage_schema_name, idnameage_schema_id, tenant_id, \
+    left_age_dataset_name, left_age_dataset_id, query_flow_name, query_flow_version, flow_update_id, HOST_189
 from basic_info.Open_DB import MYSQL
-from basic_info.url_info import query_flows_url, create_flows_url, query_flowname_url, query_flowname_version_url, \
-    query_flow_all_url, flow_update_url, \
+from basic_info.url_info import query_flows_url, create_flows_url, query_flowname_url, query_flowname_version_url, query_flow_all_url, flow_update_url, \
     query_flow_history_id_url, query_flow_history_version_url, query_flow_flowAscheduler_id_url, query_flow_version_url
 
 # 配置数据库连接
@@ -95,7 +93,7 @@ class GetDataSet(unittest.TestCase):
         except Exception as e:
             raise e
         else:
-            url2 = '%s/api/datasets/%s?tenant=%s' % (MY_LOGIN_INFO["HOST"], dataset_id, tenant_id)
+            url2 = '%s/api/datasets/%s?tenant=%s' % (HOST_189, dataset_id, tenant_id)
             response = requests.get(url=url2, headers=get_headers()).text
             response = json.loads(response)
             response_id = response["id"]
@@ -303,3 +301,6 @@ class ApiFlows(unittest.TestCase):
         self.assertEqual(response_text["id"], flow_id, '根据老的版本查询流程后查询ID不相等')
         self.assertEqual(response_text["version"], flow_version, '根据老的版本查询流程后version不一致')
         time.sleep(3)
+
+if __name__ == '__main__':
+    unittest.main()

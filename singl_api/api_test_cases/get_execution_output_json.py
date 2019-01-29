@@ -2,7 +2,7 @@ from basic_info.Open_DB import MYSQL
 from basic_info.get_auth_token import get_headers
 from basic_info.setting import MySQL_CONFIG, flow_id_list
 from basic_info.format_res import dict_res, get_time
-from basic_info.setting import MY_LOGIN_INFO2
+from basic_info.setting import HOST_189
 import time, random, requests, xlrd
 from xlutils.copy import copy
 from openpyxl import load_workbook
@@ -162,12 +162,10 @@ class GetCheckoutDataSet(object):
                     print("scheduler_id_format中存在异常%s" % e)
                 else:
                     scheduler_id_list.append(scheduler_id)
-
             else:
                 print("flow: %s scheduler创建失败" % data["flowid"])
                 # return None
         print("------create_new_scheduler(self)执行结束, 返回scheduler_id_list------\n")
-        print(len(scheduler_id_list))
         return scheduler_id_list
 
     def get_e_finial_status(self, scheduler_id):
@@ -318,7 +316,7 @@ class GetCheckoutDataSet(object):
         for i in range(0, len(sink_dataset)):
             dataset_id = sink_dataset[i]["o_dataset"]
             # 通过dataset预览接口，获取dataset json串
-            priview_url = "%s/api/datasets/%s/preview?rows=5000&tenant=2d7ad891-41c5-4fba-9ff2-03aef3c729e5" % (MY_LOGIN_INFO2["HOST"], dataset_id)
+            priview_url = "%s/api/datasets/%s/preview?rows=5000&tenant=2d7ad891-41c5-4fba-9ff2-03aef3c729e5" % (HOST_189, dataset_id)
             result = requests.get(url=priview_url, headers=get_headers())
             # print(result.url, '\n', result.text)
             # 如果dataset_id相等，# 将output_dataset 的预览数据json串写入实际结果中
@@ -418,8 +416,8 @@ class GetCheckoutDataSet(object):
 
 
 if __name__ == '__main__':
-    # sink_dataet_json = [{'flow_id': '35033c8d-fadc-4628-abf9-6803953fba34', 'execution_id': '39954be8-900a-4466-bc2e-05e379697fef', 'flow_scheduler_id': '8cf78c22-a561-4e5b-9c1c-b709ae8a51fe', 'e_final_status': 'FAILED', 'o_dataset': ''}, {'flow_id': 'f2677db1-6923-42a1-8f18-f8674394580a', 'execution_id': 'a38d303f-5bf5-441b-831c-92df5a9b7299', 'flow_scheduler_id': '65d1ca0a-4f0d-4680-b667-291ca412bdb2', 'e_final_status': 'SUCCEEDED', 'o_dataset': 'b896ff9d-691e-4939-a860-38eb828b1ad2'}]
-    GetCheckoutDataSet()
+    g = GetCheckoutDataSet()
+    g.get_json()
 
     # threading.Timer(1500, get_headers()).start()
     # g.data_for_create_scheduler()

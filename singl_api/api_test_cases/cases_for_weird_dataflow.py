@@ -2,7 +2,7 @@ import unittest
 import requests
 import time
 from basic_info.Open_DB import MYSQL
-from basic_info.setting import MySQL_CONFIG
+from basic_info.setting import MySQL_CONFIG, HOST_189
 from basic_info.format_res import dict_res
 from basic_info.ready_dataflow_data import get_dataflow_data
 from basic_info.url_info import create_scheduler_url
@@ -63,7 +63,7 @@ class ExecuteWeirdDataflow(unittest.TestCase):
         sink_dataset_list = self.test_get_dataset_id()
         L = []
         for dataset_id in sink_dataset_list:
-            priview_url = "%s/api/datasets/%s/preview?rows=5000&tenant=2d7ad891-41c5-4fba-9ff2-03aef3c729e5" % (MY_LOGIN_INFO2["HOST"], dataset_id)
+            priview_url = "%s/api/datasets/%s/preview?rows=5000&tenant=2d7ad891-41c5-4fba-9ff2-03aef3c729e5" % (HOST_189, dataset_id)
             result = requests.get(url=priview_url, headers=get_headers())
             L.append(result.text)
         result = [ i for i in self.expected_result if i not in L]

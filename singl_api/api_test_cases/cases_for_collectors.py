@@ -1,7 +1,7 @@
 
 from basic_info.url_info import collector_table_url
 from basic_info.setting import datasource_id
-import unittest,requests
+import unittest, requests
 from basic_info.get_auth_token import get_headers
 
 

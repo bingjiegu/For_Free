@@ -2,7 +2,7 @@ from basic_info.get_auth_token import get_headers
 import unittest, time, json, requests, random
 from basic_info.setting import preProcessFlowId, preProcessFlowName, processDataId
 from basic_info.Open_DB import MYSQL
-from basic_info.setting import MySQL_CONFIG, MY_LOGIN_INFO
+from basic_info.setting import MySQL_CONFIG,  HOST_189
 from basic_info.format_res import get_time
 from basic_info.timestamp_13 import timestamp_to_13
 
@@ -228,7 +228,7 @@ class QueryRule(unittest.TestCase):
 class QueryAndUpdateRuleDetail(unittest.TestCase):
     # rule id
     sql_rule_id = CasesForRule().test_create_rule_SQL()
-    query_rule_detail_url = "%s/api/woven/rule/%s" % (MY_LOGIN_INFO["HOST"], sql_rule_id)
+    query_rule_detail_url = "%s/api/woven/rule/%s" % (HOST_189, sql_rule_id)
 
     def test_rule_detail(self):
         """查询规则详细信息：最新一条sql规则"""
@@ -323,7 +323,7 @@ class CreateAnalysisModel(unittest.TestCase):
                "inputGroup":{"0": {"name": "inputELColumns", "value": "*"},
                              "1": {"name": "customExpression", "value": "/\\d/"}}}}
 
-        url = "%s/api/woven/zmodrules/%s" % (MY_LOGIN_INFO["HOST"], modelId)
+        url = "%s/api/woven/zmodrules/%s" % (HOST_189, modelId)
         response = requests.post(url=url, headers=get_headers(), json=data)
         self.assertEqual(201, response.status_code, '分析模板规则添加失败')
 
@@ -357,7 +357,7 @@ class CreateAnalysisModel(unittest.TestCase):
 class QueryAnalysisRule(unittest.TestCase):
     def test_query_analysis_rule(self):
         """查看单个模板的分析规则"""
-        query_zmod_rule = "%s/api/woven/zmodrules/%s/detailslist" % (MY_LOGIN_INFO["HOST"], CreateAnalysisModel().test_create_analysis_model1())
+        query_zmod_rule = "%s/api/woven/zmodrules/%s/detailslist" % (HOST_189, CreateAnalysisModel().test_create_analysis_model1())
         data = {"fieldList": [], "sortObject": {"field": "lastModifiedTime", "orderDirection": "DESC"}, "offset": 0, "limit": 8}
         response = requests.post(url=query_zmod_rule, headers=get_headers(), json=data)
         self.assertEqual(200, response.status_code, '查询分析模板规则的接口调用失败')

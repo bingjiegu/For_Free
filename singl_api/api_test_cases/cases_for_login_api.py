@@ -72,3 +72,4 @@ class CheckLogin(unittest.TestCase):
         # print(res.status_code, res.text)
         assert res.status_code == 400
         assert json.loads(res.text) == {"err": "the tenant null can not found"}
+

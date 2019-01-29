@@ -4,7 +4,7 @@ import unittest
 import requests
 import json
 import time
-from basic_info.setting import MySQL_CONFIG, owner, dataset_resource, schema_resource, MY_LOGIN_INFO, tenant_id
+from basic_info.setting import MySQL_CONFIG, HOST_189, tenant_id
 from basic_info.Open_DB import MYSQL
 
 # 配置数据库连接
@@ -78,7 +78,7 @@ class Get_DataSet(unittest.TestCase):
         except Exception as e:
             raise e
         else:
-            url2 = '%s/api/datasets/%s?tenant=%s' % (MY_LOGIN_INFO["HOST"], dataset_id, tenant_id)
+            url2 = '%s/api/datasets/%s?tenant=%s' % (HOST_189, dataset_id, tenant_id)
             response = requests.get(url=url2, headers=get_headers()).text
             response = json.loads(response)
             response_id = response["id"]
@@ -86,3 +86,5 @@ class Get_DataSet(unittest.TestCase):
             # print("id:", response["id"])
             # print({"id": dataset_id, "name": dataset_name} == {"id": response_id, "name": response_name})
             self.assertEqual({"id": dataset_id, "name": dataset_name}, {"id": response_id, "name": response_name}, '两次查询得到的dataset id和name不一致，查询失败')
+
+
