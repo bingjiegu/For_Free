@@ -275,16 +275,22 @@ class GetCheckoutDataSet(object):
                         # 成功后查询flow_execution_output表中的dataset, 即sink对应的输出dataset，取出dataset id 并返回该ID，后续调用预览接口查看数据`
                         # print("查询data_json_sql:")
                         sink_dataset_dict["e_final_status"] = e_final_status
+                        print(e_final_status, e_id)
                         data_json_sql = 'select b.dataset_json from merce_flow_execution as a  LEFT JOIN merce_flow_execution_output as b on a.id = b.execution_id where a.id ="%s"' % e_id
+                        print(data_json_sql)
                         data_json = self.ms.ExecuQuery(data_json_sql)
-                        # print("打印data_json:", data_json)
+                        print("打印data_json:", data_json)
                         for n in range(len(data_json)):
                             sink_dataset = data_json[n]["dataset_json"]  # 返回结果为元祖
-                            # print('sink_dataset:', sink_dataset)
-                            sink_dataset_id = dict_res(sink_dataset)["id"]  # 取出json串中的dataset id
-                            sink_dataset_dict["o_dataset"] = sink_dataset_id
-                            d = json.loads(json.dumps(sink_dataset_dict))
-                            sink_dataset_list.append(d)
+                            print('-----sink_dataset-----', sink_dataset)
+                            print('sink_dataset:', sink_dataset)
+                            if sink_dataset:
+                                sink_dataset_id = dict_res(sink_dataset)["id"]  # 取出json串中的dataset id
+                                sink_dataset_dict["o_dataset"] = sink_dataset_id
+                                d = json.loads(json.dumps(sink_dataset_dict))
+                                sink_dataset_list.append(d)
+                            else:
+                                continue
 
                         print('第%d次的sink_dataset_list %s' % (i, sink_dataset_list))
                     else:
@@ -315,10 +321,11 @@ class GetCheckoutDataSet(object):
         # 通过dataset预览接口取得数据的预览json串 result.text
         for i in range(0, len(sink_dataset)):
             dataset_id = sink_dataset[i]["o_dataset"]
+            print('dataset_id:', dataset_id)
             # 通过dataset预览接口，获取dataset json串
             priview_url = "%s/api/datasets/%s/preview?rows=5000&tenant=2d7ad891-41c5-4fba-9ff2-03aef3c729e5" % (HOST_189, dataset_id)
             result = requests.get(url=priview_url, headers=get_headers())
-            # print(result.url, '\n', result.text)
+            # print('预览接口返回的dataset json串', '\n', result.json())
             # 如果dataset_id相等，# 将output_dataset 的预览数据json串写入实际结果中
             # 按照行数进行循环
             for j in range(2, sheet_rows+1):
@@ -356,19 +363,27 @@ class GetCheckoutDataSet(object):
                 if table_sheet.cell(row=i, column=8).value and table_sheet.cell(row=i, column=6).value == "SUCCEEDED":
                     # va7为预期结果，va8为实际结果，将二者先排序后对比是否相等
                     va7 = list(eval(table_sheet.cell(row=i, column=7).value))
-                    print('va7', va7)
-                    print(table_sheet.cell(row=i, column=7).value)
                     va8 = list(eval(table_sheet.cell(row=i, column=8).value))
-                    S_va7 = sorted(va7, key=lambda item: item["id"], reverse=True)
-                    S_va8 = sorted(va8, key=lambda item: item["id"], reverse=True)
-                    if S_va7 == S_va8:
+                    if va7 != []:
+                        va7_k = va7[0].keys()
+                        va7_key = list(va7_k)
+                        print('va7_key', va7_key)
+                        S_va7 = sorted(va7, key=lambda item: item[va7_key[0]], reverse=True)    # 没有 id时候的排序
+                        S_va8 = sorted(va8, key=lambda item: item[va7_key[0]], reverse=True)
+                        print(S_va7, '\n', S_va8)
+                        if S_va7 == S_va8:
+                            table_sheet.cell(row=i, column=9, value="pass")
+                            print('test_result:', table_sheet.cell(row=i, column=9).value)
+                            table_sheet.cell(row=i, column=10, value="")
+                        else:
+                            table_sheet.cell(row=i, column=9, value="fail")
+                            table_sheet.cell(row=i, column=10, value="execution: %s 预期结果实际结果不一致 " %
+                                                                     (table_sheet.cell(row=i, column=5).value))
+                    elif va7 == [] and va8 == []:
                         table_sheet.cell(row=i, column=9, value="pass")
-                        print('test_result:', table_sheet.cell(row=i, column=9).value)
-                        table_sheet.cell(row=i, column=10, value="")
                     else:
-                        table_sheet.cell(row=i, column=9, value="fail")
-                        table_sheet.cell(row=i, column=10, value="execution: %s 预期结果实际结果不一致 " %
-                                                                 (table_sheet.cell(row=i, column=5).value))
+                        print("预期结果为空，无法获取排序key")
+
                 elif table_sheet.cell(row=i, column=6).value == "FAILED":
                     table_sheet.cell(row=i, column=9, value="fail")
                     table_sheet.cell(row=i, column=10, value="execution: %s 执行状态为 %s" % (
@@ -389,7 +404,7 @@ class GetCheckoutDataSet(object):
                     if expect_result_list == actual_result_list[-expect_len:]:  # 实际结果切片和预期结果长度一致的数据，判断和预期结果是否相等
                         # print('expect_result_list:', expect_result_list)
                         # print('actual_result_list:', actual_result_list)
-                        print(expect_result_list == actual_result_list[-expect_len:])
+                        # print(expect_result_list == actual_result_list[-expect_len:])
                         table_sheet.cell(row=i, column=9, value="pass")
                         table_sheet.cell(row=i, column=10, value="")
                     else:
@@ -411,16 +426,16 @@ class GetCheckoutDataSet(object):
             else:
                 table_sheet.cell(row=i, column=9, value="fail")
                 table_sheet.cell(row=i, column=10, value="请确认flow的mode")
-        print(table_sheet.cell(row=2, column=8).value)
-        print(table_sheet.cell(row=2, column=9).value)
+        # print(table_sheet.cell(row=2, column=8).value)
+        # print(table_sheet.cell(row=2, column=9).value)
         table.save(abs_dir("flow_dataset_info.xlsx"))
 
         print('结果保存结束')
 
 
 if __name__ == '__main__':
-    g = GetCheckoutDataSet()
-    g.get_json()
+    GetCheckoutDataSet()
+
 
     # threading.Timer(1500, get_headers()).start()
     # g.data_for_create_scheduler()
