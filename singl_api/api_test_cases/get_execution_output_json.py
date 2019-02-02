@@ -1,3 +1,4 @@
+# coding=gbk
 from basic_info.Open_DB import MYSQL
 from basic_info.get_auth_token import get_headers
 from basic_info.setting import MySQL_CONFIG, flow_id_list
@@ -14,22 +15,22 @@ abs_dir = lambda n: os.path.abspath(os.path.join(os.path.dirname(__file__), n))
 
 
 class GetCheckoutDataSet(object):
-    """è¯¥ç±»ç”¨æ¥è·å–æ‰¹é‡åˆ›å»ºçš„schedulerå¯¹åº”çš„executionï¼Œæ‰§è¡ŒæˆåŠŸåsinkæ‰€è¾“å‡ºçš„ dataset id"""
+    """¸ÃÀàÓÃÀ´»ñÈ¡ÅúÁ¿´´½¨µÄscheduler¶ÔÓ¦µÄexecution£¬Ö´ĞĞ³É¹¦ºósinkËùÊä³öµÄ dataset id"""
 
     def __init__(self):
-        """åˆå§‹åŒ–æ•°æ®åº“è¿æ¥"""
+        """³õÊ¼»¯Êı¾İ¿âÁ¬½Ó"""
         self.ms = MYSQL(MySQL_CONFIG["HOST"], MySQL_CONFIG["USER"], MySQL_CONFIG["PASSWORD"], MySQL_CONFIG["DB"])
 
     def file_flowid_count(self):
-        # ------è¯»å–xslè¡¨ä¸­çš„flow_idï¼Œç„¶åæŠŠå®ƒè£…åˆ°listé‡Œè¿”å›------
+        # ------¶ÁÈ¡xsl±íÖĞµÄflow_id£¬È»ºó°ÑËü×°µ½listÀï·µ»Ø------
         # flow_table = xlrd.open_workbook(abs_dir("flow_dataset_info.xlsx"))
         # info_sheet = flow_table.sheet_by_name("flow_info")
         # info_sheet_row = info_sheet.nrows
-        # ---ä½¿ç”¨openpyxlå¤„ç†è¡¨æ ¼ 12.26update---
+        # ---Ê¹ÓÃopenpyxl´¦Àí±í¸ñ 12.26update---
         flow_table = load_workbook(abs_dir("flow_dataset_info.xlsx"))
         # info_sheet_names = flow_table.get_sheet_names()
         info_sheet = flow_table.get_sheet_by_name('flow_info')
-        info_sheet_row = info_sheet.max_row  # è·å–è¡Œæ•°
+        info_sheet_row = info_sheet.max_row  # »ñÈ¡ĞĞÊı
         flowid_list = []
         for i in range(2, info_sheet_row+1):
             if info_sheet.cell(row=i, column=2).value and len(info_sheet.cell(row=i, column=2).value) > 10:
@@ -38,11 +39,11 @@ class GetCheckoutDataSet(object):
 
 
     def data_for_create_scheduler(self):
-        """è·å–setting.pyä¸­çš„flow_id_list
-        1. æ ¹æ®flow_id æŸ¥æ‰¾flow_nameç­‰ä¿¡æ¯
-        2. æ ¹æ®æŸ¥è¯¢åˆ°çš„flowä¿¡æ¯ï¼Œæ‹¼è£…åˆ›å»ºscheduleræ‰€éœ€è¦ä½¿ç”¨çš„data
+        """»ñÈ¡setting.pyÖĞµÄflow_id_list
+        1. ¸ù¾İflow_id ²éÕÒflow_nameµÈĞÅÏ¢
+        2. ¸ù¾İ²éÑ¯µ½µÄflowĞÅÏ¢£¬Æ´×°´´½¨schedulerËùĞèÒªÊ¹ÓÃµÄdata
         """
-        print("------å¼€å§‹æ‰§è¡Œdata_for_create_scheduler(self)------\n")
+        print("------¿ªÊ¼Ö´ĞĞdata_for_create_scheduler(self)------\n")
         data_list = []
         # print(info_sheet_row)
         flowid_count = self.file_flowid_count()
@@ -141,13 +142,13 @@ class GetCheckoutDataSet(object):
 
             data_list.append(data)
         # print(len(data_list))
-        print("------data_for_create_scheduler(self)æ‰§è¡Œç»“æŸ------\n")
+        print("------data_for_create_scheduler(self)Ö´ĞĞ½áÊø------\n")
         print(len(data_list))
         return data_list
 
     def create_new_scheduler(self):
-        """è¯¥æ–¹æ³•ä½¿ç”¨data_for_create_scheduler()è¿”å›çš„data_listæ‰¹é‡åˆ›å»ºschedulerï¼Œå¹¶è¿”å›scheduler_id_list"""
-        print("------å¼€å§‹æ‰§è¡Œcreate_new_scheduler(self)------\n")
+        """¸Ã·½·¨Ê¹ÓÃdata_for_create_scheduler()·µ»ØµÄdata_listÅúÁ¿´´½¨scheduler£¬²¢·µ»Øscheduler_id_list"""
+        print("------¿ªÊ¼Ö´ĞĞcreate_new_scheduler(self)------\n")
         from basic_info.url_info import create_scheduler_url
         scheduler_id_list = []
         for data in self.data_for_create_scheduler():
@@ -159,27 +160,27 @@ class GetCheckoutDataSet(object):
                 try:
                     scheduler_id = scheduler_id_format["id"]
                 except KeyError as e:
-                    print("scheduler_id_formatä¸­å­˜åœ¨å¼‚å¸¸%s" % e)
+                    print("scheduler_id_formatÖĞ´æÔÚÒì³£%s" % e)
                 else:
                     scheduler_id_list.append(scheduler_id)
             else:
-                print("flow: %s scheduleråˆ›å»ºå¤±è´¥" % data["flowid"])
+                print("flow: %s scheduler´´½¨Ê§°Ü" % data["flowid"])
                 # return None
-        print("------create_new_scheduler(self)æ‰§è¡Œç»“æŸ, è¿”å›scheduler_id_list------\n")
+        print("------create_new_scheduler(self)Ö´ĞĞ½áÊø, ·µ»Øscheduler_id_list------\n")
         return scheduler_id_list
 
     def get_e_finial_status(self, scheduler_id):
-        """ æ ¹æ®get_execution_info(self)è¿”å›çš„scheduler  id, æŸ¥è¯¢è¯¥schedulerçš„execution çŠ¶æ€"""
-        print("------å¼€å§‹æ‰§è¡Œget_e_finial_status(self, scheduler_id)------\n")
+        """ ¸ù¾İget_execution_info(self)·µ»ØµÄscheduler  id, ²éÑ¯¸ÃschedulerµÄexecution ×´Ì¬"""
+        print("------¿ªÊ¼Ö´ĞĞget_e_finial_status(self, scheduler_id)------\n")
         if scheduler_id:
-            # æŸ¥è¯¢å‰å…ˆç­‰å¾…5S
+            # ²éÑ¯Ç°ÏÈµÈ´ı5S
             time.sleep(5)
             execution_sql = 'select id, status, flow_id , flow_scheduler_id from merce_flow_execution where flow_scheduler_id = "%s" ' % scheduler_id
             select_result = self.ms.ExecuQuery(execution_sql)
-            # print("æ ¹æ®scheduler id %s æŸ¥è¯¢executionï¼ŒæŸ¥è¯¢ç»“æœ %s: " % (scheduler_id, select_result))
+            # print("¸ù¾İscheduler id %s ²éÑ¯execution£¬²éÑ¯½á¹û %s: " % (scheduler_id, select_result))
             if select_result:
                 e_info = {}
-                # ä»æŸ¥è¯¢ç»“æœä¸­å–å€¼
+                # ´Ó²éÑ¯½á¹ûÖĞÈ¡Öµ
                 try:
                     e_id = select_result[0]["id"]
                     print(e_id)
@@ -188,53 +189,53 @@ class GetCheckoutDataSet(object):
                     e_info["flow_scheduler_id"] = select_result[0]["flow_scheduler_id"]
                     e_status = select_result[0]["status"]
                 except IndexError as e:
-                    print("å–å€¼æ—¶æŠ¥é”™ %s" % e)
+                    print("È¡ÖµÊ±±¨´í %s" % e)
                     raise e
                 else:
-                    # å¯¹è¿”å›æ•°æ®æ ¼å¼åŒ–
+                    # ¶Ô·µ»ØÊı¾İ¸ñÊ½»¯
                     e_status_format = dict_res(e_status)
                     e_final_status = e_status_format["type"]
                 e_info["e_final_status"] = e_final_status  #
-                # å°† execution id , flow_idå’Œstatusç»„è£…æˆå­—å…¸çš„å½¢å¼å¹¶è¿”å›
-                print("------get_e_finial_status(self, scheduler_id)æ‰§è¡ŒæˆåŠŸï¼Œè¿”å›execution idå’Œstatus------\n")
+                # ½« execution id , flow_idºÍstatus×é×°³É×ÖµäµÄĞÎÊ½²¢·µ»Ø
+                print("------get_e_finial_status(self, scheduler_id)Ö´ĞĞ³É¹¦£¬·µ»Øexecution idºÍstatus------\n")
                 return e_info
             else:
-                # print("æ ¹æ®scheduler id: %s ,æ²¡æœ‰æŸ¥æ‰¾åˆ°execution" % scheduler_id)
+                # print("¸ù¾İscheduler id: %s ,Ã»ÓĞ²éÕÒµ½execution" % scheduler_id)
                 return None
         else:
             return None
 
     def get_execution_info(self):
-        """æ ¹æ®schedulers id æŸ¥è¯¢å‡ºexecution id, name, åˆ›å»ºscheduleråæŸ¥è¯¢executionæœ‰å»¶è¿Ÿï¼Œéœ€è¦åŠ ç­‰å¾…æ—¶é—´"""
-        print("------å¼€å§‹æ‰§è¡Œget_execution_info(self)------\n")
+        """¸ù¾İschedulers id ²éÑ¯³öexecution id, name, ´´½¨schedulerºó²éÑ¯executionÓĞÑÓ³Ù£¬ĞèÒª¼ÓµÈ´ıÊ±¼ä"""
+        print("------¿ªÊ¼Ö´ĞĞget_execution_info(self)------\n")
         scheduler_id_list = self.create_new_scheduler()
         # scheduler_id_list = ["182a8ca9-6540-4cdc-9d6a-3e3583532067","e5c5362a-09d4-4975-b5ab-a5f0ae39c6e6"]
         if scheduler_id_list:
             e_info_list = []
             for scheduler_id in scheduler_id_list:
-                # print('ç¬¬ %d ä¸ª scheduler_id %s  ' % (count, scheduler_id))
-                # ç­‰å¾…40SåæŸ¥è¯¢
+                # print('µÚ %d ¸ö scheduler_id %s  ' % (count, scheduler_id))
+                # µÈ´ı40Sºó²éÑ¯
                 time.sleep(40)
-                # print('è°ƒç”¨get_e_finial_status(scheduler_id)ï¼ŒæŸ¥è¯¢e_info')
-                # è‹¥æ²¡æœ‰æŸ¥åˆ°execution idï¼Œ éœ€è¦å†æ¬¡æŸ¥è¯¢
+                # print('µ÷ÓÃget_e_finial_status(scheduler_id)£¬²éÑ¯e_info')
+                # ÈôÃ»ÓĞ²éµ½execution id£¬ ĞèÒªÔÙ´Î²éÑ¯
                 e_info = self.get_e_finial_status(scheduler_id)
                 e_info_list.append(e_info)
 
-            # print('æŸ¥è¯¢å¾—åˆ°çš„e_info_list', e_info_list)
-            print("------get_execution_info(self)æ‰§è¡Œç»“æŸ------\n")
+            # print('²éÑ¯µÃµ½µÄe_info_list', e_info_list)
+            print("------get_execution_info(self)Ö´ĞĞ½áÊø------\n")
             return e_info_list
         else:
-            print("è¿”å›çš„scheduler_id_listä¸ºç©º", scheduler_id_list)
+            print("·µ»ØµÄscheduler_id_listÎª¿Õ", scheduler_id_list)
             return None
 
     def check_out_put(self):
-        """è·å–executionçš„idå’ŒçŠ¶æ€, æœ€ç»ˆè¿”å›executionæ‰§è¡ŒæˆåŠŸåçš„dataset id """
-        print("------å¼€å§‹æ‰§è¡Œcheck_out_put(self)------\n")
+        """»ñÈ¡executionµÄidºÍ×´Ì¬, ×îÖÕ·µ»ØexecutionÖ´ĞĞ³É¹¦ºóµÄdataset id """
+        print("------¿ªÊ¼Ö´ĞĞcheck_out_put(self)------\n")
         e_info_list = self.get_execution_info()
-        print("------check_out_putä¸­å¾—åˆ°çš„e_info:------\n", type(e_info_list), e_info_list)
-        # è¿”å›çš„len(e_info)å’Œ len(flow_id_list)ç›¸ç­‰æ—¶ï¼Œæ•°æ®æ— ç¼ºå¤±ï¼Œè¿›è¡Œåç»­çš„åˆ¤æ–­
-        # if len(e_info_list) == len(flow_id_list):  # è¡¨è¡Œ-1
-        if len(e_info_list) == len(self.file_flowid_count()):  # ä¸å¡«å…¥è¡¨çš„flowidæ•°ä¸€æ ·
+        print("------check_out_putÖĞµÃµ½µÄe_info:------\n", type(e_info_list), e_info_list)
+        # ·µ»ØµÄlen(e_info)ºÍ len(flow_id_list)ÏàµÈÊ±£¬Êı¾İÎŞÈ±Ê§£¬½øĞĞºóĞøµÄÅĞ¶Ï
+        # if len(e_info_list) == len(flow_id_list):  # ±íĞĞ-1
+        if len(e_info_list) == len(self.file_flowid_count()):  # ÓëÌîÈë±íµÄflowidÊıÒ»Ñù
             sink_dataset_list = []
             for i in range(len(e_info_list)):
                 sink_dataset_dict = {}
@@ -247,87 +248,87 @@ class GetCheckoutDataSet(object):
 
                 sink_dataset_dict["flow_scheduler_id"] = e_scheduler_id
                 if e_id:
-                    print("------å¼€å§‹å¯¹%s è¿›è¡ŒçŠ¶æ€çš„åˆ¤æ–­------\n" % e_id)
+                    print("------¿ªÊ¼¶Ô%s ½øĞĞ×´Ì¬µÄÅĞ¶Ï------\n" % e_id)
                     while e_final_status in ("READY", "RUNNING"):
-                        print("------è¿›å…¥whileå¾ªç¯------\n")
-                        # çŠ¶æ€ä¸º ready æˆ–è€… RUNNINGæ—¶ï¼Œå†æ¬¡æŸ¥è¯¢e_final_status
-                        print("------å¼€å§‹ç­‰å¾…20S------\n")
+                        print("------½øÈëwhileÑ­»·------\n")
+                        # ×´Ì¬Îª ready »òÕß RUNNINGÊ±£¬ÔÙ´Î²éÑ¯e_final_status
+                        print("------¿ªÊ¼µÈ´ı20S------\n")
                         time.sleep(10)
-                        # è°ƒç”¨get_e_finial_status(e_scheduler_id)å†æ¬¡æŸ¥è¯¢çŠ¶æ€
+                        # µ÷ÓÃget_e_finial_status(e_scheduler_id)ÔÙ´Î²éÑ¯×´Ì¬
                         e_info = self.get_e_finial_status(e_scheduler_id)
-                        # å¯¹e_final_status é‡æ–°èµ‹å€¼
+                        # ¶Ôe_final_status ÖØĞÂ¸³Öµ
                         e_final_status = e_info["e_final_status"]
-                        print("------å†æ¬¡æŸ¥è¯¢åçš„e_final_status: %s------\n" %e_final_status)
+                        print("------ÔÙ´Î²éÑ¯ºóµÄe_final_status: %s------\n" %e_final_status)
                         # time.sleep(50)
                     if e_final_status == "FAILED":
-                        print("execution %s æ‰§è¡Œå¤±è´¥" % e_id)
+                        print("execution %s Ö´ĞĞÊ§°Ü" % e_id)
                         sink_dataset_dict["e_final_status"] = e_final_status
                         sink_dataset_dict["o_dataset"] = ""
                         sink_dataset_list.append(sink_dataset_dict)
                         # continue
                     elif e_final_status == "KILLED":
-                        print("execution %s è¢«æ€æ­»" % e_id)
+                        print("execution %s ±»É±ËÀ" % e_id)
                         sink_dataset_dict["e_final_status"] = e_final_status
                         sink_dataset_dict["o_dataset"] = ""
                         sink_dataset_list.append(sink_dataset_dict)
                         # continue
                     elif e_final_status == "SUCCEEDED":
-                        # æˆåŠŸåæŸ¥è¯¢flow_execution_outputè¡¨ä¸­çš„dataset, å³sinkå¯¹åº”çš„è¾“å‡ºdatasetï¼Œå–å‡ºdataset id å¹¶è¿”å›è¯¥IDï¼Œåç»­è°ƒç”¨é¢„è§ˆæ¥å£æŸ¥çœ‹æ•°æ®`
-                        # print("æŸ¥è¯¢data_json_sql:")
+                        # ³É¹¦ºó²éÑ¯flow_execution_output±íÖĞµÄdataset, ¼´sink¶ÔÓ¦µÄÊä³ödataset£¬È¡³ödataset id ²¢·µ»Ø¸ÃID£¬ºóĞøµ÷ÓÃÔ¤ÀÀ½Ó¿Ú²é¿´Êı¾İ`
+                        # print("²éÑ¯data_json_sql:")
                         sink_dataset_dict["e_final_status"] = e_final_status
                         print(e_final_status, e_id)
                         data_json_sql = 'select b.dataset_json from merce_flow_execution as a  LEFT JOIN merce_flow_execution_output as b on a.id = b.execution_id where a.id ="%s"' % e_id
                         print(data_json_sql)
                         data_json = self.ms.ExecuQuery(data_json_sql)
-                        print("æ‰“å°data_json:", data_json)
+                        print("´òÓ¡data_json:", data_json)
                         for n in range(len(data_json)):
-                            sink_dataset = data_json[n]["dataset_json"]  # è¿”å›ç»“æœä¸ºå…ƒç¥–
+                            sink_dataset = data_json[n]["dataset_json"]  # ·µ»Ø½á¹ûÎªÔª×æ
                             print('-----sink_dataset-----', sink_dataset)
                             print('sink_dataset:', sink_dataset)
                             if sink_dataset:
-                                sink_dataset_id = dict_res(sink_dataset)["id"]  # å–å‡ºjsonä¸²ä¸­çš„dataset id
+                                sink_dataset_id = dict_res(sink_dataset)["id"]  # È¡³öjson´®ÖĞµÄdataset id
                                 sink_dataset_dict["o_dataset"] = sink_dataset_id
                                 d = json.loads(json.dumps(sink_dataset_dict))
                                 sink_dataset_list.append(d)
                             else:
                                 continue
 
-                        print('ç¬¬%dæ¬¡çš„sink_dataset_list %s' % (i, sink_dataset_list))
+                        print('µÚ%d´ÎµÄsink_dataset_list %s' % (i, sink_dataset_list))
                     else:
-                        print("è¿”å›çš„execution æ‰§è¡ŒçŠ¶æ€ä¸æ­£ç¡®")
+                        print("·µ»ØµÄexecution Ö´ĞĞ×´Ì¬²»ÕıÈ·")
                         return
                 else:
-                    print("executionä¸å­˜åœ¨")
+                    print("execution²»´æÔÚ")
                     return
-            print('æœ€åè¿”å›çš„sink_dataset_list\n', sink_dataset_list)
-            print("------check_out_put(self)æ‰§è¡Œç»“æŸ------\n")
-            # è°ƒç”¨get_json()æ–¹æ³•è·å–dataset_json
+            print('×îºó·µ»ØµÄsink_dataset_list\n', sink_dataset_list)
+            print("------check_out_put(self)Ö´ĞĞ½áÊø------\n")
+            # µ÷ÓÃget_json()·½·¨»ñÈ¡dataset_json
             return sink_dataset_list
         else:
-            print("è¿”å›çš„scheduler_id_listå€¼ç¼ºå¤±")
+            print("·µ»ØµÄscheduler_id_listÖµÈ±Ê§")
             return
 
     def get_json(self):
-        print("------å¼€å§‹æ‰§è¡Œget_json()------\n")
+        print("------¿ªÊ¼Ö´ĞĞget_json()------\n")
         sink_dataset = self.check_out_put()
-        print('æ‰“å°sink_dataset', sink_dataset)
+        print('´òÓ¡sink_dataset', sink_dataset)
         sink_dataset_json = []
-        # ---ä½¿ç”¨openpyxlå¤„ç†è¡¨æ ¼ 12.26update---
+        # ---Ê¹ÓÃopenpyxl´¦Àí±í¸ñ 12.26update---
         flow_table = load_workbook(abs_dir("flow_dataset_info.xlsx"))
         # info_sheet_names = flow_table.get_sheet_names()
         flow_sheet = flow_table.get_sheet_by_name('flow_info')
-        sheet_rows = flow_sheet.max_row  # è·å–è¡Œæ•°
+        sheet_rows = flow_sheet.max_row  # »ñÈ¡ĞĞÊı
 
-        # é€šè¿‡dataseté¢„è§ˆæ¥å£å–å¾—æ•°æ®çš„é¢„è§ˆjsonä¸² result.text
+        # Í¨¹ıdatasetÔ¤ÀÀ½Ó¿ÚÈ¡µÃÊı¾İµÄÔ¤ÀÀjson´® result.text
         for i in range(0, len(sink_dataset)):
             dataset_id = sink_dataset[i]["o_dataset"]
             print('dataset_id:', dataset_id)
-            # é€šè¿‡dataseté¢„è§ˆæ¥å£ï¼Œè·å–dataset jsonä¸²
+            # Í¨¹ıdatasetÔ¤ÀÀ½Ó¿Ú£¬»ñÈ¡dataset json´®
             priview_url = "%s/api/datasets/%s/preview?rows=5000&tenant=2d7ad891-41c5-4fba-9ff2-03aef3c729e5" % (HOST_189, dataset_id)
             result = requests.get(url=priview_url, headers=get_headers())
-            # print('é¢„è§ˆæ¥å£è¿”å›çš„dataset jsonä¸²', '\n', result.json())
-            # å¦‚æœdataset_idç›¸ç­‰ï¼Œ# å°†output_dataset çš„é¢„è§ˆæ•°æ®jsonä¸²å†™å…¥å®é™…ç»“æœä¸­
-            # æŒ‰ç…§è¡Œæ•°è¿›è¡Œå¾ªç¯
+            print('Ô¤ÀÀ½Ó¿Ú·µ»ØµÄdataset json´®', '\n', result.json())
+            # Èç¹ûdataset_idÏàµÈ£¬# ½«output_dataset µÄÔ¤ÀÀÊı¾İjson´®Ğ´ÈëÊµ¼Ê½á¹ûÖĞ
+            # °´ÕÕĞĞÊı½øĞĞÑ­»·
             for j in range(2, sheet_rows+1):
                 if sink_dataset[i]["flow_id"] == flow_sheet.cell(row=j, column=2).value:
                     # print(sink_dataset[i]["flow_id"])
@@ -339,69 +340,71 @@ class GetCheckoutDataSet(object):
                         if sink_dataset[i]["flow_id"] == flow_sheet.cell(row=t-1, column=2).value:
                             flow_sheet.cell(row=j, column=5, value=sink_dataset[i]["execution_id"])
                             flow_sheet.cell(row=j, column=6, value=sink_dataset[i]["e_final_status"])
-                            # flow_sheet.cell(row=j, column=8, value=result.text)  # å®é™…ç»“æœå†™å…¥è¡¨æ ¼
+                            # flow_sheet.cell(row=j, column=8, value=result.text)  # Êµ¼Ê½á¹ûĞ´Èë±í¸ñ
                             break
-                # å¦‚æœdataset idç›¸ç­‰å°±å†™å…¥ï¼Œä¸ç›¸ç­‰å°±å‘ä¸‹æ‰¾
+                # Èç¹ûdataset idÏàµÈ¾ÍĞ´Èë£¬²»ÏàµÈ¾ÍÏòÏÂÕÒ
                 for n in range(j, sheet_rows+1):
                     if dataset_id == flow_sheet.cell(row=j, column=4).value:
-                        flow_sheet.cell(row=j, column=8, value=result.text)  # dataset id ç›¸ç­‰ï¼Œå®é™…ç»“æœå†™å…¥è¡¨æ ¼
+                        flow_sheet.cell(row=j+1, column=8, value=result.text)  # dataset id ÏàµÈ£¬Êµ¼Ê½á¹ûĞ´Èë±í¸ñ
 
         flow_table.save(abs_dir("flow_dataset_info.xlsx"))
         # copy_table.save(abs_dir("flow_dataset_info.xlsx"))
-        # ---ä½¿ç”¨openpyxlå¤„ç†è¡¨æ ¼ 12.26update---
+        # ---Ê¹ÓÃopenpyxl´¦Àí±í¸ñ 12.26update---
         table = load_workbook(abs_dir("flow_dataset_info.xlsx"))
         table_sheet = table.get_sheet_by_name('flow_info')
         c_rows = table_sheet.max_row
 
-        # mode = overwrite:å®é™…ç»“æœå†™å…¥è¡¨åï¼Œå¯¹æ¯”é¢„æœŸç»“æœå’Œå®é™…ç»“æœ,å¹¶æŠŠå¤±è´¥è¯¦æƒ…å­˜åœ¨ fail_detail
-        print('-----å¼€å§‹å¯¹æ¯”ç»“æœ----')
+        # mode = overwrite:Êµ¼Ê½á¹ûĞ´Èë±íºó£¬¶Ô±ÈÔ¤ÆÚ½á¹ûºÍÊµ¼Ê½á¹û,²¢°ÑÊ§°ÜÏêÇé´æÔÚ fail_detail
+        print('-----¿ªÊ¼¶Ô±È½á¹û----')
         for i in range(2, c_rows+1):
             table_sheet.cell(row=i, column=1, value=i-1)
-            # åˆ¤æ–­modeä¸ºoverwrite
-            if table_sheet.cell(row=i, column=11).value == 'overwrite':  # åˆ¤æ–­mode
-                # å®é™…ç»“æœå­˜åœ¨å¹¶ä¸”æ‰§è¡Œç»“æœä¸ºsucceeded
+            # ÅĞ¶ÏmodeÎªoverwrite
+            if table_sheet.cell(row=i, column=11).value == 'overwrite':  # ÅĞ¶Ïmode
+                # Êµ¼Ê½á¹û´æÔÚ²¢ÇÒÖ´ĞĞ½á¹ûÎªsucceeded
                 if table_sheet.cell(row=i, column=8).value and table_sheet.cell(row=i, column=6).value == "SUCCEEDED":
-                    # va7ä¸ºé¢„æœŸç»“æœï¼Œva8ä¸ºå®é™…ç»“æœï¼Œå°†äºŒè€…å…ˆæ’åºåå¯¹æ¯”æ˜¯å¦ç›¸ç­‰
+                    # va7ÎªÔ¤ÆÚ½á¹û£¬va8ÎªÊµ¼Ê½á¹û£¬½«¶şÕßÏÈÅÅĞòºó¶Ô±ÈÊÇ·ñÏàµÈ
                     va7 = list(eval(table_sheet.cell(row=i, column=7).value))
                     va8 = list(eval(table_sheet.cell(row=i, column=8).value))
                     if va7 != []:
                         va7_k = va7[0].keys()
                         va7_key = list(va7_k)
                         print('va7_key', va7_key)
-                        S_va7 = sorted(va7, key=lambda item: item[va7_key[0]], reverse=True)    # æ²¡æœ‰ idæ—¶å€™çš„æ’åº
+                        S_va7 = sorted(va7, key=lambda item: item[va7_key[0]], reverse=True)    # Ã»ÓĞ idÊ±ºòµÄÅÅĞò
                         S_va8 = sorted(va8, key=lambda item: item[va7_key[0]], reverse=True)
+                        print('flow_id', table_sheet.cell(row=i, column=2).value)
                         print(S_va7, '\n', S_va8)
+                        print('-----¿ªÊ¼¶Ô±È½á¹û2------')
                         if S_va7 == S_va8:
                             table_sheet.cell(row=i, column=9, value="pass")
                             print('test_result:', table_sheet.cell(row=i, column=9).value)
                             table_sheet.cell(row=i, column=10, value="")
                         else:
                             table_sheet.cell(row=i, column=9, value="fail")
-                            table_sheet.cell(row=i, column=10, value="execution: %s é¢„æœŸç»“æœå®é™…ç»“æœä¸ä¸€è‡´ " %
+                            table_sheet.cell(row=i, column=10, value="execution: %s Ô¤ÆÚ½á¹ûÊµ¼Ê½á¹û²»Ò»ÖÂ " %
                                                                      (table_sheet.cell(row=i, column=5).value))
                     elif va7 == [] and va8 == []:
                         table_sheet.cell(row=i, column=9, value="pass")
                     else:
-                        print("é¢„æœŸç»“æœä¸ºç©ºï¼Œæ— æ³•è·å–æ’åºkey")
+                        print("Ô¤ÆÚ½á¹ûÎª¿Õ£¬ÎŞ·¨»ñÈ¡ÅÅĞòkey")
 
                 elif table_sheet.cell(row=i, column=6).value == "FAILED":
                     table_sheet.cell(row=i, column=9, value="fail")
-                    table_sheet.cell(row=i, column=10, value="execution: %s æ‰§è¡ŒçŠ¶æ€ä¸º %s" % (
+                    table_sheet.cell(row=i, column=10, value="execution: %s Ö´ĞĞ×´Ì¬Îª %s" % (
                         table_sheet.cell(row=i, column=5).value, table_sheet.cell(row=i, column=6).value))
                     # else:
-                    # print('execution: %sæ‰§è¡ŒçŠ¶æ€ä¸ºç©ºï¼Œè¯·æ ¸æŸ¥' % table_sheet.cell(i, 3).value)
+                    # print('execution: %sÖ´ĞĞ×´Ì¬Îª¿Õ£¬ÇëºË²é' % table_sheet.cell(i, 3).value)
                     # copy_table.save('flow_dataset_info.xls')
                 else:
                     table_sheet.cell(row=i, column=9, value="fail")
-                    table_sheet.cell(row=i, column=10, value="ç”¨ä¾‹å‚æ•°æˆ–datasetIDå¡«å†™é”™è¯¯")
-            # åˆ¤æ–­modeä¸ºappend
+                    table_sheet.cell(row=i, column=10, value="ÓÃÀı²ÎÊı»òdatasetIDÌîĞ´´íÎó")
+            # ÅĞ¶ÏmodeÎªappend
             elif table_sheet.cell(row=i, column=11).value == 'append':
-                if table_sheet.cell(row=i, column=8).value and table_sheet.cell(row=i, column=6).value == "SUCCEEDED":  # å®é™…ç»“æœå­˜åœ¨
+                if table_sheet.cell(row=i, column=8).value and table_sheet.cell(row=i, column=6).value == "SUCCEEDED":  # Êµ¼Ê½á¹û´æÔÚ
                     expect_result_list = list(eval(table_sheet.cell(row=i, column=7).value))
                     expect_len = len(expect_result_list)
                     actual_result_list = list(eval(table_sheet.cell(row=i, column=8).value))
 
-                    if expect_result_list == actual_result_list[-expect_len:]:  # å®é™…ç»“æœåˆ‡ç‰‡å’Œé¢„æœŸç»“æœé•¿åº¦ä¸€è‡´çš„æ•°æ®ï¼Œåˆ¤æ–­å’Œé¢„æœŸç»“æœæ˜¯å¦ç›¸ç­‰
+                    if expect_result_list == actual_result_list[-expect_len:]:  # Êµ¼Ê½á¹ûÇĞÆ¬ºÍÔ¤ÆÚ½á¹û³¤¶ÈÒ»ÖÂµÄÊı¾İ£¬ÅĞ¶ÏºÍÔ¤ÆÚ½á¹ûÊÇ·ñÏàµÈ
                         # print('expect_result_list:', expect_result_list)
                         # print('actual_result_list:', actual_result_list)
                         # print(expect_result_list == actual_result_list[-expect_len:])
@@ -410,27 +413,27 @@ class GetCheckoutDataSet(object):
                     else:
                         table_sheet.cell(row=i, column=9, value="fail")
                         table_sheet.cell(row=i, column=10,
-                                               value="execution: %s é¢„æœŸç»“æœå®é™…ç»“æœä¸ä¸€è‡´ \né¢„æœŸç»“æœ: %s\nå®é™…ç»“æœ: %s" % (
+                                               value="execution: %s Ô¤ÆÚ½á¹ûÊµ¼Ê½á¹û²»Ò»ÖÂ \nÔ¤ÆÚ½á¹û: %s\nÊµ¼Ê½á¹û: %s" % (
                                                table_sheet.cell(row=i, column=5).value,
                                                table_sheet.cell(row=i, column=7).value,
                                                table_sheet.cell(row=i, column=8).value))
-                elif table_sheet.cell(row=i, column=6).value == "FAILED":  # executionæ‰§è¡Œå¤±è´¥
+                elif table_sheet.cell(row=i, column=6).value == "FAILED":  # executionÖ´ĞĞÊ§°Ü
                     table_sheet.cell(row=i, column=9, value="fail")
                     table_sheet.cell(row=i, column=10,
-                                           value="execution: %s æ‰§è¡ŒçŠ¶æ€ä¸º %s" % (
+                                           value="execution: %s Ö´ĞĞ×´Ì¬Îª %s" % (
                                            table_sheet.cell(row=i, column=5).value, table_sheet.cell(row=i, column=6).value))
                 else:
                     table_sheet.cell(row=i, column=9, value="fail")
-                    table_sheet.cell(row=i, column=10, value="ç”¨ä¾‹å‚æ•°æˆ–datasetIDå¡«å†™é”™è¯¯")
+                    table_sheet.cell(row=i, column=10, value="ÓÃÀı²ÎÊı»òdatasetIDÌîĞ´´íÎó")
 
             else:
                 table_sheet.cell(row=i, column=9, value="fail")
-                table_sheet.cell(row=i, column=10, value="è¯·ç¡®è®¤flowçš„mode")
+                table_sheet.cell(row=i, column=10, value="ÇëÈ·ÈÏflowµÄmode")
         # print(table_sheet.cell(row=2, column=8).value)
         # print(table_sheet.cell(row=2, column=9).value)
         table.save(abs_dir("flow_dataset_info.xlsx"))
 
-        print('ç»“æœä¿å­˜ç»“æŸ')
+        print('½á¹û±£´æ½áÊø')
 
 
 if __name__ == '__main__':
