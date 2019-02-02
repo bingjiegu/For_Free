@@ -345,7 +345,7 @@ class GetCheckoutDataSet(object):
                 # 如果dataset id相等就写入，不相等就向下找
                 for n in range(j, sheet_rows+1):
                     if dataset_id == flow_sheet.cell(row=j, column=4).value:
-                        flow_sheet.cell(row=j+1, column=8, value=result.text)  # dataset id 相等，实际结果写入表格
+                        flow_sheet.cell(row=j, column=8, value=result.text)  # dataset id 相等，实际结果写入表格
 
         flow_table.save(abs_dir("flow_dataset_info.xlsx"))
         # copy_table.save(abs_dir("flow_dataset_info.xlsx"))
@@ -437,8 +437,8 @@ class GetCheckoutDataSet(object):
 
 
 if __name__ == '__main__':
-    GetCheckoutDataSet()
-
+    g =GetCheckoutDataSet()
+    g.get_json()
 
     # threading.Timer(1500, get_headers()).start()
     # g.data_for_create_scheduler()
