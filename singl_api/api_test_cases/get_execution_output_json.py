@@ -50,9 +50,10 @@ class GetCheckoutDataSet(object):
         for flow_id in flowid_count:
             # print('------',flow_id, '--------')
             # print(i, flow_id)
-            # print('flow_id', flow_id)
+            print('flow_id', flow_id)
             try:
                 sql = 'select name, flow_type from merce_flow where id = "%s"' % flow_id
+                print(sql)
                 flow_info = self.ms.ExecuQuery(sql)
                 # print('flow_info:',flow_info)
             except Exception as e:
@@ -60,11 +61,13 @@ class GetCheckoutDataSet(object):
             else:
                 try:
                     flow_name = flow_info[0]["name"]
+                    print('flow_name: ', flow_name)
                     flow_type = flow_info[0]["flow_type"]
                     # print(flow_name, flow_type)
                 except KeyError as e:
                     raise e
-
+                except IndexError as T:
+                    raise T
             data = {
                 "configurations": {
                     "arguments": [],
@@ -322,30 +325,45 @@ class GetCheckoutDataSet(object):
         # 通过dataset预览接口取得数据的预览json串 result.text
         for i in range(0, len(sink_dataset)):
             dataset_id = sink_dataset[i]["o_dataset"]
-            print('dataset_id:', dataset_id)
-            # 通过dataset预览接口，获取dataset json串
-            priview_url = "%s/api/datasets/%s/preview?rows=5000&tenant=2d7ad891-41c5-4fba-9ff2-03aef3c729e5" % (HOST_189, dataset_id)
-            result = requests.get(url=priview_url, headers=get_headers())
-            print('预览接口返回的dataset json串', '\n', result.json())
-            # 如果dataset_id相等，# 将output_dataset 的预览数据json串写入实际结果中
-            # 按照行数进行循环
+                # 如果dataset_id相等，# 将output_dataset 的预览数据json串写入实际结果中
+                # 按照行数进行循环
             for j in range(2, sheet_rows+1):
-                if sink_dataset[i]["flow_id"] == flow_sheet.cell(row=j, column=2).value:
-                    # print(sink_dataset[i]["flow_id"])
-                    flow_sheet.cell(row=j, column=5, value=sink_dataset[i]["execution_id"])
-                    flow_sheet.cell(row=j, column=6, value=sink_dataset[i]["e_final_status"])
+                if dataset_id:
+                    print('dataset_id:', dataset_id)
+                    # 通过dataset预览接口，获取dataset json串
+                    priview_url = "%s/api/datasets/%s/preview?rows=5000&tenant=2d7ad891-41c5-4fba-9ff2-03aef3c729e5" % (
+                    HOST_189, dataset_id)
+                    result = requests.get(url=priview_url, headers=get_headers())
+                    print('预览接口返回的dataset json串', '\n', result.json())
+                    if sink_dataset[i]["flow_id"] == flow_sheet.cell(row=j, column=2).value:
+                        # print(sink_dataset[i]["flow_id"])
+                        flow_sheet.cell(row=j, column=5, value=sink_dataset[i]["execution_id"])
+                        flow_sheet.cell(row=j, column=6, value=sink_dataset[i]["e_final_status"])
 
+                    else:
+                        for t in range(j, 2, -1):
+                            if sink_dataset[i]["flow_id"] == flow_sheet.cell(row=t-1, column=2).value:
+                                flow_sheet.cell(row=j, column=5, value=sink_dataset[i]["execution_id"])
+                                flow_sheet.cell(row=j, column=6, value=sink_dataset[i]["e_final_status"])
+                                # flow_sheet.cell(row=j, column=8, value=result.text)  # 实际结果写入表格
+                                break
+                # 如果dataset id相等就写入实际结果，不相等就向下找
+                    for n in range(j, sheet_rows+1):
+                        if dataset_id == flow_sheet.cell(row=j, column=4).value:
+                            flow_sheet.cell(row=j, column=8, value=result.text)  # dataset id 相等，实际结果写入表格
                 else:
-                    for t in range(j, 2, -1):
-                        if sink_dataset[i]["flow_id"] == flow_sheet.cell(row=t-1, column=2).value:
-                            flow_sheet.cell(row=j, column=5, value=sink_dataset[i]["execution_id"])
-                            flow_sheet.cell(row=j, column=6, value=sink_dataset[i]["e_final_status"])
-                            # flow_sheet.cell(row=j, column=8, value=result.text)  # 实际结果写入表格
-                            break
-                # 如果dataset id相等就写入，不相等就向下找
-                for n in range(j, sheet_rows+1):
-                    if dataset_id == flow_sheet.cell(row=j, column=4).value:
-                        flow_sheet.cell(row=j, column=8, value=result.text)  # dataset id 相等，实际结果写入表格
+                    if sink_dataset[i]["flow_id"] == flow_sheet.cell(row=j, column=2).value:
+                        # print(sink_dataset[i]["flow_id"])
+                        flow_sheet.cell(row=j, column=5, value=sink_dataset[i]["execution_id"])
+                        flow_sheet.cell(row=j, column=6, value=sink_dataset[i]["e_final_status"])
+
+                    else:
+                        for t in range(j, 2, -1):
+                            if sink_dataset[i]["flow_id"] == flow_sheet.cell(row=t - 1, column=2).value:
+                                flow_sheet.cell(row=j, column=5, value=sink_dataset[i]["execution_id"])
+                                flow_sheet.cell(row=j, column=6, value=sink_dataset[i]["e_final_status"])
+                                # flow_sheet.cell(row=j, column=8, value=result.text)  # 实际结果写入表格
+                                break
 
         flow_table.save(abs_dir("flow_dataset_info.xlsx"))
         # copy_table.save(abs_dir("flow_dataset_info.xlsx"))
