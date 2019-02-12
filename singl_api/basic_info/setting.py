@@ -19,29 +19,29 @@ email_to = {
 }
 # ------84环境使用--------
 #  HOST
-HOST_189 = "http://192.168.1.84:8515"
+# HOST_189 = "http://192.168.1.84:8515"
+# # 数据库连接信息
+# MySQL_CONFIG = {
+#     'HOST': '192.168.1.189',
+#     "PORT": 3306,
+#     "USER": 'merce',
+#     "PASSWORD": 'merce',
+#     "DB": 'info4_merce',
+#     'case_db': 'test'
+# }
+
+# -------189环境使用-------
+# HOST
+HOST_189 = "http://192.168.1.189:8515"
 # 数据库连接信息
 MySQL_CONFIG = {
     'HOST': '192.168.1.189',
     "PORT": 3306,
     "USER": 'merce',
     "PASSWORD": 'merce',
-    "DB": 'info4_merce',
+    "DB": 'merce',
     'case_db': 'test'
 }
-
-# -------189环境使用-------
-# HOST
-# HOST_189 = "http://192.168.1.189:8515"
-# 数据库连接信息
-# MySQL_CONFIG = {
-#     'HOST': '192.168.1.189',
-#     "PORT": 3306,
-#     "USER": 'merce',
-#     "PASSWORD": 'merce',
-#     "DB": 'merce',
-#     'case_db': 'test'
-# }
 
 MySQL_CONFIG_85 = {
     'HOST': '192.168.1.85',
