@@ -455,8 +455,8 @@ class GetCheckoutDataSet(object):
 
 
 if __name__ == '__main__':
-    g =GetCheckoutDataSet()
-    g.get_json()
+    GetCheckoutDataSet()
+
 
     # threading.Timer(1500, get_headers()).start()
     # g.data_for_create_scheduler()
