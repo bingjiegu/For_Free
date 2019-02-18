@@ -376,77 +376,107 @@ class GetCheckoutDataSet(object):
         print('-----开始对比结果----')
         for i in range(2, c_rows+1):
             table_sheet.cell(row=i, column=1, value=i-1)
-            # 判断mode为overwrite
-            if table_sheet.cell(row=i, column=11).value == 'overwrite':  # 判断mode
-                # 实际结果存在并且执行结果为succeeded
-                if table_sheet.cell(row=i, column=8).value and table_sheet.cell(row=i, column=6).value == "SUCCEEDED":
-                    # va7为预期结果，va8为实际结果，将二者先排序后对比是否相等
-                    va7 = list(eval(table_sheet.cell(row=i, column=7).value))
-                    va8 = list(eval(table_sheet.cell(row=i, column=8).value))
-                    if va7 != []:
-                        va7_k = va7[0].keys()
-                        va7_key = list(va7_k)
-                        print('va7_key', va7_key)
-                        S_va7 = sorted(va7, key=lambda item: item[va7_key[0]], reverse=True)    # 没有 id时候的排序
-                        S_va8 = sorted(va8, key=lambda item: item[va7_key[0]], reverse=True)
-                        print('flow_id', table_sheet.cell(row=i, column=2).value)
-                        print(S_va7, '\n', S_va8)
-                        print('-----开始对比结果2------')
-                        if S_va7 == S_va8:
-                            table_sheet.cell(row=i, column=9, value="pass")
-                            print('test_result:', table_sheet.cell(row=i, column=9).value)
-                            table_sheet.cell(row=i, column=10, value="")
-                        else:
-                            table_sheet.cell(row=i, column=9, value="fail")
-                            table_sheet.cell(row=i, column=10, value="execution: %s 预期结果实际结果不一致 " %
-                                                                     (table_sheet.cell(row=i, column=5).value))
-                    elif va7 == [] and va8 == []:
+            # 对flow_id = '09296a11-5abf-4af4-a58f-2f14e414db67'的执行结果进行判断
+            if table_sheet.cell(row=i, column=2).value == '09296a11-5abf-4af4-a58f-2f14e414db67':
+                if table_sheet.cell(row=i, column=6).value == 'SUCCEEDED' and table_sheet.cell(row=i, column=8):
+                    new_result = []
+                    expect_result = list(eval(table_sheet.cell(row=i, column=7).value))
+                    actual_result = list(eval(table_sheet.cell(row=i, column=8).value))
+                    for b_item in range(len(expect_result)):
+                        for a_item in range(len(actual_result)):
+                            if actual_result[a_item] == expect_result[b_item]:
+                                new_result.append(actual_result[a_item])
+                    if new_result == actual_result:
                         table_sheet.cell(row=i, column=9, value="pass")
-                    else:
-                        print("预期结果为空，无法获取排序key")
-
-                elif table_sheet.cell(row=i, column=6).value == "FAILED":
-                    table_sheet.cell(row=i, column=9, value="fail")
-                    table_sheet.cell(row=i, column=10, value="execution: %s 执行状态为 %s" % (
-                        table_sheet.cell(row=i, column=5).value, table_sheet.cell(row=i, column=6).value))
-                    # else:
-                    # print('execution: %s执行状态为空，请核查' % table_sheet.cell(i, 3).value)
-                    # copy_table.save('flow_dataset_info.xls')
-                else:
-                    table_sheet.cell(row=i, column=9, value="fail")
-                    table_sheet.cell(row=i, column=10, value="用例参数或datasetID填写错误")
-            # 判断mode为append
-            elif table_sheet.cell(row=i, column=11).value == 'append':
-                if table_sheet.cell(row=i, column=8).value and table_sheet.cell(row=i, column=6).value == "SUCCEEDED":  # 实际结果存在
-                    expect_result_list = list(eval(table_sheet.cell(row=i, column=7).value))
-                    expect_len = len(expect_result_list)
-                    actual_result_list = list(eval(table_sheet.cell(row=i, column=8).value))
-
-                    if expect_result_list == actual_result_list[-expect_len:]:  # 实际结果切片和预期结果长度一致的数据，判断和预期结果是否相等
-                        # print('expect_result_list:', expect_result_list)
-                        # print('actual_result_list:', actual_result_list)
-                        # print(expect_result_list == actual_result_list[-expect_len:])
-                        table_sheet.cell(row=i, column=9, value="pass")
+                        print('test_result:', table_sheet.cell(row=i, column=9).value)
                         table_sheet.cell(row=i, column=10, value="")
                     else:
                         table_sheet.cell(row=i, column=9, value="fail")
-                        table_sheet.cell(row=i, column=10,
-                                               value="execution: %s 预期结果实际结果不一致 \n预期结果: %s\n实际结果: %s" % (
-                                               table_sheet.cell(row=i, column=5).value,
-                                               table_sheet.cell(row=i, column=7).value,
-                                               table_sheet.cell(row=i, column=8).value))
-                elif table_sheet.cell(row=i, column=6).value == "FAILED":  # execution执行失败
+                        table_sheet.cell(row=i, column=10, value="execution: %s 预期结果实际结果不一致 " %
+                                                                 (table_sheet.cell(row=i, column=5).value))
+                elif table_sheet.cell(row=i, column=5).value == 'SUCCEEDED' and table_sheet.cell(row=i, column=8) == "":
                     table_sheet.cell(row=i, column=9, value="fail")
-                    table_sheet.cell(row=i, column=10,
-                                           value="execution: %s 执行状态为 %s" % (
-                                           table_sheet.cell(row=i, column=5).value, table_sheet.cell(row=i, column=6).value))
+                    table_sheet.cell(row=i, column=10, value="execution: %s 预期结果实际结果不一致,实际结果为空 " %
+                                                             (table_sheet.cell(row=i, column=5).value))
+                elif table_sheet.cell(row=i, column=5).value == 'FAILED':
+                    table_sheet.cell(row=i, column=9, value="fail")
+                    table_sheet.cell(row=i, column=10, value="execution: %s 执行状态为 %s" % (
+                        table_sheet.cell(row=i, column=5).value, table_sheet.cell(row=i, column=6).value))
                 else:
-                    table_sheet.cell(row=i, column=9, value="fail")
-                    table_sheet.cell(row=i, column=10, value="用例参数或datasetID填写错误")
+                    print('请确认flow_id: %s的执行状态' % table_sheet.cell(row=i, column=2).value)
 
             else:
-                table_sheet.cell(row=i, column=9, value="fail")
-                table_sheet.cell(row=i, column=10, value="请确认flow的mode")
+                # 判断mode为overwrite
+                if table_sheet.cell(row=i, column=11).value == 'overwrite':  # 判断mode
+                    # 实际结果存在并且执行结果为succeeded
+                    if table_sheet.cell(row=i, column=8).value and table_sheet.cell(row=i, column=6).value == "SUCCEEDED":
+                        # va7为预期结果，va8为实际结果，将二者先排序后对比是否相等
+                        va7 = list(eval(table_sheet.cell(row=i, column=7).value))
+                        va8 = list(eval(table_sheet.cell(row=i, column=8).value))
+                        if va7 != []:
+                            va7_k = va7[0].keys()
+                            va7_key = list(va7_k)
+                            print('va7_key', va7_key)
+                            S_va7 = sorted(va7, key=lambda item: item[va7_key[0]], reverse=True)    # 没有 id时候的排序
+                            S_va8 = sorted(va8, key=lambda item: item[va7_key[0]], reverse=True)
+                            print('flow_id', table_sheet.cell(row=i, column=2).value)
+                            print(S_va7, '\n', S_va8)
+                            print('-----开始对比结果2------')
+                            if S_va7 == S_va8:
+                                table_sheet.cell(row=i, column=9, value="pass")
+                                print('test_result:', table_sheet.cell(row=i, column=9).value)
+                                table_sheet.cell(row=i, column=10, value="")
+                            else:
+                                table_sheet.cell(row=i, column=9, value="fail")
+                                table_sheet.cell(row=i, column=10, value="execution: %s 预期结果实际结果不一致 " %
+                                                                         (table_sheet.cell(row=i, column=5).value))
+                        elif va7 == [] and va8 == []:
+                            table_sheet.cell(row=i, column=9, value="pass")
+                        else:
+                            print("预期结果为空，无法获取排序key")
+
+                    elif table_sheet.cell(row=i, column=6).value == "FAILED":
+                        table_sheet.cell(row=i, column=9, value="fail")
+                        table_sheet.cell(row=i, column=10, value="execution: %s 执行状态为 %s" % (
+                            table_sheet.cell(row=i, column=5).value, table_sheet.cell(row=i, column=6).value))
+                        # else:
+                        # print('execution: %s执行状态为空，请核查' % table_sheet.cell(i, 3).value)
+                        # copy_table.save('flow_dataset_info.xls')
+                    else:
+                        table_sheet.cell(row=i, column=9, value="fail")
+                        table_sheet.cell(row=i, column=10, value="用例参数或datasetID填写错误")
+                # 判断mode为append
+                elif table_sheet.cell(row=i, column=11).value == 'append':
+                    if table_sheet.cell(row=i, column=8).value and table_sheet.cell(row=i, column=6).value == "SUCCEEDED":  # 实际结果存在
+                        expect_result_list = list(eval(table_sheet.cell(row=i, column=7).value))
+                        expect_len = len(expect_result_list)
+                        actual_result_list = list(eval(table_sheet.cell(row=i, column=8).value))
+
+                        if expect_result_list == actual_result_list[-expect_len:]:  # 实际结果切片和预期结果长度一致的数据，判断和预期结果是否相等
+                            # print('expect_result_list:', expect_result_list)
+                            # print('actual_result_list:', actual_result_list)
+                            # print(expect_result_list == actual_result_list[-expect_len:])
+                            table_sheet.cell(row=i, column=9, value="pass")
+                            table_sheet.cell(row=i, column=10, value="")
+                        else:
+                            table_sheet.cell(row=i, column=9, value="fail")
+                            table_sheet.cell(row=i, column=10,
+                                                   value="execution: %s 预期结果实际结果不一致 \n预期结果: %s\n实际结果: %s" % (
+                                                   table_sheet.cell(row=i, column=5).value,
+                                                   table_sheet.cell(row=i, column=7).value,
+                                                   table_sheet.cell(row=i, column=8).value))
+                    elif table_sheet.cell(row=i, column=6).value == "FAILED":  # execution执行失败
+                        table_sheet.cell(row=i, column=9, value="fail")
+                        table_sheet.cell(row=i, column=10,
+                                               value="execution: %s 执行状态为 %s" % (
+                                               table_sheet.cell(row=i, column=5).value, table_sheet.cell(row=i, column=6).value))
+                    else:
+                        table_sheet.cell(row=i, column=9, value="fail")
+                        table_sheet.cell(row=i, column=10, value="用例参数或datasetID填写错误")
+
+                else:
+                    table_sheet.cell(row=i, column=9, value="fail")
+                    table_sheet.cell(row=i, column=10, value="请确认flow的mode")
         # print(table_sheet.cell(row=2, column=8).value)
         # print(table_sheet.cell(row=2, column=9).value)
         table.save(abs_dir("flow_dataset_info.xlsx"))
@@ -456,6 +486,7 @@ class GetCheckoutDataSet(object):
 
 if __name__ == '__main__':
     GetCheckoutDataSet()
+
 
 
     # threading.Timer(1500, get_headers()).start()
