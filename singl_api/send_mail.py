@@ -12,7 +12,7 @@ from smtplib import SMTP_SSL
 from openpyxl import load_workbook
 from api_test_cases.get_execution_output_json import abs_dir, GetCheckoutDataSet
 import xlrd
-from run import start_time, stop_time
+
 
 
 def sendEmail(content, title, from_name, from_address, to_address, serverport, serverip, username, password):
@@ -76,6 +76,7 @@ def main2():
 
 # 使用该方法发送邮件
 def main3(report_path):
+
     # 163邮箱smtp服务器
     host_server = "smtp.163.com"
     # sender_163为发件人的163邮箱
@@ -85,8 +86,8 @@ def main3(report_path):
     # 发件人的邮箱
     sender_163_mail = "ruifan_test@163.com"
     # 收件人邮箱
-    receivers = ['bingjie.gu@inforefiner.com', 'zhiming.wang@inforefiner.com', 'yuan.peng@inforefiner.com', 'anchong.wang@inforefiner.com', 'qian.feng@inforefiner.com'] # 定时任务使用
-    # receivers = ['bingjie.gu@inforefiner.com']  # 调试使用
+    # receivers = ['bingjie.gu@inforefiner.com', 'zhiming.wang@inforefiner.com', 'yuan.peng@inforefiner.com', 'anchong.wang@inforefiner.com', 'qian.feng@inforefiner.com'] # 定时任务使用
+    receivers = ['bingjie.gu@inforefiner.com']  # 调试使用
     msg = MIMEMultipart()
     # 邮件的正文内容
     # f = xlrd.open_workbook("./api_test_cases/flow_dataset_info.xls")
@@ -140,17 +141,26 @@ def main3(report_path):
     # print('去重后len(failed_flow_s:', len(failed_flow_s))
     # 邮件的正文内容
     filename = time.strftime("%Y%m%d%H", time.localtime()) + '_report.html'
+    # if len(failed_flow_s) > 0:
+    #     mail_content = '\n各位好:'+'\n' + '\n' + \
+    #                 '非execution的测试用例测试结果请参考附件<<%s>>' % filename + '\n'\
+    #                 + ' execution执行相关测试场景共 %d 个\n\n执行开始时间：%s\n执行结束时间：%s\n耗时: %s\n\n成功%d个, 失败 %d个\n\n成功的flow id为 %s\n\n失败的flow id为 %s\n\n失败原因为： ' \
+    #                    % (total, len(succeed_flow_s), len(failed_flow_s), start_time, stop_time, stop_time - start_time,succeed_flow_s, failed_flow_s) + detail_msg
+    # else:
+    #     mail_content = '\n各位好:' + '\n' + \
+    #                    '非execution的测试用例测试结果请参考附件<<%s>>' % filename + '\n' \
+    #                + ' execution执行相关测试场景共 %d 个\n\n执行开始时间：%s\n执行结束时间：%s\n耗时: %s\n\n成功%d个, 失败 %d个\n\n成功的flow id为 %s' \
+    #                % (total, start_time, stop_time, stop_time - start_time,len(succeed_flow_s), len(failed_flow_s), succeed_flow_s)
     if len(failed_flow_s) > 0:
         mail_content = '\n各位好:'+'\n' + '\n' + \
                     '非execution的测试用例测试结果请参考附件<<%s>>' % filename + '\n'\
-                    + ' execution执行相关测试场景共 %d 个\n\n执行开始时间：%s\n执行结束时间：%s\n耗时: %s\n\n成功%d个, 失败 %d个\n\n成功的flow id为 %s\n\n失败的flow id为 %s\n\n失败原因为： ' \
-                       % (total, len(succeed_flow_s), len(failed_flow_s), start_time, stop_time, stop_time - start_time,succeed_flow_s, failed_flow_s) + detail_msg
+                    + ' execution执行相关测试场景共 %d 个\n\n成功%d个, 失败 %d个\n\n成功的flow id为 %s\n\n失败的flow id为 %s\n\n失败原因为： ' \
+                       % (total, len(succeed_flow_s), len(failed_flow_s),succeed_flow_s, failed_flow_s) + detail_msg
     else:
         mail_content = '\n各位好:' + '\n' + \
                        '非execution的测试用例测试结果请参考附件<<%s>>' % filename + '\n' \
-                   + ' execution执行相关测试场景共 %d 个\n\n执行开始时间：%s\n执行结束时间：%s\n耗时: %s\n\n成功%d个, 失败 %d个\n\n成功的flow id为 %s' \
-                   % (total, start_time, stop_time, stop_time - start_time,len(succeed_flow_s), len(failed_flow_s), succeed_flow_s)
-
+                   + ' execution执行相关测试场景共 %d 个\n\n成功%d个, 失败 %d个\n\n成功的flow id为 %s' \
+                   % (total, len(succeed_flow_s), len(failed_flow_s), succeed_flow_s)
     # print(mail_content)
     # 邮件标题
     mail_title = 'BayMax API自动化测试报告'
