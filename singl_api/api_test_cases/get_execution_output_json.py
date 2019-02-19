@@ -281,13 +281,13 @@ class GetCheckoutDataSet(object):
                         sink_dataset_dict["e_final_status"] = e_final_status
                         print(e_final_status, e_id)
                         data_json_sql = 'select b.dataset_json from merce_flow_execution as a  LEFT JOIN merce_flow_execution_output as b on a.id = b.execution_id where a.id ="%s"' % e_id
-                        print(data_json_sql)
+                        # print(data_json_sql)
                         data_json = self.ms.ExecuQuery(data_json_sql)
-                        print("打印data_json:", data_json)
+                        # print("打印data_json:", data_json)
                         for n in range(len(data_json)):
                             sink_dataset = data_json[n]["dataset_json"]  # 返回结果为元祖
                             print('-----sink_dataset-----', sink_dataset)
-                            print('sink_dataset:', sink_dataset)
+                            # print('sink_dataset:', sink_dataset)
                             if sink_dataset:
                                 sink_dataset_id = dict_res(sink_dataset)["id"]  # 取出json串中的dataset id
                                 sink_dataset_dict["o_dataset"] = sink_dataset_id
@@ -328,13 +328,20 @@ class GetCheckoutDataSet(object):
                 # 如果dataset_id相等，# 将output_dataset 的预览数据json串写入实际结果中
                 # 按照行数进行循环
             for j in range(2, sheet_rows+1):
+                # 第一步:清空上次的测试结果
+                flow_sheet.cell(row=j, column=5, value='')
+                flow_sheet.cell(row=j, column=6, value='')
+                flow_sheet.cell(row=j, column=8, value='')
+                flow_sheet.cell(row=j, column=9, value='')
+                flow_sheet.cell(row=j, column=10, value='')
+                # 第二步：判断dataset id是否存在，存在则取回预览结果并找到表中相等的dataset id，写入预览结果
                 if dataset_id:
                     print('dataset_id:', dataset_id)
                     # 通过dataset预览接口，获取dataset json串
                     priview_url = "%s/api/datasets/%s/preview?rows=5000&tenant=2d7ad891-41c5-4fba-9ff2-03aef3c729e5" % (
                     HOST_189, dataset_id)
                     result = requests.get(url=priview_url, headers=get_headers())
-                    print('预览接口返回的dataset json串', '\n', result.json())
+                    # print('预览接口返回的dataset json串', '\n', result.json())
                     if sink_dataset[i]["flow_id"] == flow_sheet.cell(row=j, column=2).value:
                         # print(sink_dataset[i]["flow_id"])
                         flow_sheet.cell(row=j, column=5, value=sink_dataset[i]["execution_id"])
@@ -416,12 +423,12 @@ class GetCheckoutDataSet(object):
                         if va7 != []:
                             va7_k = va7[0].keys()
                             va7_key = list(va7_k)
-                            print('va7_key', va7_key)
+                            # print('va7_key', va7_key)
                             S_va7 = sorted(va7, key=lambda item: item[va7_key[0]], reverse=True)    # 没有 id时候的排序
                             S_va8 = sorted(va8, key=lambda item: item[va7_key[0]], reverse=True)
-                            print('flow_id', table_sheet.cell(row=i, column=2).value)
-                            print(S_va7, '\n', S_va8)
-                            print('-----开始对比结果2------')
+                            # print('flow_id', table_sheet.cell(row=i, column=2).value)
+                            # print(S_va7, '\n', S_va8)
+                            print('-----确认结果------')
                             if S_va7 == S_va8:
                                 table_sheet.cell(row=i, column=9, value="pass")
                                 print('test_result:', table_sheet.cell(row=i, column=9).value)
