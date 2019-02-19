@@ -5,6 +5,7 @@ from send_mail import main2, main3
 from basic_info.get_auth_token import get_headers
 from api_test_cases.get_execution_output_json import GetCheckoutDataSet
 import threading
+import datetime
 # from newSuite import NewSuite
 
 testcase = unittest.TestSuite()
@@ -18,14 +19,21 @@ filename = time.strftime("%Y%m%d%H", time.localtime()) + '_report.html'
 report_path = 'E:\Reports\\' + filename
 fp = open(report_path, 'wb')
 runner = HTMLTestRunner.HTMLTestRunner(stream=fp, title='API自动化测试报告', description='覆盖dataset,schema,schedulers,execution等测试场景')
+print('开始执行自动化脚本')
+start_time = datetime.datetime.now()
 runner.run(testcase)
 fp.close()
-
+print('自动化脚本执行结束，开始执行flow用例')
 # 需要执行的脚本
 obj = GetCheckoutDataSet()
 sink_dataet_json = obj.get_json()
+stop_time = datetime.datetime.now()
+print('耗时:', stop_time-start_time)
 main3(report_path=report_path)
 threading.Timer(1500, get_headers()).start()
+print('重新发送一次TOKEN')
+
+
 
 
 
