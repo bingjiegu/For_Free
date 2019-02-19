@@ -49,7 +49,6 @@ class CasesForRule(unittest.TestCase):
 
 class QueryRule(unittest.TestCase):
     from basic_info.url_info import rule_query_url
-
     def test_query_rule_all(self):
         """查询全部规则"""
         data = {
@@ -149,15 +148,18 @@ class QueryRule(unittest.TestCase):
                 }
         response = requests.post(url=self.rule_query_url, headers=get_headers(), json=data)
         # print(response.status_code, response.json())
-        self.assertEqual(200, response.status_code, 'SQL规则查询失败')
+        self.assertEqual(200, response.status_code, '按照修改时间查询规则失败')
         if response.json()["totalElements"]:
-            self.assertIsNotNone(response.json()["content"], 'SQL规则查询结果为空')
+            self.assertIsNotNone(response.json()["content"], '按照修改时间查询规则结果为空')
         contents = response.json()["content"]
         # print(contents,'\n' , type(contents))
+        count = 0
         for content in contents:
             # print(content["lastModifiedTime"])
-            self.assertGreaterEqual(content["lastModifiedTime"], begin_time, '按照lastModifiedTime查询规则时，返回的查询结果中，lastModifiedTime未包含在查询时间段内')
-            self.assertGreaterEqual(end_time, content["lastModifiedTime"], '按照lastModifiedTime查询规则时，返回的查询结果中，lastModifiedTime未包含在查询时间段内')
+            count += 1
+            print(count, content["lastModifiedTime"], content["lastModifiedTime"])
+            self.assertGreaterEqual(content["lastModifiedTime"], begin_time, '按照lastModifiedTime查询规则时，返回的查询结果中，lastModifiedTime不大于开始时间')
+            self.assertGreaterEqual(end_time, content["lastModifiedTime"], '按照lastModifiedTime查询规则时，返回的查询结果中，lastModifiedTime不小于结束时间')
 
     def test_query_rule_NumberType_Any(self):
         """根据数据类型_Any查询规则"""
