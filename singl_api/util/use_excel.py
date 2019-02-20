@@ -2,7 +2,8 @@ import xlrd, xlwt
 from openpyxl import workbook
 from openpyxl import load_workbook
 from xlutils.copy import copy
-
+import os
+abs_dir = lambda n: os.path.abspath(os.path.join(os.path.dirname(__file__), n))
 
 # 设置表格样式
 def set_style(name, height, bold=False):
@@ -86,5 +87,39 @@ def openpyxl_read():
     print(flow_info.cell(row=1, column=3).value, rows, columns)
     print(flow_info.cell(row=2, column=12).value)
 
+
+def get_value():
+    table = load_workbook(abs_dir("flow_dataset_info.xlsx"))
+    table_sheet = table.get_sheet_by_name('flow_info')
+    c_rows = table_sheet.max_row
+
+    # mode = overwrite:实际结果写入表后，对比预期结果和实际结果,并把失败详情存在 fail_detail
+    print('-----开始对比结果----')
+
+
+    va7 = list(eval(table_sheet.cell(row=11, column=7).value))
+    va8 = list(eval(table_sheet.cell(row=11, column=8).value))
+    print(va7)
+    print(va8)
+    S_va7 = sorted(va7, key=lambda item: item["id"], reverse=True)
+    S_va8 = sorted(va8, key=lambda item: item["id"], reverse=True)
+    print(S_va7==S_va8)
+    print(S_va8)
+
+
+    # s_va7 = sorted(va7, key=lambda item: item[-1], reverse=True)
+    # print(s_va7)
+
+    # for i in range(2, c_rows+1):
+    #     table_sheet.cell(row=i, column=1, value=i-1)
+    #     if table_sheet.cell(row=i, column=11).value == 'overwrite':  # 判断mode
+    # # 实际结果存在
+    #         if table_sheet.cell(row=i, column=8).value and table_sheet.cell(row=i, column=6).value == "SUCCEEDED":
+    #             # 实际结果和预期结果相等
+    #             if table_sheet.cell(row=i, column=7).value == table_sheet.cell(row=i, column=8).value:
+    #                 table_sheet.cell(row=i, column=9, value="pass")
+    #                 print('test_result:', table_sheet.cell(row=i, column=9).value)
+    #                 table_sheet.cell(row=i, column=10, value="")
+
 if __name__ == '__main__':
-    print(openpyxl_read())
+    print(get_value())
