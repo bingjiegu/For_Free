@@ -10,6 +10,7 @@ from openpyxl import load_workbook
 from xlutils.copy import copy
 import json
 import os,threading
+import datetime
 abs_dir = lambda n: os.path.abspath(os.path.join(os.path.dirname(__file__), n))
 
 
@@ -255,7 +256,7 @@ class GetCheckoutDataSet(object):
                     while e_final_status in ("READY", "RUNNING"):
                         print("------进入while循环------\n")
                         # 状态为 ready 或者 RUNNING时，再次查询e_final_status
-                        print("------开始等待20S------\n")
+                        print("------开始等待10S------\n")
                         time.sleep(10)
                         # 调用get_e_finial_status(e_scheduler_id)再次查询状态
                         e_info = self.get_e_finial_status(e_scheduler_id)
@@ -327,50 +328,36 @@ class GetCheckoutDataSet(object):
             dataset_id = sink_dataset[i]["o_dataset"]
                 # 如果dataset_id相等，# 将output_dataset 的预览数据json串写入实际结果中
                 # 按照行数进行循环
-            for j in range(2, sheet_rows+1):
-                # 第一步:清空上次的测试结果
-                flow_sheet.cell(row=j, column=5, value='')
-                flow_sheet.cell(row=j, column=6, value='')
-                flow_sheet.cell(row=j, column=8, value='')
-                flow_sheet.cell(row=j, column=9, value='')
-                flow_sheet.cell(row=j, column=10, value='')
-                # 第二步：判断dataset id是否存在，存在则取回预览结果并找到表中相等的dataset id，写入预览结果
-                if dataset_id:
-                    print('dataset_id:', dataset_id)
-                    # 通过dataset预览接口，获取dataset json串
-                    priview_url = "%s/api/datasets/%s/preview?rows=5000&tenant=2d7ad891-41c5-4fba-9ff2-03aef3c729e5" % (
-                    HOST_189, dataset_id)
-                    result = requests.get(url=priview_url, headers=get_headers())
-                    # print('预览接口返回的dataset json串', '\n', result.json())
-                    if sink_dataset[i]["flow_id"] == flow_sheet.cell(row=j, column=2).value:
-                        # print(sink_dataset[i]["flow_id"])
-                        flow_sheet.cell(row=j, column=5, value=sink_dataset[i]["execution_id"])
-                        flow_sheet.cell(row=j, column=6, value=sink_dataset[i]["e_final_status"])
 
-                    else:
-                        for t in range(j, 2, -1):
-                            if sink_dataset[i]["flow_id"] == flow_sheet.cell(row=t-1, column=2).value:
-                                flow_sheet.cell(row=j, column=5, value=sink_dataset[i]["execution_id"])
-                                flow_sheet.cell(row=j, column=6, value=sink_dataset[i]["e_final_status"])
-                                # flow_sheet.cell(row=j, column=8, value=result.text)  # 实际结果写入表格
-                                break
+            # 第二步：判断dataset id是否存在，存在则取回预览结果并找到表中相等的dataset id，写入预览结果
+            print('dataset_id: ', dataset_id)
+            for j in range(2, sheet_rows + 1):
+                # print('dataset_id:', dataset_id)
+                # 通过dataset预览接口，获取dataset json串
+                priview_url = "%s/api/datasets/%s/preview?rows=5000&tenant=2d7ad891-41c5-4fba-9ff2-03aef3c729e5" % (
+                HOST_189, dataset_id)
+                result = requests.get(url=priview_url, headers=get_headers())
+                # print('预览接口返回的dataset json串', '\n', result.json())
                 # 如果dataset id相等就写入实际结果，不相等就向下找
-                    for n in range(j, sheet_rows+1):
-                        if dataset_id == flow_sheet.cell(row=j, column=4).value:
-                            flow_sheet.cell(row=j, column=8, value=result.text)  # dataset id 相等，实际结果写入表格
-                else:
-                    if sink_dataset[i]["flow_id"] == flow_sheet.cell(row=j, column=2).value:
-                        # print(sink_dataset[i]["flow_id"])
-                        flow_sheet.cell(row=j, column=5, value=sink_dataset[i]["execution_id"])
-                        flow_sheet.cell(row=j, column=6, value=sink_dataset[i]["e_final_status"])
+                # if dataset_id:
+                    # for n in range(j, sheet_rows+1):
+                if dataset_id == flow_sheet.cell(row=j, column=4).value:
+                    flow_sheet.cell(row=j, column=8, value=result.text)  # dataset id 相等，实际结果写入表格
+                # flow id 相等时，将execution id 和执行状态写入
+                if sink_dataset[i]["flow_id"] == flow_sheet.cell(row=j, column=2).value:
+                    # print(sink_dataset[i]["flow_id"])
+                    flow_sheet.cell(row=j, column=5, value=sink_dataset[i]["execution_id"])
+                    flow_sheet.cell(row=j, column=6, value=sink_dataset[i]["e_final_status"])
 
-                    else:
-                        for t in range(j, 2, -1):
-                            if sink_dataset[i]["flow_id"] == flow_sheet.cell(row=t - 1, column=2).value:
-                                flow_sheet.cell(row=j, column=5, value=sink_dataset[i]["execution_id"])
-                                flow_sheet.cell(row=j, column=6, value=sink_dataset[i]["e_final_status"])
-                                # flow_sheet.cell(row=j, column=8, value=result.text)  # 实际结果写入表格
-                                break
+                else:
+                    for t in range(j, 2, -1):
+                        if sink_dataset[i]["flow_id"] == flow_sheet.cell(row=t-1, column=2).value:
+                            flow_sheet.cell(row=j, column=5, value=sink_dataset[i]["execution_id"])
+                            flow_sheet.cell(row=j, column=6, value=sink_dataset[i]["e_final_status"])
+                            # flow_sheet.cell(row=j, column=8, value=result.text)  # 实际结果写入表格
+                            break
+            else:
+                print('请确认flow id = %s 的dataset id' % sink_dataset[i]["flow_id"])
 
         flow_table.save(abs_dir("flow_dataset_info.xlsx"))
         # copy_table.save(abs_dir("flow_dataset_info.xlsx"))
@@ -419,8 +406,8 @@ class GetCheckoutDataSet(object):
                     if table_sheet.cell(row=i, column=8).value and table_sheet.cell(row=i, column=6).value == "SUCCEEDED":
                         # va7为预期结果，va8为实际结果，将二者先排序后对比是否相等
                         va7 = list(eval(table_sheet.cell(row=i, column=7).value))
-                        va8 = list(eval(table_sheet.cell(row=i, column=8).value))
-                        if va7 != []:
+                        if eval(table_sheet.cell(row=i, column=8).value).__class__ == [].__class__ :
+                            va8 = list(eval(table_sheet.cell(row=i, column=8).value))
                             va7_k = va7[0].keys()
                             va7_key = list(va7_k)
                             # print('va7_key', va7_key)
@@ -437,11 +424,8 @@ class GetCheckoutDataSet(object):
                                 table_sheet.cell(row=i, column=9, value="fail")
                                 table_sheet.cell(row=i, column=10, value="execution: %s 预期结果实际结果不一致 " %
                                                                          (table_sheet.cell(row=i, column=5).value))
-                        elif va7 == [] and va8 == []:
-                            table_sheet.cell(row=i, column=9, value="pass")
                         else:
-                            print("预期结果为空，无法获取排序key")
-
+                            pass
                     elif table_sheet.cell(row=i, column=6).value == "FAILED":
                         table_sheet.cell(row=i, column=9, value="fail")
                         table_sheet.cell(row=i, column=10, value="execution: %s 执行状态为 %s" % (
@@ -493,7 +477,13 @@ class GetCheckoutDataSet(object):
 
 if __name__ == '__main__':
     GetCheckoutDataSet()
-
+    # begin_time = datetime.datetime.now()
+    # print('begin_time:', begin_time)
+    # g = GetCheckoutDataSet()
+    # g.get_json()
+    # end_time = datetime.datetime.now()
+    # print('end_time:', end_time)
+    # print('此次执行耗时：', end_time-begin_time)
 
 
     # threading.Timer(1500, get_headers()).start()
