@@ -53,7 +53,7 @@ class GetCheckoutDataSet(object):
             # print(i, flow_id)
             print('flow_id', flow_id)
             try:
-                sql = 'select name, flow_type from merce_flow where id = "%s"' % flow_id
+                sql = 'select name, flow_type, parameters from merce_flow where id = "%s"' % flow_id
                 print(sql)
                 flow_info = self.ms.ExecuQuery(sql)
                 # print('flow_info:',flow_info)
@@ -64,14 +64,25 @@ class GetCheckoutDataSet(object):
                     flow_name = flow_info[0]["name"]
                     print('flow_name: ', flow_name)
                     flow_type = flow_info[0]["flow_type"]
-                    # print(flow_name, flow_type)
+                    flow_parameters = flow_info[0]["parameters"]
+                    flow_parameters_list = dict_res(flow_parameters)
+                    arguments = {}
+                    if flow_parameters_list != []:
+                        arguments["name"] = flow_parameters_list[0]["name"]
+                        arguments["category"] = flow_parameters_list[0]["category"]
+                        arguments["value"] = flow_parameters_list[0]["defaultVal"]
+                        arguments["refs"] = flow_parameters_list[0]["refs"]
+                        arguments["description"] = flow_parameters_list[0]["description"]
+                        print('arguments:', arguments)
+
                 except KeyError as e:
                     raise e
                 except IndexError as T:
                     raise T
+
             data = {
                 "configurations": {
-                    "arguments": [],
+                    "arguments": arguments,
                     "properties": [
                         {
                             "name": "all.debug",
@@ -139,25 +150,29 @@ class GetCheckoutDataSet(object):
                 "flowId": flow_id,
                 "flowName": flow_name,
                 "flowType": flow_type,
-                "name": "students_flow" + str(random.randint(0, 9999))+str(random.randint(0, 9999)),
+                "name": flow_name + 'scheduler' + str(random.randint(0, 9999))+str(random.randint(0, 9999)),
                 "schedulerId": "once",
                 "source": "rhinos"
             }
 
             data_list.append(data)
-        # print(len(data_list))
         print("------data_for_create_scheduler(self)执行结束------\n")
-        print(len(data_list))
         return data_list
 
     def create_new_scheduler(self):
-        """该方法使用data_for_create_scheduler()返回的data_list批量创建scheduler，并返回scheduler_id_list"""
+        """
+        该方法使用data_for_create_scheduler()返回的data_list批量创建scheduler，
+        并返回scheduler_id_list， 供get_execution_info(self)调用
+        """
         print("------开始执行create_new_scheduler(self)------\n")
         from basic_info.url_info import create_scheduler_url
         scheduler_id_list = []
+        scheduler_number = 1
         for data in self.data_for_create_scheduler():
-            time.sleep(30)
             res = requests.post(url=create_scheduler_url, headers=get_headers(), json=data)
+            print('第%d 个scheduler' % scheduler_number)
+            scheduler_number += 1
+            time.sleep(20)
             print(res.status_code, res.text)
             if res.status_code == 201 and res.text:
                 scheduler_id_format = dict_res(res.text)
@@ -171,7 +186,34 @@ class GetCheckoutDataSet(object):
                 print("flow: %s scheduler创建失败" % data["flowid"])
                 # return None
         print("------create_new_scheduler(self)执行结束, 返回scheduler_id_list------\n")
+        print('scheduler_id_list', scheduler_id_list)
         return scheduler_id_list
+
+    def get_execution_info(self):
+        """
+        根据schedulers id 查询出execution id, name,
+        创建scheduler后查询execution有延迟，需要加等待时间
+        """
+        print("------开始执行get_execution_info(self)------\n")
+        scheduler_id_list = self.create_new_scheduler()
+        if scheduler_id_list:
+            e_info_list = []
+            for scheduler_id in scheduler_id_list:
+                # print('第 %d 个 scheduler_id %s  ' % (count, scheduler_id))
+                # 等待20S后查询
+                time.sleep(40)
+                # print('调用get_e_finial_status(scheduler_id)，查询e_info')
+                # 若没有查到execution id， 需要再次查询
+                e_info = self.get_e_finial_status(scheduler_id)
+                e_info_list.append(e_info)
+
+            # print('查询得到的e_info_list', e_info_list)
+            print("------get_execution_info(self)执行结束------\n")
+            print('e_info_list:', e_info_list)
+            return e_info_list
+        else:
+            print("返回的scheduler_id_list为空", scheduler_id_list)
+            return None
 
     def get_e_finial_status(self, scheduler_id):
         """ 根据get_execution_info(self)返回的scheduler  id, 查询该scheduler的execution 状态"""
@@ -209,29 +251,6 @@ class GetCheckoutDataSet(object):
         else:
             return None
 
-    def get_execution_info(self):
-        """根据schedulers id 查询出execution id, name, 创建scheduler后查询execution有延迟，需要加等待时间"""
-        print("------开始执行get_execution_info(self)------\n")
-        scheduler_id_list = self.create_new_scheduler()
-        # scheduler_id_list = ["182a8ca9-6540-4cdc-9d6a-3e3583532067","e5c5362a-09d4-4975-b5ab-a5f0ae39c6e6"]
-        if scheduler_id_list:
-            e_info_list = []
-            for scheduler_id in scheduler_id_list:
-                # print('第 %d 个 scheduler_id %s  ' % (count, scheduler_id))
-                # 等待40S后查询
-                time.sleep(40)
-                # print('调用get_e_finial_status(scheduler_id)，查询e_info')
-                # 若没有查到execution id， 需要再次查询
-                e_info = self.get_e_finial_status(scheduler_id)
-                e_info_list.append(e_info)
-
-            # print('查询得到的e_info_list', e_info_list)
-            print("------get_execution_info(self)执行结束------\n")
-            return e_info_list
-        else:
-            print("返回的scheduler_id_list为空", scheduler_id_list)
-            return None
-
     def check_out_put(self):
         """获取execution的id和状态, 最终返回execution执行成功后的dataset id """
         print("------开始执行check_out_put(self)------\n")
@@ -242,6 +261,7 @@ class GetCheckoutDataSet(object):
         if len(e_info_list) == len(self.file_flowid_count()):  # 与填入表的flowid数一样
             sink_dataset_list = []
             for i in range(len(e_info_list)):
+                print('e_info_list', e_info_list)
                 sink_dataset_dict = {}
                 e_id = e_info_list[i]["e_id"]
                 e_final_status = e_info_list[i]["e_final_status"]
@@ -326,12 +346,9 @@ class GetCheckoutDataSet(object):
         # 通过dataset预览接口取得数据的预览json串 result.text
         for i in range(0, len(sink_dataset)):
             dataset_id = sink_dataset[i]["o_dataset"]
-                # 如果dataset_id相等，# 将output_dataset 的预览数据json串写入实际结果中
-                # 按照行数进行循环
-
             # 第二步：判断dataset id是否存在，存在则取回预览结果并找到表中相等的dataset id，写入预览结果
-            print('dataset_id: ', dataset_id)
-            for j in range(2, sheet_rows + 1):
+            # print('dataset_id: ', dataset_id)
+            for j in range(2, sheet_rows + 1):  # 按照行数进行循环
                 # print('dataset_id:', dataset_id)
                 # 通过dataset预览接口，获取dataset json串
                 priview_url = "%s/api/datasets/%s/preview?rows=5000&tenant=2d7ad891-41c5-4fba-9ff2-03aef3c729e5" % (
@@ -356,8 +373,8 @@ class GetCheckoutDataSet(object):
                             flow_sheet.cell(row=j, column=6, value=sink_dataset[i]["e_final_status"])
                             # flow_sheet.cell(row=j, column=8, value=result.text)  # 实际结果写入表格
                             break
-            else:
-                print('请确认flow id = %s 的dataset id' % sink_dataset[i]["flow_id"])
+            # else:
+            #     print('请确认flow id = %s 的dataset id' % sink_dataset[i]["flow_id"])
 
         flow_table.save(abs_dir("flow_dataset_info.xlsx"))
         # copy_table.save(abs_dir("flow_dataset_info.xlsx"))
@@ -370,8 +387,8 @@ class GetCheckoutDataSet(object):
         print('-----开始对比结果----')
         for i in range(2, c_rows+1):
             table_sheet.cell(row=i, column=1, value=i-1)
-            # 对flow_id = '09296a11-5abf-4af4-a58f-2f14e414db67'的执行结果进行判断
-            if table_sheet.cell(row=i, column=2).value == '09296a11-5abf-4af4-a58f-2f14e414db67':
+            # 对sampe step涉及的flow单独进行结果判断
+            if table_sheet.cell(row=i, column=2).value in ( '09296a11-5abf-4af4-a58f-2f14e414db67', '981b6f96-5106-4b4e-8b11-d3757d17baaf'):
                 if table_sheet.cell(row=i, column=6).value == 'SUCCEEDED' and table_sheet.cell(row=i, column=8):
                     new_result = []
                     expect_result = list(eval(table_sheet.cell(row=i, column=7).value))
@@ -388,11 +405,11 @@ class GetCheckoutDataSet(object):
                         table_sheet.cell(row=i, column=9, value="fail")
                         table_sheet.cell(row=i, column=10, value="execution: %s 预期结果实际结果不一致 " %
                                                                  (table_sheet.cell(row=i, column=5).value))
-                elif table_sheet.cell(row=i, column=5).value == 'SUCCEEDED' and table_sheet.cell(row=i, column=8) == "":
+                elif table_sheet.cell(row=i, column=6).value == 'SUCCEEDED' and table_sheet.cell(row=i, column=8) == "":
                     table_sheet.cell(row=i, column=9, value="fail")
                     table_sheet.cell(row=i, column=10, value="execution: %s 预期结果实际结果不一致,实际结果为空 " %
                                                              (table_sheet.cell(row=i, column=5).value))
-                elif table_sheet.cell(row=i, column=5).value == 'FAILED':
+                elif table_sheet.cell(row=i, column=6).value == 'FAILED':
                     table_sheet.cell(row=i, column=9, value="fail")
                     table_sheet.cell(row=i, column=10, value="execution: %s 执行状态为 %s" % (
                         table_sheet.cell(row=i, column=5).value, table_sheet.cell(row=i, column=6).value))
@@ -406,8 +423,8 @@ class GetCheckoutDataSet(object):
                     if table_sheet.cell(row=i, column=8).value and table_sheet.cell(row=i, column=6).value == "SUCCEEDED":
                         # va7为预期结果，va8为实际结果，将二者先排序后对比是否相等
                         va7 = list(eval(table_sheet.cell(row=i, column=7).value))
-                        if eval(table_sheet.cell(row=i, column=8).value).__class__ == [].__class__ :
-                            va8 = list(eval(table_sheet.cell(row=i, column=8).value))
+                        va8 = list(eval(table_sheet.cell(row=i, column=8).value))   # 注意：是不是需要放在if 语句后面？？？？
+                        if va7 != [] and eval(table_sheet.cell(row=i, column=8).value).__class__ == [].__class__ :
                             va7_k = va7[0].keys()
                             va7_key = list(va7_k)
                             # print('va7_key', va7_key)
@@ -415,8 +432,14 @@ class GetCheckoutDataSet(object):
                             S_va8 = sorted(va8, key=lambda item: item[va7_key[0]], reverse=True)
                             # print('flow_id', table_sheet.cell(row=i, column=2).value)
                             # print(S_va7, '\n', S_va8)
+                            # 安排不同的key进行排序，只要有其中一个key排序后相等，就认为两个结果相等
+                            result = []
+                            for t in range(len(va7_key)):
+                                S_va7 = sorted(va7, key=lambda item: item[va7_key[t]], reverse=True)  # 没有 id时候的排序
+                                S_va8 = sorted(va8, key=lambda item: item[va7_key[t]], reverse=True)
+                                result.append(S_va7 == S_va8)
                             print('-----确认结果------')
-                            if S_va7 == S_va8:
+                            if True in result:
                                 table_sheet.cell(row=i, column=9, value="pass")
                                 print('test_result:', table_sheet.cell(row=i, column=9).value)
                                 table_sheet.cell(row=i, column=10, value="")
@@ -424,8 +447,13 @@ class GetCheckoutDataSet(object):
                                 table_sheet.cell(row=i, column=9, value="fail")
                                 table_sheet.cell(row=i, column=10, value="execution: %s 预期结果实际结果不一致 " %
                                                                          (table_sheet.cell(row=i, column=5).value))
+                        elif va7 == [] and va8 == []:
+                            table_sheet.cell(row=i, column=9, value="pass")
+                            print('test_result:', table_sheet.cell(row=i, column=9).value)
+                            table_sheet.cell(row=i, column=10, value="")
                         else:
-                            pass
+                            table_sheet.cell(row=i, column=9, value="")
+                            table_sheet.cell(row=i, column=10, value="请确认预期结果和实际结果")
                     elif table_sheet.cell(row=i, column=6).value == "FAILED":
                         table_sheet.cell(row=i, column=9, value="fail")
                         table_sheet.cell(row=i, column=10, value="execution: %s 执行状态为 %s" % (
@@ -477,10 +505,11 @@ class GetCheckoutDataSet(object):
 
 if __name__ == '__main__':
     GetCheckoutDataSet()
+    # g.get_json()
     # begin_time = datetime.datetime.now()
     # print('begin_time:', begin_time)
     # g = GetCheckoutDataSet()
-    # g.get_json()
+    # print(g.get_execution_info())
     # end_time = datetime.datetime.now()
     # print('end_time:', end_time)
     # print('此次执行耗时：', end_time-begin_time)
