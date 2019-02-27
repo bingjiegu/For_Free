@@ -56,7 +56,7 @@ class GetCheckoutDataSet(object):
                 sql = 'select name, flow_type, parameters from merce_flow where id = "%s"' % flow_id
                 print(sql)
                 flow_info = self.ms.ExecuQuery(sql)
-                # print('flow_info:',flow_info)
+                print('flow_info:', flow_info)
             except Exception as e:
                 raise e
             else:
@@ -66,13 +66,16 @@ class GetCheckoutDataSet(object):
                     flow_type = flow_info[0]["flow_type"]
                     flow_parameters = flow_info[0]["parameters"]
                     flow_parameters_list = dict_res(flow_parameters)
+                    arguments_list = []
                     arguments = {}
-                    if flow_parameters_list != []:
+                    print('flow_parameters_list:', flow_parameters_list)
+                    if flow_parameters_list != [] and flow_parameters_list != None:
                         arguments["name"] = flow_parameters_list[0]["name"]
                         arguments["category"] = flow_parameters_list[0]["category"]
                         arguments["value"] = flow_parameters_list[0]["defaultVal"]
                         arguments["refs"] = flow_parameters_list[0]["refs"]
                         arguments["description"] = flow_parameters_list[0]["description"]
+                        arguments_list.append(arguments)
                         print('arguments:', arguments)
 
                 except KeyError as e:
@@ -82,7 +85,7 @@ class GetCheckoutDataSet(object):
 
             data = {
                 "configurations": {
-                    "arguments": arguments,
+                    "arguments": arguments_list,
                     "properties": [
                         {
                             "name": "all.debug",
@@ -172,7 +175,7 @@ class GetCheckoutDataSet(object):
             res = requests.post(url=create_scheduler_url, headers=get_headers(), json=data)
             print('第%d 个scheduler' % scheduler_number)
             scheduler_number += 1
-            time.sleep(20)
+            time.sleep(2)
             print(res.status_code, res.text)
             if res.status_code == 201 and res.text:
                 scheduler_id_format = dict_res(res.text)
@@ -198,31 +201,34 @@ class GetCheckoutDataSet(object):
         scheduler_id_list = self.create_new_scheduler()
         if scheduler_id_list:
             e_info_list = []
+            count = 1
             for scheduler_id in scheduler_id_list:
-                # print('第 %d 个 scheduler_id %s  ' % (count, scheduler_id))
-                # 等待20S后查询
-                time.sleep(40)
-                # print('调用get_e_finial_status(scheduler_id)，查询e_info')
+                print('开始第%d 次查询，查询scheduler id 为 %s 的execution info' % (count, scheduler_id))
+                # 等待30S后查询
+                time.sleep(20)
                 # 若没有查到execution id， 需要再次查询
                 e_info = self.get_e_finial_status(scheduler_id)
                 e_info_list.append(e_info)
-
+                print('e_info_list:', e_info_list)
+                count += 1
             # print('查询得到的e_info_list', e_info_list)
             print("------get_execution_info(self)执行结束------\n")
-            print('e_info_list:', e_info_list)
             return e_info_list
         else:
             print("返回的scheduler_id_list为空", scheduler_id_list)
             return None
 
     def get_e_finial_status(self, scheduler_id):
-        """ 根据get_execution_info(self)返回的scheduler  id, 查询该scheduler的execution 状态"""
+        """
+        根据get_execution_info(self)返回的scheduler  id,
+        查询该scheduler的execution 状态
+        """
         print("------开始执行get_e_finial_status(self, scheduler_id)------\n")
         if scheduler_id:
-            # 查询前先等待5S
-            time.sleep(5)
             execution_sql = 'select id, status, flow_id , flow_scheduler_id from merce_flow_execution where flow_scheduler_id = "%s" ' % scheduler_id
             select_result = self.ms.ExecuQuery(execution_sql)
+            print(execution_sql)
+            print('查询execution 结果：', select_result)
             # print("根据scheduler id %s 查询execution，查询结果 %s: " % (scheduler_id, select_result))
             if select_result:
                 e_info = {}
@@ -252,7 +258,10 @@ class GetCheckoutDataSet(object):
             return None
 
     def check_out_put(self):
-        """获取execution的id和状态, 最终返回execution执行成功后的dataset id """
+        """
+        获取execution的id和状态,
+        最终返回execution执行成功后的dataset id
+        """
         print("------开始执行check_out_put(self)------\n")
         e_info_list = self.get_execution_info()
         print("------check_out_put中得到的e_info:------\n", type(e_info_list), e_info_list)
@@ -276,8 +285,8 @@ class GetCheckoutDataSet(object):
                     while e_final_status in ("READY", "RUNNING"):
                         print("------进入while循环------\n")
                         # 状态为 ready 或者 RUNNING时，再次查询e_final_status
-                        print("------开始等待10S------\n")
-                        time.sleep(10)
+                        print("------查询前等待5S------\n")
+                        time.sleep(5)
                         # 调用get_e_finial_status(e_scheduler_id)再次查询状态
                         e_info = self.get_e_finial_status(e_scheduler_id)
                         # 对e_final_status 重新赋值
@@ -504,7 +513,8 @@ class GetCheckoutDataSet(object):
 
 
 if __name__ == '__main__':
-    GetCheckoutDataSet()
+    g = GetCheckoutDataSet()
+    g.get_json()
     # g.get_json()
     # begin_time = datetime.datetime.now()
     # print('begin_time:', begin_time)
