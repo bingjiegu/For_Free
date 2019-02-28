@@ -225,7 +225,8 @@ class GetCheckoutDataSet(object):
         """
         print("------开始执行get_e_finial_status(self, scheduler_id)------\n")
         if scheduler_id:
-            execution_sql = 'select id, status, flow_id , flow_scheduler_id from merce_flow_execution where flow_scheduler_id = "%s" ' % scheduler_id
+            execution_sql = 'select id, status_type, flow_id , flow_scheduler_id from merce_flow_execution where flow_scheduler_id = "%s" ' % scheduler_id
+            time.sleep(10)
             select_result = self.ms.ExecuQuery(execution_sql)
             print(execution_sql)
             print('查询execution 结果：', select_result)
@@ -239,15 +240,15 @@ class GetCheckoutDataSet(object):
                     e_info["e_id"] = e_id
                     e_info["flow_id"] = select_result[0]["flow_id"]
                     e_info["flow_scheduler_id"] = select_result[0]["flow_scheduler_id"]
-                    e_status = select_result[0]["status"]
+                    e_info["e_final_status"] = select_result[0]["status_type"]
                 except IndexError as e:
                     print("取值时报错 %s" % e)
                     raise e
-                else:
-                    # 对返回数据格式化
-                    e_status_format = dict_res(e_status)
-                    e_final_status = e_status_format["type"]
-                e_info["e_final_status"] = e_final_status  #
+                # else:
+                #     # 对返回数据格式化
+                #     e_status_format = dict_res(e_status)
+                #     e_final_status = e_status_format["type"]
+                # e_info["e_final_status"] = e_final_status  #
                 # 将 execution id , flow_id和status组装成字典的形式并返回
                 print("------get_e_finial_status(self, scheduler_id)执行成功，返回execution id和status------\n")
                 return e_info
@@ -513,8 +514,8 @@ class GetCheckoutDataSet(object):
 
 
 if __name__ == '__main__':
-    g = GetCheckoutDataSet()
-    g.get_json()
+    GetCheckoutDataSet()
+    
     # g.get_json()
     # begin_time = datetime.datetime.now()
     # print('begin_time:', begin_time)
