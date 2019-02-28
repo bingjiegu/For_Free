@@ -21,7 +21,7 @@ class CreateSchedulers(unittest.TestCase):
     # 创建schedulers的API路径
     def test_case01(self):
         """创建schedulers，单次执行"""
-        scheduler_name = 'students_schedulers' + str(random.randint(0, 99999))
+        scheduler_name = 'api_auto_create_schedulers_once' + str(random.randint(0, 99999))
         flow_table = load_workbook(abs_dir("flow_dataset_info.xlsx"))
         info_sheet = flow_table.get_sheet_by_name("flow_info")
         flow_id = info_sheet.cell(row=2, column=2).value
@@ -41,7 +41,7 @@ class CreateSchedulers(unittest.TestCase):
 
     def test_case02(self):
         """创建schedulers，周期执行"""
-        scheduler_name = 'students_schedulers_cron' + str(random.randint(0, 99999))
+        scheduler_name = 'api_auto_create_schedulers_cron' + str(random.randint(0, 99999))
         # start_time = get_time()+(600*1000)  # starttime设为当前时间10分钟后
         start_time = get_time()  # starttime设为当前时间
         end_time = get_time() + (24*3600*1000)  # endtime设为当前时间1天后
