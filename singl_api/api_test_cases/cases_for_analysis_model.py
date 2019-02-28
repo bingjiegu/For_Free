@@ -292,6 +292,9 @@ class RemoveRule(unittest.TestCase):
 
 
 class CreateAnalysisModel(unittest.TestCase):
+    """
+    创建分析模板
+    """
     from basic_info.url_info import create_analysis_model
 
     def test_create_analysis_model1(self):
