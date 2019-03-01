@@ -398,7 +398,8 @@ class GetCheckoutDataSet(object):
         for i in range(2, c_rows+1):
             table_sheet.cell(row=i, column=1, value=i-1)
             # 对sampe step涉及的flow单独进行结果判断
-            if table_sheet.cell(row=i, column=2).value in ( '09296a11-5abf-4af4-a58f-2f14e414db67', '981b6f96-5106-4b4e-8b11-d3757d17baaf'):
+            if table_sheet.cell(row=i, column=2).value in ('09296a11-5abf-4af4-a58f-2f14e414db67', '981b6f96-5106-4b4e-8b11-d3757d17baaf',  # 189 sample
+                                                            'ee3a57bf-494e-4e03-9755-fc6ad1d22a2a', '2d095376-2e72-4169-9d9b-68ade8f40955'):  # 84 sample
                 if table_sheet.cell(row=i, column=6).value == 'SUCCEEDED' and table_sheet.cell(row=i, column=8):
                     new_result = []
                     expect_result = list(eval(table_sheet.cell(row=i, column=7).value))
@@ -407,7 +408,10 @@ class GetCheckoutDataSet(object):
                         for a_item in range(len(actual_result)):
                             if actual_result[a_item] == expect_result[b_item]:
                                 new_result.append(actual_result[a_item])
-                    if new_result == actual_result:
+                    if len(new_result) == len(actual_result):
+                        # print(new_result)
+                        # print(actual_result)
+                        # print(expect_result)
                         table_sheet.cell(row=i, column=9, value="pass")
                         print('test_result:', table_sheet.cell(row=i, column=9).value)
                         table_sheet.cell(row=i, column=10, value="")
@@ -514,8 +518,8 @@ class GetCheckoutDataSet(object):
 
 
 if __name__ == '__main__':
-    GetCheckoutDataSet()
-    
+    g = GetCheckoutDataSet()
+    g.get_json()
     # g.get_json()
     # begin_time = datetime.datetime.now()
     # print('begin_time:', begin_time)

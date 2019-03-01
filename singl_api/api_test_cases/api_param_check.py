@@ -6,6 +6,8 @@ import json
 import time
 from basic_info.setting import MySQL_CONFIG, owner, dataset_resource, schema_resource, MY_LOGIN_INFO, tenant_id
 from basic_info.Open_DB import MYSQL
+import xlrd, random, os
+from basic_info.format_res import get_time
 
 # 配置数据库连接
 ms = MYSQL(MySQL_CONFIG["HOST"], MySQL_CONFIG["USER"], MySQL_CONFIG["PASSWORD"], MySQL_CONFIG["DB"])
@@ -408,5 +410,40 @@ class ForCreateSchema(unittest.TestCase):
         code = int(text["list"][0]["code"])
         self.assertEqual(code, 900, "缺少resource参数时的code不正确")
 
+abs_dir = lambda n: os.path.abspath(os.path.join(os.path.dirname(__file__), n))
+class ForScheduler(unittest.TestCase):
+    """创建scheduler，删除scheduler接口参数校验"""
+    from basic_info.url_info import remove_list_url, create_scheduler_url
+
+    def test_case01(self):
+        """根据id删除scheduler"""
+        data = ["eb9aaab9-0a78-48d1-a1ee-2db49f5", "9ea66e51-f30c-48b9-afc2-a8e7dbc56e24"]
+        res = requests.post(url=self.remove_list_url, headers=get_headers(), json=data)
+        text = res.json()
+        self.assertEqual(text, 0, '应删除scheduler个数不正确')
+        self.assertEqual(res.status_code, 200, '删除scheduler返回的状态码不正确')
+        # print(text, res.status_code)
+
+    # def test_case02(self):
+    #     """创建schedulers时flow name, flow type校验"""
+    #     scheduler_name = 'students_schedulers' + str(random.randint(0, 99999))
+    #     flow_table = xlrd.open_workbook(abs_dir("flow_dataset_info.xlsx"))
+    #     # flow_table = xlrd.open_workbook("flow_dataset_info.xls")
+    #     info_sheet = flow_table.sheet_by_name("flow_info")
+    #     flow_id = info_sheet.cell(1, 1).value
+    #     flow_name = info_sheet.cell(1, 2).value
+    #     data = {"name": scheduler_name,
+    #             "flowId": flow_id,
+    #             # "flowName": 'flow_name',
+    #             # "flowType": '',
+    #             "schedulerId": "once",
+    #             "configurations":
+    #                 {"startTime": get_time(), "arguments": [], "cron": "once", "properties": []}
+    #             }
+    #     res = requests.post(url=self.create_scheduler_url, headers=get_headers(), json=data)
+    #     print(res.status_code, res.text)
+    #     self.assertEqual(res.status_code, 201, '创建单次执行的scheduler失败: %s' % res.text)
 
 
+if __name__ == '__main__':
+    unittest.main()
