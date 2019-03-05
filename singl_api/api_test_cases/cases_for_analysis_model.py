@@ -243,7 +243,7 @@ class QueryAndUpdateRuleDetail(unittest.TestCase):
     def test_rule_update(self):
         """更新规则-SQL类型的name"""
         data = {"id": self.sql_rule_id,
-                "name": self.test_rule_detail() + '_after_update',
+                "name": self.test_rule_detail() + '_after_update' + str(random.randint(0,99999)),
                 "creator":"admin",
                 "createTime":1548389901000,
                 "lastModifier":"admin",
