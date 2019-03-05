@@ -11,19 +11,22 @@ from basic_info.setting import MY_LOGIN_INFO2
 
 class ExecuteWeirdDataflow(unittest.TestCase):
 
-    def setUp(self):
-        self.ms = MYSQL(MySQL_CONFIG["HOST"], MySQL_CONFIG["USER"], MySQL_CONFIG["PASSWORD"], MySQL_CONFIG["DB"])
-        self.expected_result = ['[{"name":"james","id":"6","age":"50"}]', '[{"name":"xiaowang","id":"3","age":"30"}]', '[{"name":"xiaoming","id":"1","age":"18"}]', '[{"name":"tyest","id":"4","age":"12"}]', '[{"name":"xiaohong","id":"2","age":"20"}]', '[{"name":"空","id":"5","age":"空"}]']
-
-    def tearDown(self):
-        pass
-
+    # def setUp(self):
+    #     self.ms = MYSQL(MySQL_CONFIG["HOST"], MySQL_CONFIG["USER"], MySQL_CONFIG["PASSWORD"], MySQL_CONFIG["DB"])
+    #     self.expected_result = ['[{"name":"james","id":"6","age":"50"}]', '[{"name":"xiaowang","id":"3","age":"30"}]', '[{"name":"xiaoming","id":"1","age":"18"}]', '[{"name":"tyest","id":"4","age":"12"}]', '[{"name":"xiaohong","id":"2","age":"20"}]', '[{"name":"空","id":"5","age":"空"}]']
+    #
+    # def tearDown(self):
+    #     pass
+    ms = MYSQL(MySQL_CONFIG["HOST"], MySQL_CONFIG["USER"], MySQL_CONFIG["PASSWORD"], MySQL_CONFIG["DB"])
+    expected_result = ['[{"name":"james","id":"6","age":"50"}]', '[{"name":"xiaowang","id":"3","age":"30"}]', '[{"name":"xiaoming","id":"1","age":"18"}]', '[{"name":"tyest","id":"4","age":"12"}]', '[{"name":"xiaohong","id":"2","age":"20"}]', '[{"name":"空","id":"5","age":"空"}]']
+    #
     def test_create_scheduler(self):
         print("开始执行test_create_scheduler(self)")
         data = get_dataflow_data('tc_auto_df_sink_hdfs_path使用$进行分区、使用sliceTimeColumn1545633382888')
-        print('data', data)
         res = requests.post(url=create_scheduler_url, headers=get_headers(), json=data)
-        self.assertEqual(201, res.status_code)
+        print(res.url)
+        print(res.status_code)
+        self.assertEqual(201, res.status_code, '创建scheduler失败，失败原因%s' % res.text)
         self.assertNotEqual(res.json().get('id', 'scheduler创建可能失败了'), 'scheduler创建可能失败了')
         # scheduler_id = res.json()['id']
         # print('---------scheduler_id-------', scheduler_id)
@@ -36,11 +39,13 @@ class ExecuteWeirdDataflow(unittest.TestCase):
         e_status_format = {'type': 'READY'}
         while e_status_format["type"] in ("READY", "RUNNING"):
             time.sleep(5)
-            execution_sql = 'select id, status, flow_id, flow_scheduler_id from merce_flow_execution where flow_scheduler_id = "%s"' % scheduler_id
+            execution_sql = 'select id, status_type, flow_id, flow_scheduler_id from merce_flow_execution where flow_scheduler_id = "%s"' % scheduler_id
             time.sleep(20)
+            print(execution_sql)
             select_result = self.ms.ExecuQuery(execution_sql)
-            e_status = select_result[0]["status"]
-            e_status_format = dict_res(e_status)
+            print(select_result)
+            e_status_format["type"] = select_result[0]["status_type"]
+            # e_status_format = dict_res(e_status)
         if e_status_format['type'] == 'SUCCEEDED':
             self.assertEqual('SUCCEEDED', e_status_format['type'])
             print('select_result: \n', select_result)
@@ -77,8 +82,9 @@ class ExecuteWeirdDataflow(unittest.TestCase):
             self.assertEqual(different_result, [])
         else:
             return None
-if __name__  == '__main__':
-    unittest.main()
+
+# g = ExecuteWeirdDataflow()
+# g.test_test_check_result()
 
 
 
