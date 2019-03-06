@@ -1,62 +1,128 @@
 from openpyxl import load_workbook
-import os
+import os,unittest
+from basic_info.format_res import dict_res
 table_dir = lambda n: os.path.abspath(os.path.join(os.path.dirname(__file__), n))
 
+case_table = load_workbook(table_dir('api_cases.xlsx'))
+case_table_sheet = case_table.get_sheet_by_name('tester')
+all_rows = case_table_sheet.max_row
 
-def get_result():
-    case_table = load_workbook(table_dir('api_cases.xlsx'))
-    case_table_sheet = case_table.get_sheet_by_name('developer')
-    all_rows = case_table_sheet.max_row
-    for row in range(2,all_rows+1):
-        # status code
-        ex_stutus_code = case_table_sheet.cell(row=row, column=9).value
-        ac_stutus_code = case_table_sheet.cell(row=row, column=10).value
-        # text
-        ex_text = case_table_sheet.cell(row=row, column=12).value
-        ac_text = case_table_sheet.cell(row=row, column=13).value
-        # 判断两个status code是否相等
-        if ex_stutus_code == ac_stutus_code:
-            print('pass')
-            case_table_sheet.cell(row=row, column=11, value='pass')
-        else:
-            case_table_sheet.cell(row=row, column=11, value='status code预期结果和实际结果不一致，预期结果：%s, 实际结果：%s' % (ex_stutus_code, ac_stutus_code))
-            print('status code预期结果和实际结果不一致，预期结果：%s, 实际结果：%s' % (ex_stutus_code, ac_stutus_code))
-        # 判断两个text是否相等
-        if ex_text == ac_text:
-            print('pass')
-            case_table_sheet.cell(row=row, column=14, value='pass')
-        else:
-            case_table_sheet.cell(row=row, column=14, value='response.text预期结果和实际结果不一致，预期结果：%s, 实际结果：%s' % (ex_text, ac_text))
-            print('response.text预期结果和实际结果不一致，预期结果：%s, 实际结果：%s' % (ex_text, ac_text))
+class GetResult(unittest.TestCase):
+
+    def compare_code_result(self):
+        for row in range(2, all_rows+1):
+            # status code
+            ex_status_code = case_table_sheet.cell(row=row, column=9).value
+            ac_status_code = case_table_sheet.cell(row=row, column=10).value
+            # 判断两个status code是否相等
+            if ex_status_code and ac_status_code != '':
+                if ex_status_code == ac_status_code:
+                    case_table_sheet.cell(row=row, column=11, value='pass')
+                else:
+                    case_table_sheet.cell(row=row, column=11, value='fail')
+                    print('预期结果：%s, 实际结果：%s' % (ex_status_code, ac_status_code))
+            else:
+                print('第 %d 行 status_code为空' % row)
         case_table.save(table_dir('api_cases.xlsx'))
 
 
-
-def compair_result():
-    case_table = load_workbook(table_dir('api_cases.xlsx'))
-    case_table_sheet = case_table.get_sheet_by_name('developer')
-    all_rows = case_table_sheet.max_row
-    for row in range(2, all_rows + 1):
-        status_code_result = case_table_sheet.cell(row=row, column=11).value
-        response_text_result = case_table_sheet.cell(row=row, column=11).value
-        if status_code_result == 'pass' and response_text_result == 'pass':
-            # print('测试用例:%s 测试通过' % case_table_sheet.cell(row=row, column=3).value)
-            case_table_sheet.cell(row=row, column=15, value='pass')
-            case_table_sheet.cell(row=row, column=16, value='')
-        elif status_code_result == 'pass' and response_text_result != 'pass':
-            # print('测试用例:%s 测试未通过，错误原因:%s' % (case_table_sheet.cell(row=row, column=3).value, response_text_result ))
-            case_table_sheet.cell(row=row, column=15, value='fail')
-            case_table_sheet.cell(row=row, column=16, value='错误原因:%s' % response_text_result)
-        elif status_code_result != 'pass' and response_text_result == 'pass':
-            # print('测试用例:%s 测试未通过，错误原因:%s' % (case_table_sheet.cell(row=row, column=3).value, status_code_result ))
-            case_table_sheet.cell(row=row, column=15, value='fail')
-            case_table_sheet.cell(row=row, column=16, value='错误原因:%s' % status_code_result)
-        elif status_code_result != 'pass' and response_text_result != 'pass':
-            # print('测试用例:%s 测试未通过，错误原因:%s\n %s' % (case_table_sheet.cell(row=row, column=3).value, status_code_result, response_text_result))
-            case_table_sheet.cell(row=row, column=15, value='fail')
-            case_table_sheet.cell(row=row, column=16, value='错误原因:%s\n %s' % (status_code_result, response_text_result))
-        else:
-            print('请确认接口返回的response')
+    # 对比预期response和实际返回的response.text， 根据预期和实际结果的关系进行处理
+    def compare_text_result(self):
+        for row in range(2, all_rows+1):
+            response_text = case_table_sheet.cell(row=row, column=14).value  # 接口返回的response.text
+            response_text_dict = dict_res(response_text)
+            expect_text = case_table_sheet.cell(row=row, column=12).value
+            key_word = case_table_sheet.cell(row=row, column=5).value  # 接口关键字
+            code_result = case_table_sheet.cell(row=row, column=11).value  # status_code对比结果
+            relation = case_table_sheet.cell(row=row, column=13).value  # 预期text和response.text的关系
+            #  status_code 对比结果pass的前提下，判断response.text断言是否正确,
+            #  status_code 对比结果fail时，用例整体结果设为fail
+            if code_result == 'pass':
+                if key_word in ('create', 'query', 'update'):
+                    self.assert_deal(key_word, relation, expect_text, response_text, response_text_dict, row, 15)
+                elif key_word == 'delete':
+                    if response_text == None and expect_text == None:
+                        case_table_sheet.cell(row=row, column=15, value='pass')
+                    else:
+                        print('请确认 第%d行 预期text和接口实际返回response.text' % row)
+                else:
+                    print('请确认第%d行的key_word' % row)
+            elif code_result == 'fail':
+                # case 结果列
+                case_table_sheet.cell(row=row, column=16, value='fail')
+                # case失败原因
+                case_table_sheet.cell(row=row, column=17, value='status_code对比结果为%s' % code_result)
+            else:
+                print('请确认第 %d 行 status_code对比结果' % row)
 
         case_table.save(table_dir('api_cases.xlsx'))
-compair_result()
+
+    #  该方法根据expect_text, response_text的关系，进行断言, 目前只处理了等于和包含两种关系
+    def assert_deal(self, key_word, relation, expect_text, response_text, response_text_dict, row, column):
+        if key_word == 'create':
+            if relation == '=':   # 返回{"id":"ac4c81c2-6568-4b73-969d-fbf4ee699194"}格式内容时如何判断
+                try:
+                    print('第 %d 行 response_text返回id %s' % (row, response_text_dict.get("id")))
+                    self.assertIsNotNone(response_text_dict.get("id"), '第 %d 行 response_text没有返回id' % row)
+                except:
+                    print('第 %d 行 response_text没有返回id' % row)
+                    case_table_sheet.cell(row=row, column=column, value='fail')
+                else:
+                    case_table_sheet.cell(row=row, column=column, value='pass')
+            elif relation == 'in':
+                try:
+                    self.assertIn(expect_text, response_text, '第 %d 行 expect_text没有包含在接口返回的response_text中' % row)
+                except:
+                    print('第 %d 行 expect_text和response_text不相等， 结果对比失败' % row)
+                    case_table_sheet.cell(row=row, column=column, value='fail')
+                else:
+                    case_table_sheet.cell(row=row, column=column, value='pass')
+            else:
+                print('请确认第 %d 行 预期expect_text和response_text的relatrion' % row)
+                case_table_sheet.cell(row=row, column=column, value='请确认预期text和接口response.text的relatrion')
+        elif key_word in ('query', 'update'):
+            if relation == '=':
+                try:
+                    self.assertEqual(expect_text, response_text, '第 %d 行 expect_text和response_text不相等' % row)
+                except:
+                    print('第 %d 行 expect_text和response_text不相等， 结果对比失败' % row)
+                    case_table_sheet.cell(row=row, column=column, value='fail')
+                else:
+                    case_table_sheet.cell(row=row, column=column, value='pass')
+            elif relation == 'in':
+                try:
+                    self.assertIn(expect_text, response_text, '第 %d 行 expect_text没有包含在接口返回的response_text中' % row)
+                except:
+                    print('第 %d 行 expect_text和response_text不相等， 结果对比失败' % row)
+                    case_table_sheet.cell(row=row, column=column, value='fail')
+                else:
+                    case_table_sheet.cell(row=row, column=column, value='pass')
+            else:
+                print('请确认第 %d 行 预期expect_text和response_text的relatrion' % row)
+                case_table_sheet.cell(row=row, column=column, value='请确认预期text和接口response.text的relatrion')
+        else:
+            print('请确认第 %d 行 的key_word' % row)
+
+    # 对比case最终的结果
+    def deal_result(self):
+
+        self.compare_code_result()
+        self.compare_text_result()
+
+        for row in range(2, all_rows + 1):
+            status_code_result = case_table_sheet.cell(row=row, column=11).value
+            response_text_result = case_table_sheet.cell(row=row, column=15).value
+            if status_code_result == 'pass' and response_text_result == 'pass':
+                # print('测试用例:%s 测试通过' % case_table_sheet.cell(row=row, column=3).value)
+                case_table_sheet.cell(row=row, column=16, value='pass')
+                case_table_sheet.cell(row=row, column=17, value='')
+            elif status_code_result == 'fail' or response_text_result == 'fail':
+                case_table_sheet.cell(row=row, column=16, value='fail')
+                case_table_sheet.cell(row=row, column=17, value='status code或response.text对比失败')
+            else:
+                print('请确认status code或response.text对比结果')
+
+            case_table.save(table_dir('api_cases.xlsx'))
+
+g = GetResult()
+g.deal_result()
