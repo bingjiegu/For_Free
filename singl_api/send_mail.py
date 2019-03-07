@@ -5,14 +5,11 @@ from email import encoders
 from email.mime.text import MIMEText
 from email.header import Header
 from email.mime.multipart import MIMEMultipart
-from email.utils import parseaddr, formataddr
 from email.mime.base import MIMEBase
 from basic_info.setting import email_to
 from smtplib import SMTP_SSL
 from openpyxl import load_workbook
 from api_test_cases.get_execution_output_json import abs_dir, GetCheckoutDataSet
-import xlrd
-
 
 
 def sendEmail(content, title, from_name, from_address, to_address, serverport, serverip, username, password):
@@ -22,13 +19,10 @@ def sendEmail(content, title, from_name, from_address, to_address, serverport, s
     # 这里的to_address只用于显示，必须是一个string
     msg['To'] = ','.join(to_address)
     msg['From'] = from_name
-
     # 邮件正文是MIMEText:
     msg.attach(MIMEText(content, 'html', 'utf-8'))
-
     # 添加附件就是加上一个MIMEBase，从本地读取一个文件:
     with open('E:\Reports\Test_report.html', 'rb') as f:
-    # with open('%s', 'rb' % file) as f:
         # 设置附件的MIME和文件名，这里是png类型:
         mime = MIMEBase('report', 'html', filename='Test_Report.html')
         # mime = MIMEBase('report', 'html', filename=filename)
@@ -74,9 +68,9 @@ def main2():
     f.close()
     sendEmail(mail_body, title, config['from_name'], config['from'], config['to'], config['serverport'], config['serverip'], config['username'], config['password'])
 
+
 # 使用该方法发送邮件
 def main3(report_path):
-
     # 163邮箱smtp服务器
     host_server = "smtp.163.com"
     # sender_163为发件人的163邮箱
@@ -90,76 +84,54 @@ def main3(report_path):
     receivers = ['bingjie.gu@inforefiner.com']  # 调试使用
     msg = MIMEMultipart()
     # 邮件的正文内容
-    # f = xlrd.open_workbook("./api_test_cases/flow_dataset_info.xls")
     f = load_workbook(abs_dir("flow_dataset_info.xlsx"))
-    # f_sheet = f.sheet_by_name("flow_info")
     f_sheet = f.get_sheet_by_name("flow_info")
-    # cols = f_sheet.ncols
     cols = f_sheet.max_column
-    # rows = f_sheet.nrows
     rows = f_sheet.max_row
     succeed = 0
     succeed_flow = []
     failed = 0
     failed_flow = []
+    flow_failed_detail = []
     flow_id_list = GetCheckoutDataSet().file_flowid_count()
     total = len(flow_id_list)
     print('flow总数total:', total)
     detail_msg = ''' '''
     for row in range(2, rows+1):
         if f_sheet.cell(row=row, column=9).value == "fail":
-            # detail_msg = f_sheet.cell(row=row, column=10).value
             detail_msg += '\n' + f_sheet.cell(row=row, column=10).value + '\n'
-            if f_sheet.cell(row=row, column=2).value:
-                failed_flow.append(f_sheet.cell(row=row, column=2).value)
+            if f_sheet.cell(row=row, column=3).value:
+                failed_flow.append(f_sheet.cell(row=row, column=3).value)
             else:
                 for i in range(row, 2, -1):
-                    if f_sheet.cell(row=i-1, column=2).value:
-                        failed_flow.append(f_sheet.cell(row=i-1, column=2).value)
+                    if f_sheet.cell(row=i-1, column=3).value:
+                        failed_flow.append(f_sheet.cell(row=i-1, column=3).value)
                         break
         elif f_sheet.cell(row=row, column=9).value == "pass":
-            if f_sheet.cell(row=row, column=2).value:
-                succeed_flow.append(f_sheet.cell(row=row, column=2).value)
+            if f_sheet.cell(row=row, column=3).value:
+                succeed_flow.append(f_sheet.cell(row=row, column=3).value)
                 # print(succeed_flow)
             else:
                 for i in range(row, 2, -1):
-                    if f_sheet.cell(row=i-1, column=2).value:
-                        succeed_flow.append(f_sheet.cell(row=i-1, column=2).value)
+                    if f_sheet.cell(row=i-1, column=3).value:
+                        succeed_flow.append(f_sheet.cell(row=i-1, column=3).value)
                         break
-    print(succeed_flow)
-    print('\n')
-    print(len(succeed_flow))
+
     failed_flow_s = list(set(failed_flow))
     succeed_flow_s = list(set(succeed_flow))
-    # print('succeed_flow_s: ', succeed_flow_s)
-    # print('len(succeed_flow_s:', len(succeed_flow_s))
     for disct_id in (disct_ids for disct_ids in failed_flow_s if disct_ids in succeed_flow_s):
         succeed_flow_s.remove(disct_id)
-    # print('去重后succeed_flow_s: ', succeed_flow_s)
-    # print('去重后len(succeed_flow_s:', len(succeed_flow_s))
-    # print('去重后failed_flow_s: ', failed_flow_s)
-    # print('去重后len(failed_flow_s:', len(failed_flow_s))
     # 邮件的正文内容
     filename = time.strftime("%Y%m%d%H", time.localtime()) + '_report.html'
-    # if len(failed_flow_s) > 0:
-    #     mail_content = '\n各位好:'+'\n' + '\n' + \
-    #                 '非execution的测试用例测试结果请参考附件<<%s>>' % filename + '\n'\
-    #                 + ' execution执行相关测试场景共 %d 个\n\n执行开始时间：%s\n执行结束时间：%s\n耗时: %s\n\n成功%d个, 失败 %d个\n\n成功的flow id为 %s\n\n失败的flow id为 %s\n\n失败原因为： ' \
-    #                    % (total, len(succeed_flow_s), len(failed_flow_s), start_time, stop_time, stop_time - start_time,succeed_flow_s, failed_flow_s) + detail_msg
-    # else:
-    #     mail_content = '\n各位好:' + '\n' + \
-    #                    '非execution的测试用例测试结果请参考附件<<%s>>' % filename + '\n' \
-    #                + ' execution执行相关测试场景共 %d 个\n\n执行开始时间：%s\n执行结束时间：%s\n耗时: %s\n\n成功%d个, 失败 %d个\n\n成功的flow id为 %s' \
-    #                % (total, start_time, stop_time, stop_time - start_time,len(succeed_flow_s), len(failed_flow_s), succeed_flow_s)
     if len(failed_flow_s) > 0:
         mail_content = '\n各位好:'+'\n' + '\n' + \
-                    '非execution的测试用例测试结果请参考附件<<%s>>' % filename + '\n'\
-                    + ' execution执行相关测试场景共 %d 个\n\n成功%d个, 失败 %d个\n\n成功的flow id为 %s\n\n失败的flow id为 %s\n\n失败原因为： ' \
+                    'API的测试用例测试结果请参考附件<<%s>>' % filename + '\n'\
+                    + ' flow用例共 %d 个\n\n成功%d个, 失败 %d个\n\n成功的flow name为 %s\n\n失败的flow name为 %s\n\n失败原因为： ' \
                        % (total, len(succeed_flow_s), len(failed_flow_s),succeed_flow_s, failed_flow_s) + detail_msg
     else:
         mail_content = '\n各位好:' + '\n' + \
-                       '非execution的测试用例测试结果请参考附件<<%s>>' % filename + '\n' \
-                   + ' execution执行相关测试场景共 %d 个\n\n成功%d个, 失败 %d个\n\n成功的flow id为 %s' \
+                       'API的测试用例测试结果请参考附件<<%s>>' % filename + '\n' \
+                   + ' flow用例共 %d 个\n\n成功%d个, 失败 %d个\n\n成功的flow name为 %s' \
                    % (total, len(succeed_flow_s), len(failed_flow_s), succeed_flow_s)
     # print(mail_content)
     # 邮件标题
@@ -197,5 +169,5 @@ def main3(report_path):
     print('%s----发送邮件成功' % time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
     smtp.quit()
 
-# report_path = 'E:\Reports\\2018122813_report.html'
-# main3(report_path)
+report_path = 'E:\Reports\\2018122813_report.html'
+main3(report_path)
