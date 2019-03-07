@@ -22,28 +22,26 @@ all_rows = case_table_sheet.max_row
 # 判断请求方法，并根据不同的请求方法调用不同的处理方式
 def deal_request_method():
     for i in range(2, all_rows+1):
-        request_method = case_table_sheet.cell(row=i, column=6).value
-        request_url = case_table_sheet.cell(row=i, column=7).value
-        request_data = case_table_sheet.cell(row=i, column=8).value
-        key_word = case_table_sheet.cell(row=i, column=5).value
+        request_method = case_table_sheet.cell(row=i, column=4).value
+        request_url = case_table_sheet.cell(row=i, column=5).value
+        request_data = case_table_sheet.cell(row=i, column=6).value
+        key_word = case_table_sheet.cell(row=i, column=3).value
         # 请求方法转大写
         if request_method:
             request_method_upper = request_method.upper()
             # 根据不同的请求方法，进行分发
             if request_method_upper == 'POST':
                 # 调用post方法发送请求
-                post_request_result_check(row=i, column=10, url=request_url, headers=get_headers(),
+                post_request_result_check(row=i, column=8, url=request_url, headers=get_headers(),
                                                 data=request_data, table_sheet_name=case_table_sheet)
 
             elif request_method_upper == 'GET':
                 # 调用GET请求
                 get_request_result_check(url=request_url, headers=get_headers(), data=request_data,
-                                         table_sheet_name=case_table_sheet, row=i, column=10)
+                                         table_sheet_name=case_table_sheet, row=i, column=8)
 
             elif request_method_upper == 'PUT':
-                res = put_request_result_check(request_url, get_headers(), request_data)
-                write_result(case_table_sheet, i, 10, res[0])
-                write_result(case_table_sheet, i, 14, res[1])
+                put_request_result_check(url=request_url, row=i, data=request_data, table_sheet_name=case_table_sheet, column=8)
 
             elif request_method_upper == 'DELETE':
                 delete_request_result_check()
@@ -63,9 +61,9 @@ def post_request_result_check(row, column, url, headers, data, table_sheet_name)
     if isinstance(data, str):
         #  SQL语句作为参数，需要先将SQL语句执行，数据库查询返回数据作为接口要传递的参数
         if data.startswith('select'):  # 后续根据需要增加其他select内容，如name或者其他？？？？？？
-            print('data startswith select:', data)
+            # print('data startswith select:', data)
             data_select_result = ms.ExecuQuery(data)
-            print(data_select_result)
+            # print(data_select_result)
             datas = []
             if data_select_result:
                 try:
@@ -89,12 +87,12 @@ def post_request_result_check(row, column, url, headers, data, table_sheet_name)
             write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
         # 列表作为参数， 如["9d3639f0-02bc-44cd-ac71-9a6d0f572632"]
         elif data.startswith('[') and data.endswith(']'):
-            print('data startswith [:', data)
+            # print('data startswith [:', data)
             data_list = dict_res(data)
-            print(type(data_list))
+            # print(type(data_list))
             if data:
                 response = requests.post(url=url, headers=headers, json=data_list)
-                print(response.status_code)
+                # print(response.status_code)
                 write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
                 write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
             else:
@@ -110,13 +108,16 @@ def get_request_result_check(url, headers, data, table_sheet_name, row, column):
     # GET请求需要从parameter中获取参数,并把参数拼装到URL中，
     if data:
         # 分割参数，分割后成为一个列表['61bf20da-f42c-4b35-9142-0fc2a7664e3e', '2']
-        parameters = data.split(',')
+        parameters = data.split('&')
         # 处理存在select语句中的参数，并重新赋值后传递给URL
         for i in range(len(parameters)):
             if parameters[i].startswith('select id from'):
                 select_result = ms.ExecuQuery(parameters[i])
                 parameters[i] = select_result[0]["id"]
-        print(parameters)
+            elif parameters[i].startswith('select name from'):
+                select_result = ms.ExecuQuery(parameters[i])
+                parameters[i] = select_result[0]["name"]
+
         # 判断URL中需要的参数个数，并比较和data中的参数个数是否相等
         if len(parameters) == 1:
             url_new = url.format(parameters[0])
@@ -134,22 +135,31 @@ def get_request_result_check(url, headers, data, table_sheet_name, row, column):
             write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
             write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
         else:
-            print('请确认第%d行parameter数据' % row)
-    # GET 请求无参数，直接发送请求
+            print('请确认第%d行parameters' % row)
+    # GET 请求参数写在URL中，直接发送请求
     else:
         response = requests.get(url=url, headers=headers)
         write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
         write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
-        return response.status_code, response.text
-
-def delete_request_result_check():
-    print('delete')
 
 
 # PUT请求
-def put_request_result_check(url, headers, data):
-    response = requests.put(url=url, headers=headers, json=data)
-    return response.status_code, response.text
+def put_request_result_check(url, row, data, table_sheet_name, column):
+    # 分隔参数
+    parameters = data.split('&')
+    # 拼接URL
+    new_url = url.format(parameters[0])
+    # 发送的参数体
+    parameters_data = parameters[-1]
+    if parameters_data.startswith('{'):
+        response = requests.put(url=new_url, headers=get_headers(), json=dict_res(parameters_data))
+        write_result(table_sheet_name, row, column, response.status_code)
+        write_result(table_sheet_name, row, column+4, response.text)
+    else:
+        print('请确认第%d行parameters中需要update的值格式，应为id&{data}' % row)
+
+def delete_request_result_check():
+    print('delete')
 
 
 #  写入返回结果
@@ -158,15 +168,12 @@ def write_result(sheet, row, column, value):
 
 
 deal_request_method()
-
-# url = case_table_sheet.cell(row=3,column=7).value
-# data = case_table_sheet.cell(row=3, column=8).value
-# key_word = case_table_sheet.cell(row=3, column=5).value
-# print(url)
-# print(data)
-# print(type(data))
-# print(key_word)
+#
+# url = case_table_sheet.cell(row=2,column=7).value
+# data = case_table_sheet.cell(row=2, column=8).value
+# key_word = case_table_sheet.cell(row=2, column=5).value
 # # post_request_result_check(key_word, row, column, url, headers, data, table_sheet_name)
-# post_request_result_check(key_word=key_word, row=3, column=10, url=url, headers=get_headers(), data=data, table_sheet_name=case_table_sheet)
-# case_table.save(ab_dir("api_cases.xlsx"))
+# put_request_result_check( row=2, data=data, table_sheet_name=case_table_sheet, column=10)
+
+case_table.save(ab_dir("api_cases.xlsx"))
 
