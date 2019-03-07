@@ -459,8 +459,8 @@ class GetCheckoutDataSet(object):
                                 table_sheet.cell(row=i, column=10, value="")
                             else:
                                 table_sheet.cell(row=i, column=9, value="fail")
-                                table_sheet.cell(row=i, column=10, value="execution: %s 预期结果实际结果不一致 " %
-                                                                         (table_sheet.cell(row=i, column=5).value))
+                                table_sheet.cell(row=i, column=10, value="flowname: %s --->预期结果实际结果不一致 \n" %
+                                                                         (table_sheet.cell(row=i, column=3).value))
                         elif va7 == [] and va8 == []:
                             table_sheet.cell(row=i, column=9, value="pass")
                             print('test_result:', table_sheet.cell(row=i, column=9).value)
@@ -470,11 +470,7 @@ class GetCheckoutDataSet(object):
                             table_sheet.cell(row=i, column=10, value="请确认预期结果和实际结果")
                     elif table_sheet.cell(row=i, column=6).value == "FAILED":
                         table_sheet.cell(row=i, column=9, value="fail")
-                        table_sheet.cell(row=i, column=10, value="execution: %s 执行状态为 %s" % (
-                            table_sheet.cell(row=i, column=5).value, table_sheet.cell(row=i, column=6).value))
-                        # else:
-                        # print('execution: %s执行状态为空，请核查' % table_sheet.cell(i, 3).value)
-                        # copy_table.save('flow_dataset_info.xls')
+                        table_sheet.cell(row=i, column=10, value="flowname: %s --->执行状态为 %s\n" % (table_sheet.cell(row=i, column=3).value, table_sheet.cell(row=i, column=6).value))
                     else:
                         table_sheet.cell(row=i, column=9, value="fail")
                         table_sheet.cell(row=i, column=10, value="用例参数或datasetID填写错误")
@@ -518,6 +514,7 @@ class GetCheckoutDataSet(object):
 
 
 if __name__ == '__main__':
+    # GetCheckoutDataSet()
     g = GetCheckoutDataSet()
     g.get_json()
     # g.get_json()
