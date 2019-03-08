@@ -80,10 +80,10 @@ def main3(report_path):
     # 发件人的邮箱
     sender_163_mail = "ruifan_test@163.com"
     # 收件人邮箱
-    # receivers = ['bingjie.gu@inforefiner.com', 'zhiming.wang@inforefiner.com', 'yuan.peng@inforefiner.com', 'anchong.wang@inforefiner.com', 'qian.feng@inforefiner.com'] # 定时任务使用
-    receivers = ['bingjie.gu@inforefiner.com']  # 调试使用
+    receivers = ['bingjie.gu@inforefiner.com', 'zhiming.wang@inforefiner.com', 'yuan.peng@inforefiner.com', 'anchong.wang@inforefiner.com', 'qian.feng@inforefiner.com'] # 定时任务使用
+    # receivers = ['bingjie.gu@inforefiner.com']  # 调试使用
     msg = MIMEMultipart()
-    # 邮件的正文内容
+    # 邮件的正文内容----flow执行结果
     f = load_workbook(abs_dir("flow_dataset_info.xlsx"))
     f_sheet = f.get_sheet_by_name("flow_info")
     cols = f_sheet.max_column
@@ -116,22 +116,26 @@ def main3(report_path):
                     if f_sheet.cell(row=i-1, column=3).value:
                         succeed_flow.append(f_sheet.cell(row=i-1, column=3).value)
                         break
-
     failed_flow_s = list(set(failed_flow))
     succeed_flow_s = list(set(succeed_flow))
     for disct_id in (disct_ids for disct_ids in failed_flow_s if disct_ids in succeed_flow_s):
         succeed_flow_s.remove(disct_id)
+    # 邮件的正文内容----API执行结果
+    # 统计api执行结果，加入到邮件正文中，失败的用例name，失败的原因？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？
+
     # 邮件的正文内容
     filename = time.strftime("%Y%m%d%H", time.localtime()) + '_report.html'
     if len(failed_flow_s) > 0:
         mail_content = '\n各位好:'+'\n' + '\n' + \
                     'API的测试用例测试结果请参考附件<<%s>>' % filename + '\n'\
-                    + ' flow用例共 %d 个\n\n成功%d个, 失败 %d个\n\n成功的flow name为 %s\n\n失败的flow name为 %s\n\n失败原因为： ' \
-                       % (total, len(succeed_flow_s), len(failed_flow_s),succeed_flow_s, failed_flow_s) + detail_msg
+                    + '-------------------------------------------------------------' + '\n'\
+                       + ' flow用例共 %d 个\n\n成功%d个, 失败 %d个\n\n成功的flow name为 %s\n\n失败的flow name为 %s\n\n失败原因为： ' \
+                       % (total, len(succeed_flow_s), len(failed_flow_s), succeed_flow_s, failed_flow_s) + detail_msg
     else:
         mail_content = '\n各位好:' + '\n' + \
                        'API的测试用例测试结果请参考附件<<%s>>' % filename + '\n' \
-                   + ' flow用例共 %d 个\n\n成功%d个, 失败 %d个\n\n成功的flow name为 %s' \
+                   + '--------------------------------------------------------------' + '\n' \
+                       + ' flow用例共 %d 个\n\n成功%d个, 失败 %d个\n\n成功的flow name为 %s' \
                    % (total, len(succeed_flow_s), len(failed_flow_s), succeed_flow_s)
     # print(mail_content)
     # 邮件标题
@@ -169,5 +173,5 @@ def main3(report_path):
     print('%s----发送邮件成功' % time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
     smtp.quit()
 
-report_path = 'E:\Reports\\2018122813_report.html'
-main3(report_path)
+# report_path = 'E:\Reports\\2018122813_report.html'
+# main3(report_path)
