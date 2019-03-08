@@ -514,9 +514,9 @@ class GetCheckoutDataSet(object):
 
 
 if __name__ == '__main__':
-    # GetCheckoutDataSet()
-    g = GetCheckoutDataSet()
-    g.get_json()
+    GetCheckoutDataSet()
+    # g = GetCheckoutDataSet()
+    # g.get_json()
     # g.get_json()
     # begin_time = datetime.datetime.now()
     # print('begin_time:', begin_time)
