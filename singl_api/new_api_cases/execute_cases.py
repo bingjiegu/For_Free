@@ -167,7 +167,7 @@ def write_result(sheet, row, column, value):
     sheet.cell(row=row, column=column, value=value)
 
 
-deal_request_method()
+# deal_request_method()
 #
 # url = case_table_sheet.cell(row=2,column=7).value
 # data = case_table_sheet.cell(row=2, column=8).value
@@ -175,5 +175,6 @@ deal_request_method()
 # # post_request_result_check(key_word, row, column, url, headers, data, table_sheet_name)
 # put_request_result_check( row=2, data=data, table_sheet_name=case_table_sheet, column=10)
 
-case_table.save(ab_dir("api_cases.xlsx"))
+# case_table.save(ab_dir("api_cases.xlsx"))
 
+# print(ab_dir("api_cases.xlsx"))
