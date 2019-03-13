@@ -1,3 +1,4 @@
+# coding:utf-8
 import unittest
 import time
 import HTMLTestRunner
@@ -19,9 +20,9 @@ filename = time.strftime("%Y%m%d%H", time.localtime()) + '_report.html'
 report_path = 'E:\Reports\\' + filename
 fp = open(report_path, 'wb')
 runner = HTMLTestRunner.HTMLTestRunner(stream=fp, title='API自动化测试报告', description='覆盖dataset,schema,schedulers,execution等测试场景')
-print('开始执行自动化脚本')
+print('开始执行API自动化脚本')
 start_time = datetime.datetime.now()
-runner.run(testcase)
+# runner.run(testcase)
 fp.close()
 print('自动化脚本执行结束，开始执行flow用例')
 # 需要执行的脚本
@@ -29,9 +30,16 @@ obj = GetCheckoutDataSet()
 sink_dataet_json = obj.get_json()
 stop_time = datetime.datetime.now()
 print('耗时:', stop_time-start_time)
+
 main3(report_path=report_path)
-threading.Timer(1500, get_headers()).start()
-print('重新发送一次TOKEN')
+# threading.Timer(1500, get_headers()).start()
+# print('重新发送一次TOKEN')
+
+# from new_api_cases.execute_cases import deal_request_method
+# from new_api_cases.check_result import CheckResult
+
+
+
 
 
 
