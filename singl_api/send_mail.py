@@ -131,16 +131,19 @@ def main3(report_path):
     cases_num = sheet_rows - 1
     pass_cases = 0
     failed_cases = 0
-    failed_cases_info = {}
+    failed_cases_list = []
     for row in range(2, sheet_rows+1):
         if cases_sheet.cell(row=row, column=14).value == 'pass':
             pass_cases += 1
         elif cases_sheet.cell(row=row, column=14).value == 'fail':
             failed_cases += 1
-            failed_cases_info[cases_sheet.cell(row=row, column=2).value] = cases_sheet.cell(row=row, column=15).value
-
+            # k = cases_sheet.cell(row=row, column=2).value
+            # v = cases_sheet.cell(row=row, column=15).value
+            # dict = {k: v}
+            failed_cases_list.append(cases_sheet.cell(row=row, column=15).value)
         else:
             print('请确认第%d行测试用例测试结果' % row)
+
 
     # 邮件的正文内容
     filename = time.strftime("%Y%m%d%H", time.localtime()) + '_report.html'
@@ -148,10 +151,10 @@ def main3(report_path):
         mail_content = '\n各位好:'+'\n' + '\n' + \
                     '一、API的测试用例结果请参考附件<<%s>>' % filename + '\n'\
                     + '-------------------------------------------------------------' + '\n'\
-                       + '二、Flow用例共 %d 个\n成功%d个, 失败 %d个\n失败的flow name为 %s\n失败原因为： ' % (total, len(succeed_flow_s), len(failed_flow_s), failed_flow_s) + detail_msg + \
+                       + '二、Flow用例共 %d 个\n成功%d个, 失败 %d个\n失败的flow name为 %s\n失败原因为：\n ' % (total, len(succeed_flow_s), len(failed_flow_s), failed_flow_s) + detail_msg + \
                        '-------------------------------------------------------------' + '\n' + \
                        '三、 API测试用例共%d个，\n成功%d个， 失败%d个,失败的case info： \n%s' \
-                       % (cases_num, pass_cases, failed_cases, failed_cases_info)
+                       % (cases_num, pass_cases, failed_cases, failed_cases_list)
     else:
         mail_content = '\n各位好:' + '\n' + \
                        '一、API的测试用例结果请参考附件<<%s>>' % filename + '\n' \
@@ -159,7 +162,7 @@ def main3(report_path):
                        + '二、flow用例共 %d 个\n成功%d个, 失败 %d个\n' % (total, len(succeed_flow_s), len(failed_flow_s)) + '\n' \
                        + '--------------------------------------------------------------' + '\n' + \
                        '三、API测试用例共%d个，\n成功%d个， 失败%d个,失败的case info: \n%s' \
-                       % (cases_num, pass_cases, failed_cases, failed_cases_info)
+                       % (cases_num, pass_cases, failed_cases, failed_cases_list)
     # print(mail_content)
     # 邮件标题
     # mail_title = time.strftime("%Y-%m-%d 自动化日报", time.localtime())
@@ -187,7 +190,7 @@ def main3(report_path):
     apicases_filepath = table_dir('api_cases.xlsx')
     with open(apicases_filepath, 'rb') as a:
         # 设置附件的MIME和文件名，这里是html类型:
-        mime = MIMEBase('report', 'xlsx', filename='api_casex.xlsx')
+        mime = MIMEBase('report', 'xlsx', filename='api_cases.xlsx')
         # 加上必要的头信息:
         mime.add_header('Content-Disposition', 'attachment', filename='api_casex.xlsx')
         mime.add_header('Content-ID', '<0>')
@@ -230,4 +233,4 @@ def main3(report_path):
 # report_path = 'E:\Reports\\2018122813_report.html'
 # main3(report_path)
 # apicases_filepath = table_dir('api_cases.xlse')
-# print(apicases_filepath)
+# # # print(apicases_filepath)
