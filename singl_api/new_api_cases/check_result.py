@@ -1,3 +1,4 @@
+# coding:utf-8
 from openpyxl import load_workbook
 import os,unittest
 from basic_info.format_res import dict_res
@@ -121,15 +122,16 @@ class CheckResult(unittest.TestCase):
                 case_table_sheet.cell(row=row, column=15, value='')
             elif status_code_result == 'fail' and response_text_result == 'pass':
                 case_table_sheet.cell(row=row, column=14, value='fail')
-                case_table_sheet.cell(row=row, column=15, value='status code对比失败,预期为%s,实际为%s'
-                                                                % (case_table_sheet.cell(row=row, column=7).value, case_table_sheet.cell(row=row, column=8).value))
+                case_table_sheet.cell(row=row, column=15, value='%s--->失败原因：status code对比失败,预期为%s,实际为%s'
+                                                                % (case_table_sheet.cell(row=row, column=2).value, case_table_sheet.cell(row=row, column=7).value, case_table_sheet.cell(row=row, column=8).value))
             elif status_code_result == 'pass' and response_text_result == 'fail':
                 case_table_sheet.cell(row=row, column=14, value='fail')
-                case_table_sheet.cell(row=row, column=15, value='返回内容对比失败,预期为%s,实际为%s'
-                                                                % (case_table_sheet.cell(row=row, column=11).value,case_table_sheet.cell(row=row, column=12).value))
+                case_table_sheet.cell(row=row, column=15, value='%s--->失败原因：返回内容对比失败' %
+                                                                (case_table_sheet.cell(row=row, column=2).value))
             elif status_code_result == 'fail' and response_text_result == 'fail':
                 case_table_sheet.cell(row=row, column=14, value='fail')
-                case_table_sheet.cell(row=row, column=15, value='status code和返回文本对比都是失败，请查看附件<api_cases.xlsx>确认具体失败原因')
+                case_table_sheet.cell(row=row, column=15, value='%s--->失败原因：status code和返回文本对比均失败，请查看附件<api_cases.xlsx>确认具体失败原因'
+                                                                % (case_table_sheet.cell(row=row, column=2).value))
             else:
                 print('请确认status code或response.text对比结果')
         case_table.save(table_dir('api_cases.xlsx'))

@@ -1,3 +1,4 @@
+# coding:utf-8
 import requests
 import unittest
 from basic_info.get_auth_token import get_headers

@@ -1,3 +1,4 @@
+# coding:utf-8
 import os
 from basic_info import Open_DB
 
@@ -33,7 +34,7 @@ email_to = {
 # -------189环境使用-------
 # HOST
 HOST_189 = "http://192.168.1.189:8515"
-# 数据库连接信息
+# # # 数据库连接信息
 MySQL_CONFIG = {
     'HOST': '192.168.1.189',
     "PORT": 3306,

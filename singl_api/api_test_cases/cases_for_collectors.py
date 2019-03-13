@@ -1,4 +1,4 @@
-
+# coding:utf-8
 from basic_info.url_info import collector_table_url
 from basic_info.setting import datasource_id
 import unittest, requests

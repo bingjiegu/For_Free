@@ -1,4 +1,4 @@
-
+# coding:utf-8
 import os
 import re
 from openpyxl import load_workbook
@@ -56,8 +56,10 @@ def deal_request_method():
 
 # POST请求
 def post_request_result_check(row, column, url, headers, data, table_sheet_name):
+    import random
     # if key_word in ('delete',''):
     # 参数列中是字符串
+    # name = 'create_by_auto' + str(random.randint(0, 99999))
     if isinstance(data, str):
         #  SQL语句作为参数，需要先将SQL语句执行，数据库查询返回数据作为接口要传递的参数
         if data.startswith('select'):  # 后续根据需要增加其他select内容，如name或者其他？？？？？？
@@ -82,6 +84,7 @@ def post_request_result_check(row, column, url, headers, data, table_sheet_name)
         elif data.startswith('{') and data.endswith('}'):
             print('data startswith {:', data)
             data_dict = dict_res(data)
+            print(data_dict)
             response = requests.post(url=url, headers=headers, json=data_dict)
             write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
             write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
@@ -167,7 +170,7 @@ def write_result(sheet, row, column, value):
     sheet.cell(row=row, column=column, value=value)
 
 
-# deal_request_method()
+deal_request_method()
 #
 # url = case_table_sheet.cell(row=2,column=7).value
 # data = case_table_sheet.cell(row=2, column=8).value

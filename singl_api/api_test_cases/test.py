@@ -1,27 +1,20 @@
-# coding=gbk
-from basic_info.Open_DB import MYSQL
-from basic_info.get_auth_token import get_headers
-from basic_info.setting import MySQL_CONFIG, flow_id_list
-from basic_info.format_res import dict_res, get_time
-from basic_info.setting import HOST_189
-import time, random, requests, xlrd
-from xlutils.copy import copy
-from openpyxl import load_workbook
-from xlutils.copy import copy
-import json
-import os,threading
-import datetime
-abs_dir = lambda n: os.path.abspath(os.path.join(os.path.dirname(__file__), n))
+# coding:utf-8
+from tkinter import *
+from new_api_cases.check_result import CheckResult
+from api_test_cases.get_execution_output_json import GetCheckoutDataSet
+
+root = Tk()
+w1 = Label(root, text=r'你可以在该页面进行测试用例的新增，编辑，执行等操作')
+
+w1.config(fg='black',font=('隶书', 16, 'bold'), pady=30)  # text的字体颜色，和背景颜色
+w1.place(x=210, y=0)
 
 
-flow_table = load_workbook(abs_dir("flow_dataset_info.xlsx"))
-# info_sheet_names = flow_table.get_sheet_names()
-flow_sheet = flow_table.get_sheet_by_name('flow_info')
-sheet_rows = flow_sheet.max_row  # ��ȡ����
-flow_id__84_list = []
-for row in range(1, sheet_rows):
-    if flow_sheet.cell(row=row, column=13).value == 84:
-        flow_id__84_list.append(flow_sheet.cell(row=row, column=2).value)
-# print(flow_sheet.cell(row=18, column=2).value, flow_sheet.cell(row=18, column=13).value == 84)
-print(flow_id__84_list)
-print(len(flow_id__84_list))
+b1 = Button(text='执行API测试用例', command=CheckResult().deal_result)
+b2 = Button(text='执行Flow测试用例', command=GetCheckoutDataSet().get_json)
+b1.config(font=('隶书', 15, 'bold'),padx=5,pady=5)
+b2.config(font=('宋体', 15, 'bold'),padx=5,pady=5)
+b1.place(x=250, y=180)
+b2.place(x=550, y=180)
+root.config(width=1000, height=500)
+mainloop()

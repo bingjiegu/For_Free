@@ -1,3 +1,4 @@
+# coding:utf-8
 from basic_info.setting import *
 
 from basic_info.setting import scheduler_id, zmod_id, zmod_exectuion_id

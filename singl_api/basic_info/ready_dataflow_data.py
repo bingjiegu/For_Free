@@ -1,14 +1,17 @@
+# coding:utf-8
 from basic_info.Open_DB import MYSQL
 from basic_info.setting import MySQL_CONFIG
 from basic_info.format_res import get_time
 import random
 
 def get_dataflow_data(flow_name):
+    print("开始执行get_dataflow_data(flow_name)")
     ms = MYSQL(MySQL_CONFIG["HOST"], MySQL_CONFIG["USER"], MySQL_CONFIG["PASSWORD"], MySQL_CONFIG["DB"])
     try:
         sql = 'select id, flow_type from merce_flow where name = "%s"' % flow_name
         flow_info = ms.ExecuQuery(sql)
-        print('flow_info:',flow_info)
+        print(sql)
+        print('flow_info:', flow_info)
     except Exception as e:
         raise e
     else:
@@ -89,10 +92,9 @@ def get_dataflow_data(flow_name):
         "flowId": flow_id,
         "flowName": flow_name,
         "flowType": flow_type,
-        "name": "students_flow" + str(random.randint(0, 99999)),
+        "name": flow_name + str(random.randint(0, 99999)),
         "schedulerId": "once",
         "source": "rhinos"
     }
     return data
-
 

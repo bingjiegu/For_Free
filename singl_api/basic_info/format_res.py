@@ -1,3 +1,4 @@
+# coding:utf-8
 import json
 from json.decoder import JSONDecodeError
 import time

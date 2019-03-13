@@ -1,4 +1,7 @@
+# coding:utf-8
 import pymysql
+
+
 
 # 数据库连接
 class MYSQL:
@@ -39,12 +42,12 @@ class MYSQL:
 
 
 # if __name__ == '__main__':
-#     ms = ms = MYSQL(MySQL_CONFIG["HOST"], MySQL_CONFIG["USER"], MySQL_CONFIG["PASSWORD"], MySQL_CONFIG["DB"])
+#     from basic_info.setting import MySQL_CONFIG
+#     ms = MYSQL(MySQL_CONFIG["HOST"], MySQL_CONFIG["USER"], MySQL_CONFIG["PASSWORD"], MySQL_CONFIG["DB"])
 #     sql = 'select name from merce_schema order  by create_time desc limit 1'
 #     res = ms.ExecuQuery(sql)
-#     res = res[0][0]
-    # print(type(res))
-    # print(res)
+#
+#     print(res)
 
 
 

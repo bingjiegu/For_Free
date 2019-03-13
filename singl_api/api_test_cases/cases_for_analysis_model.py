@@ -1,3 +1,4 @@
+# coding:utf-8
 from basic_info.get_auth_token import get_headers
 import unittest, time, json, requests, random
 from basic_info.setting import preProcessFlowId, preProcessFlowName, processDataId

@@ -1,4 +1,4 @@
-
+# coding:utf-8
 from basic_info.get_auth_token import get_headers
 import requests,json
 

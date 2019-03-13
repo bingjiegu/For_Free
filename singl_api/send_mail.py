@@ -1,3 +1,4 @@
+# coding:utf-8
 import smtplib
 import os.path as pth
 import time, os
@@ -124,7 +125,7 @@ def main3(report_path):
     for disct_id in (disct_ids for disct_ids in failed_flow_s if disct_ids in succeed_flow_s):
         succeed_flow_s.remove(disct_id)
     # 邮件的正文内容----API执行结果
-    # 统计api执行结果，加入到邮件正文中，失败的用例name，失败的原因？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？
+    # 统计api执行结果，加入到邮件正文中，失败的用例name，失败的原因
     api_cases_table = load_workbook(table_dir('api_cases.xlsx'))
     cases_sheet = api_cases_table.get_sheet_by_name('tester')
     sheet_rows = cases_sheet.max_row

@@ -1,3 +1,4 @@
+# coding:utf-8
 import unittest
 from basic_info.setting import MY_LOGIN_INFO2
 import requests

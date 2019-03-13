@@ -1,3 +1,4 @@
+# coding:utf-8
 import requests
 from basic_info.setting import MY_LOGIN_INFO2
 
@@ -8,6 +9,7 @@ def get_auth_token():
     x_auth_token = res.headers['X-AUTH-TOKEN']
     # print(x_auth_token)
     return x_auth_token
+
 
 
 # 组装headers， 接口请求时调用
