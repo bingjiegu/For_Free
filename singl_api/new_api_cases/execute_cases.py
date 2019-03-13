@@ -9,6 +9,7 @@ from basic_info.setting import MySQL_CONFIG
 from basic_info.Open_DB import MYSQL
 from basic_info.format_res import get_time
 from basic_info.timestamp_13 import timestamp_to_13
+import random
 
 ms = MYSQL(MySQL_CONFIG["HOST"], MySQL_CONFIG["USER"], MySQL_CONFIG["PASSWORD"], MySQL_CONFIG["DB"])
 ab_dir = lambda n: os.path.abspath(os.path.join(os.path.dirname(__file__), n))
@@ -24,7 +25,9 @@ def deal_request_method():
     for i in range(2, all_rows+1):
         request_method = case_table_sheet.cell(row=i, column=4).value
         request_url = case_table_sheet.cell(row=i, column=5).value
-        request_data = case_table_sheet.cell(row=i, column=6).value
+        # request_data = case_table_sheet.cell(row=i, column=6).value
+        data = case_table_sheet.cell(row=i, column=6).value
+        request_data = deal_parameters(data)
         key_word = case_table_sheet.cell(row=i, column=3).value
         # 请求方法转大写
         if request_method:
@@ -169,8 +172,19 @@ def delete_request_result_check():
 def write_result(sheet, row, column, value):
     sheet.cell(row=row, column=column, value=value)
 
+def deal_parameters(data):
+    if data:
+        if '随机数' in data:
+            # print(data)
+            new_data = data.replace('随机数', str(random.randint(0, 99999999)))
+            return new_data
+        else:
+            return data
 
-deal_request_method()
+
+
+
+# deal_request_method()
 #
 # url = case_table_sheet.cell(row=2,column=7).value
 # data = case_table_sheet.cell(row=2, column=8).value
