@@ -6,6 +6,7 @@ from send_mail import main2, main3
 from basic_info.get_auth_token import get_headers
 from api_test_cases.get_execution_output_json import GetCheckoutDataSet
 import threading
+from new_api_cases.check_result import CheckResult
 import datetime
 # from newSuite import NewSuite
 
@@ -30,13 +31,13 @@ obj = GetCheckoutDataSet()
 sink_dataet_json = obj.get_json()
 stop_time = datetime.datetime.now()
 print('耗时:', stop_time-start_time)
-
+print('开始执行excel 版本api case')
+CheckResult().deal_result()
 main3(report_path=report_path)
 # threading.Timer(1500, get_headers()).start()
 # print('重新发送一次TOKEN')
 
-# from new_api_cases.execute_cases import deal_request_method
-# from new_api_cases.check_result import CheckResult
+
 
 
 
