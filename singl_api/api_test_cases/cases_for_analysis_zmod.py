@@ -32,7 +32,7 @@ class CasesForZmod(unittest.TestCase):
         content_ids.sort()
         self.assertEqual(200, response.status_code, '分析任务查询接口调用失败')
         # 数据库查询得到最新的8条分析任务id并排序
-        zdaf_data_limit8 = 'select id from merce_zdaf where flow_status != "PREPARING" order by create_time desc limit 8'
+        zdaf_data_limit8 = 'select id from merce_zdaf where flow_status != "PREPARING" order by last_modified_time desc limit 8'
         zdaf8 = ms.ExecuQuery(zdaf_data_limit8)
         zdaf_ids = [item[key] for item in zdaf8 for key in item]
         zdaf_ids.sort()

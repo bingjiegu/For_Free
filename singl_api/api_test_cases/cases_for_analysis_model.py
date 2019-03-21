@@ -30,7 +30,7 @@ class CasesForRule(unittest.TestCase):
 
     def test_create_rule_SQL(self):
         """创建Custom - SQL规则"""
-        rule_name = "rule_for_SQL_students_copy" + str(random.randint(0, 9999))
+        rule_name = "rule_for_SQL_students_copy" + str(random.randint(0, 999999999))
         data = {"aggType":"None",
                 "buildType":"Custom",
                 "customType":"SQL",
