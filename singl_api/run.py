@@ -18,23 +18,26 @@ for test_suite in discover:
         # print(test_case)
         testcase.addTest(test_case)
 filename = time.strftime("%Y%m%d%H", time.localtime()) + '_report.html'
-report_path = 'E:\Reports\\' + filename
-report_path = '/root/gbj/Reports/' + filename
+# report_path = 'E:\Reports\\' + filename
+report_path = '/root/gbj/Reports/' + filename  # 192.168.1.87环境Jenkins使用
 fp = open(report_path, 'wb')
 runner = HTMLTestRunner.HTMLTestRunner(stream=fp, title='API自动化测试报告', description='覆盖dataset,schema,schedulers,execution等测试场景')
 print('开始执行API自动化脚本')
 start_time = datetime.datetime.now()
+print('start_time:', start_time)
 runner.run(testcase)
 fp.close()
 print('自动化脚本执行结束，开始执行flow用例')
 # 需要执行的脚本
 obj = GetCheckoutDataSet()
 sink_dataet_json = obj.get_json()
-stop_time = datetime.datetime.now()
-print('耗时:', stop_time-start_time)
+
 print('开始执行excel 版本api case')
 CheckResult().deal_result()
 main3(report_path=report_path)
+stop_time = datetime.datetime.now()
+print('stop_time:', stop_time)
+print('耗时:', stop_time-start_time)
 # threading.Timer(1500, get_headers()).start()
 # print('重新发送一次TOKEN')
 
