@@ -59,10 +59,7 @@ def deal_request_method():
 
 # POST请求
 def post_request_result_check(row, column, url, headers, data, table_sheet_name):
-    import random
-    # if key_word in ('delete',''):
-    # 参数列中是字符串
-    # name = 'create_by_auto' + str(random.randint(0, 99999))
+
     if isinstance(data, str):
         #  SQL语句作为参数，需要先将SQL语句执行，数据库查询返回数据作为接口要传递的参数
         if data.startswith('select'):  # 后续根据需要增加其他select内容，如name或者其他？？？？？？
@@ -106,7 +103,7 @@ def post_request_result_check(row, column, url, headers, data, table_sheet_name)
         else:
                 print('第%d行参数不是以startswith或者{,[开头，请先确认参数内容' % row)
     else:
-        print('请确认第%d行的method和key_word' % row)
+        print('请确认第%d行的data形式' % row)
 
 
 # GET请求
@@ -184,7 +181,7 @@ def deal_parameters(data):
 
 
 
-# deal_request_method()
+deal_request_method()
 #
 # url = case_table_sheet.cell(row=2,column=7).value
 # data = case_table_sheet.cell(row=2, column=8).value
