@@ -1,5 +1,5 @@
 # coding:utf-8
-import requests
+import requests,json
 from basic_info.setting import MY_LOGIN_INFO2
 
 
@@ -8,8 +8,8 @@ def get_auth_token():
     res = requests.post(url=MY_LOGIN_INFO2["URL"], headers=MY_LOGIN_INFO2["HEADERS"], data=MY_LOGIN_INFO2["DATA"])
     # print(res.headers)
     # x_token = res.headers['X-AUTH-TOKEN']
-    # print(x_auth_token)
-    return res.headers['X-AUTH-TOKEN']
+    # print(json.dumps(dict(res.headers)['X-AUTH-TOKEN']))
+    return json.dumps(dict(res.headers)['X-AUTH-TOKEN'])
 
 
 
@@ -20,7 +20,7 @@ def get_headers():
     return headers
 
 
-
+# get_auth_token()
 
 
 
