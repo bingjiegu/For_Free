@@ -6,11 +6,12 @@ from basic_info.setting import MY_LOGIN_INFO2
 # 获取登录后返回的X-AUTH-TOKEN
 def get_auth_token():
     res = requests.post(url=MY_LOGIN_INFO2["URL"], headers=MY_LOGIN_INFO2["HEADERS"], data=MY_LOGIN_INFO2["DATA"])
-    # print(res.headers)
+    print('1:', type(res.headers))
     dict_headers = dict(res.headers)
-    print(type(dict_headers))
-    print(dict_headers)
-    print(dict_headers['X-AUTH-TOKEN'])
+    print('2:', type(dict_headers))
+    token = dict_headers['X-AUTH-TOKEN']
+    print('3:', token)
+    print('4:', type(token))
     return dict_headers['X-AUTH-TOKEN']
 
 
@@ -21,7 +22,6 @@ def get_headers():
     return headers
 
 
-# get_auth_token()
 
 
 
