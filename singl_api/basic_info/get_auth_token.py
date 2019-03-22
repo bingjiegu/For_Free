@@ -15,7 +15,7 @@ def get_auth_token():
 def get_headers():
     x_auth_token = get_auth_token()
     headers = {'Content-Type': 'application/json', "X-AUTH-TOKEN": x_auth_token, "Accept": "application/json"}
-    print(headers)
+    # print(headers)
     return headers
 
 
