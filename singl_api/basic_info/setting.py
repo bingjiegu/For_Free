@@ -65,6 +65,7 @@ MY_LOGIN_INFO2 = {
  "HEADERS": {'Content-Type': 'application/x-www-form-urlencoded'},
  "URL": "http://192.168.1.189:8515/api/auth/login",
  "DATA": {'name': encrypt_rf('admin'), 'password': encrypt_rf('123456'), 'version': 'Europa-3.0.0.19 - 20180428', 'tenant': encrypt_rf('default')},
+"DATA_ERROR_NAME": {'name': encrypt_rf('adminn'), 'password': encrypt_rf('123456'), 'version': 'Europa-3.0.0.19 - 20180428', 'tenant': encrypt_rf('default')},
  "HOST": "http://192.168.1.189:8515"
 }
 
