@@ -18,8 +18,8 @@ for test_suite in discover:
         # print(test_case)
         testcase.addTest(test_case)
 filename = time.strftime("%Y%m%d%H", time.localtime()) + '_report.html'
-# report_path = 'E:\Reports\\' + filename
-report_path = '/root/gbj/Reports/' + filename  # 192.168.1.87环境Jenkins使用
+report_path = 'E:\Reports\\' + filename
+# report_path = '/root/gbj/Reports/' + filename  # 192.168.1.87环境Jenkins使用
 fp = open(report_path, 'wb')
 runner = HTMLTestRunner.HTMLTestRunner(stream=fp, title='API自动化测试报告', description='覆盖dataset,schema,schedulers,execution等测试场景')
 print('开始执行API自动化脚本')
