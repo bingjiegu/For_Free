@@ -12,7 +12,7 @@ def get_auth_token():
     token = dict_headers['X-AUTH-TOKEN']
     print('3:', token)
     print('4:', type(token))
-    return dict_headers['X-AUTH-TOKEN']
+    return token
 
 
 # 组装headers， 接口请求时调用
