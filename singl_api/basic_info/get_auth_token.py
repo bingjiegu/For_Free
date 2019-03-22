@@ -8,9 +8,11 @@ def get_auth_token():
     print('-----',MY_LOGIN_INFO2)
     res = requests.post(url=MY_LOGIN_INFO2["URL"], headers=MY_LOGIN_INFO2["HEADERS"], data=MY_LOGIN_INFO2["DATA"])
 
+    print('=====', res)
     print('1:', type(res.headers))
     dict_headers = dict(res.headers)
     print('2:', type(dict_headers))
+    print('2-1:', dict_headers)
     token = dict_headers['X-AUTH-TOKEN']
     print('3:', token)
     print('4:', type(token))
