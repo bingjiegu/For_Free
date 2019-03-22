@@ -7,9 +7,9 @@ from basic_info.setting import MY_LOGIN_INFO2
 def get_auth_token():
     res = requests.post(url=MY_LOGIN_INFO2["URL"], headers=MY_LOGIN_INFO2["HEADERS"], data=MY_LOGIN_INFO2["DATA"])
     # print(res.headers)
-    x_token = res.headers['X-AUTH-TOKEN']
+    # x_token = res.headers['X-AUTH-TOKEN']
     # print(x_auth_token)
-    return x_token
+    return res.headers['X-AUTH-TOKEN']
 
 
 
