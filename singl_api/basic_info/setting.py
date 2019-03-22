@@ -1,6 +1,7 @@
 # coding:utf-8
 import os
 from basic_info import Open_DB
+from util.encrypt import encrypt_rf
 
 
 
@@ -63,7 +64,7 @@ MY_LOGIN_INFO = {
 MY_LOGIN_INFO2 = {
  "HEADERS": {'Content-Type': 'application/x-www-form-urlencoded'},
  "URL": "http://192.168.1.189:8515/api/auth/login",
- "DATA": {'name': 'admin', 'password': '123456', 'version': 'Europa-3.0.0.19 - 20180428', 'tenant': 'default'},
+ "DATA": {'name': encrypt_rf('admin'), 'password': encrypt_rf('123456'), 'version': 'Europa-3.0.0.19 - 20180428', 'tenant': encrypt_rf('default')},
  "HOST": "http://192.168.1.189:8515"
 }
 
