@@ -13,6 +13,7 @@ def get_auth_token():
     dict_headers = dict(res.headers)
     print('2:', type(dict_headers))
     print('2-1:', dict_headers)
+    print('2-2:', res.text)
     token = dict_headers['X-AUTH-TOKEN']
     print('3:', token)
     print('4:', type(token))
