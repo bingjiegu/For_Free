@@ -1,15 +1,14 @@
 # coding:utf-8
 import os
-import re
 from openpyxl import load_workbook
 import requests
 from basic_info.get_auth_token import get_headers
 from basic_info.format_res import dict_res
 from basic_info.setting import MySQL_CONFIG
 from basic_info.Open_DB import MYSQL
-from basic_info.format_res import get_time
-from basic_info.timestamp_13 import timestamp_to_13
 import random
+from new_api_cases.get_statementId import statementId
+
 
 ms = MYSQL(MySQL_CONFIG["HOST"], MySQL_CONFIG["USER"], MySQL_CONFIG["PASSWORD"], MySQL_CONFIG["DB"])
 ab_dir = lambda n: os.path.abspath(os.path.join(os.path.dirname(__file__), n))
@@ -59,7 +58,6 @@ def deal_request_method():
 
 # POST请求
 def post_request_result_check(row, column, url, headers, data, table_sheet_name):
-
     if isinstance(data, str):
         #  SQL语句作为参数，需要先将SQL语句执行，数据库查询返回数据作为接口要传递的参数
         if data.startswith('select'):  # 后续根据需要增加其他select内容，如name或者其他？？？？？？
@@ -108,37 +106,49 @@ def post_request_result_check(row, column, url, headers, data, table_sheet_name)
 
 # GET请求
 def get_request_result_check(url, headers, data, table_sheet_name, row, column):
+
     # GET请求需要从parameter中获取参数,并把参数拼装到URL中，
     if data:
-        # 分割参数，分割后成为一个列表['61bf20da-f42c-4b35-9142-0fc2a7664e3e', '2']
-        parameters = data.split('&')
-        # 处理存在select语句中的参数，并重新赋值后传递给URL
-        for i in range(len(parameters)):
-            if parameters[i].startswith('select id from'):
-                select_result = ms.ExecuQuery(parameters[i])
-                parameters[i] = select_result[0]["id"]
-            elif parameters[i].startswith('select name from'):
-                select_result = ms.ExecuQuery(parameters[i])
-                parameters[i] = select_result[0]["name"]
-
-        # 判断URL中需要的参数个数，并比较和data中的参数个数是否相等
-        if len(parameters) == 1:
-            url_new = url.format(parameters[0])
-            response = requests.get(url=url_new, headers=headers)
-            write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
-            write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
-        elif len(parameters) == 2:
-            url_new = url.format(parameters[0], parameters[1])
-            response = requests.get(url=url_new, headers=headers)
-            write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
-            write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
-        elif len(parameters) == 3:
-            url_new = url.format(parameters[0], parameters[1], parameters[2])
-            response = requests.get(url=url_new, headers=headers)
+        if case_table_sheet.cell(row=row, column=2).value == '根据statement id,获取预览Dataset的结果数据(datasetId存在)':
+            print(data)
+            statement_id = statementId(data)
+            parameter_list = []
+            parameter_list.append(data)
+            parameter_list.append(statement_id)
+            url_new = url.format(parameter_list[0], parameter_list[1])
+            response = requests.get(url=url_new, headers=get_headers())
             write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
             write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
         else:
-            print('请确认第%d行parameters' % row)
+            # 分割参数，分割后成为一个列表['61bf20da-f42c-4b35-9142-0fc2a7664e3e', '2']
+            parameters = data.split('&')
+            # 处理存在select语句中的参数，并重新赋值后传递给URL
+            for i in range(len(parameters)):
+                if parameters[i].startswith('select id from'):
+                    select_result = ms.ExecuQuery(parameters[i])
+                    parameters[i] = select_result[0]["id"]
+                elif parameters[i].startswith('select name from'):
+                    select_result = ms.ExecuQuery(parameters[i])
+                    parameters[i] = select_result[0]["name"]
+
+            # 判断URL中需要的参数个数，并比较和data中的参数个数是否相等
+            if len(parameters) == 1:
+                url_new = url.format(parameters[0])
+                response = requests.get(url=url_new, headers=headers)
+                write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
+                write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
+            elif len(parameters) == 2:
+                url_new = url.format(parameters[0], parameters[1])
+                response = requests.get(url=url_new, headers=headers)
+                write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
+                write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
+            elif len(parameters) == 3:
+                url_new = url.format(parameters[0], parameters[1], parameters[2])
+                response = requests.get(url=url_new, headers=headers)
+                write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
+                write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
+            else:
+                print('请确认第%d行parameters' % row)
     # GET 请求参数写在URL中，直接发送请求
     else:
         response = requests.get(url=url, headers=headers)
@@ -181,7 +191,7 @@ def deal_parameters(data):
 
 
 
-deal_request_method()
+# deal_request_method()
 #
 # url = case_table_sheet.cell(row=2,column=7).value
 # data = case_table_sheet.cell(row=2, column=8).value
