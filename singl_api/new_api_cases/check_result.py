@@ -1,6 +1,6 @@
 # coding:utf-8
 from openpyxl import load_workbook
-import os,unittest
+import os,unittest,json
 from basic_info.format_res import dict_res
 from new_api_cases.execute_cases import deal_request_method
 table_dir = lambda n: os.path.abspath(os.path.join(os.path.dirname(__file__), n))
@@ -39,13 +39,13 @@ class CheckResult(unittest.TestCase):
             #  status_code 对比结果pass的前提下，判断response.text断言是否正确,
             #  status_code 对比结果fail时，用例整体结果设为fail
             if code_result == 'pass':
-                if key_word in ('create', 'query', 'update'):
+                if key_word in ('create', 'query', 'update', 'delete'):
                     self.assert_deal(key_word, relation, expect_text, response_text, response_text_dict, row, 13)
-                elif key_word == 'delete':
-                    if response_text == None and expect_text == None:
-                        case_table_sheet.cell(row=row, column=13, value='pass')
-                    else:
-                        print('请确认 第%d行 预期text和接口实际返回response.text' % row)
+                # elif key_word == 'delete':
+                #     if response_text == None and expect_text == None:
+                #         case_table_sheet.cell(row=row, column=13, value='pass')
+                #     else:
+                #         print('请确认 第%d行 预期text和接口实际返回response.text' % row)
                 else:
                     print('请确认第%d行的key_word' % row)
             elif code_result == 'fail':
@@ -61,27 +61,30 @@ class CheckResult(unittest.TestCase):
     #  该方法根据expect_text, response_text的关系，进行断言, 目前只处理了等于和包含两种关系
     def assert_deal(self, key_word, relation, expect_text, response_text, response_text_dict, row, column):
         if key_word == 'create':
-            if relation == '=':   # 返回{"id":"ac4c81c2-6568-4b73-969d-fbf4ee699194"}格式内容时如何判断
+            if relation == '=':   # 只返回id时，判断返回内容中包含id属性，长度为45
                 try:
-                    print('第 %d 行 response_text返回id %s' % (row, response_text_dict.get("id")))
+                    # print('第 %d 行 response_text返回id %s' % (row, response_text_dict.get("id")))
                     self.assertIsNotNone(response_text_dict.get("id"), '第 %d 行 response_text没有返回id' % row)
+                    self.assertEqual(expect_text, len(response_text), '第%d行的response_text长度和预期不一致' % row)
                 except:
                     print('第 %d 行 response_text没有返回id' % row)
                     case_table_sheet.cell(row=row, column=column, value='fail')
                 else:
                     case_table_sheet.cell(row=row, column=column, value='pass')
-            elif relation == 'in':
+            elif relation == 'in':  # 返回多内容时，判断返回内容中包含id属性，并且expect_text包含在response_text中
                 try:
+                    self.assertIsNotNone(response_text_dict.get("id"), '第 %d 行 response_text没有返回id' % row)
                     self.assertIn(expect_text, response_text, '第 %d 行 expect_text没有包含在接口返回的response_text中' % row)
                 except:
-                    print('第 %d 行 expect_text和response_text不相等， 结果对比失败' % row)
+                    print('第 %d 行 expect_text没有包含在response_text中， 结果对比失败' % row)
                     case_table_sheet.cell(row=row, column=column, value='fail')
                 else:
                     case_table_sheet.cell(row=row, column=column, value='pass')
+
             else:
                 print('请确认第 %d 行 预期expect_text和response_text的relatrion' % row)
                 case_table_sheet.cell(row=row, column=column, value='请确认预期text和接口response.text的relatrion')
-        elif key_word in ('query', 'update'):
+        elif key_word in ('query', 'update', 'delete'):
             if relation == '=':
                 try:
                     self.assertEqual(expect_text, response_text, '第 %d 行 expect_text和response_text不相等' % row)
@@ -107,7 +110,7 @@ class CheckResult(unittest.TestCase):
     # 对比case最终的结果
     def deal_result(self):
         # 执行测试用例
-        deal_request_method()
+        # deal_request_method()
         # 对比code
         self.compare_code_result()
         # 对比text
@@ -136,6 +139,10 @@ class CheckResult(unittest.TestCase):
                 print('请确认status code或response.text对比结果')
         case_table.save(table_dir('api_cases.xlsx'))
 
+
 # 调试
-# g = CheckResult()
-# g.deal_result()
+# 执行用例
+deal_request_method()
+# 对比用例结果
+g = CheckResult()
+g.deal_result()

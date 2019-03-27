@@ -7,7 +7,7 @@ from basic_info.format_res import dict_res
 from basic_info.setting import MySQL_CONFIG
 from basic_info.Open_DB import MYSQL
 import random
-from new_api_cases.get_statementId import statementId
+from new_api_cases.get_statementId import statementId, statementId_no_dataset, get_sql_analyse_statement_id, get_sql_analyse_dataset_info, get_sql_execte_statement_id
 
 
 ms = MYSQL(MySQL_CONFIG["HOST"], MySQL_CONFIG["USER"], MySQL_CONFIG["PASSWORD"], MySQL_CONFIG["DB"])
@@ -59,54 +59,81 @@ def deal_request_method():
 # POST请求
 def post_request_result_check(row, column, url, headers, data, table_sheet_name):
     if isinstance(data, str):
-        #  SQL语句作为参数，需要先将SQL语句执行，数据库查询返回数据作为接口要传递的参数
-        if data.startswith('select'):  # 后续根据需要增加其他select内容，如name或者其他？？？？？？
-            # print('data startswith select:', data)
-            data_select_result = ms.ExecuQuery(data)
-            # print(data_select_result)
-            datas = []
-            if data_select_result:
-                try:
-                    for i in range(len(data_select_result)):
-                        datas.append(data_select_result[i]["id"])
-                except:
-                    print('请确认第%d行SQL语句' % row)
-                else:
-                    response = requests.post(url=url, headers=headers, json=datas)
-                    # 将返回的status_code和response.text分别写入第10列和第14列
-                    write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
-                    write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
-            else:
-                print('第%d行参数查询无结果' % row)
-        # 字典形式作为参数，如{"id":"7135cf6e-2b12-4282-90c4-bed9e2097d57","name":"gbj_for_jdbcDatasource_create_0301_1_0688","creator":"admin"}
-        elif data.startswith('{') and data.endswith('}'):
-            print('data startswith {:', data)
-            data_dict = dict_res(data)
-            print(data_dict)
-            response = requests.post(url=url, headers=headers, json=data_dict)
+        case_detail = case_table_sheet.cell(row=row, column=2).value
+        # if case_detail =='HDFS，根据statementId取结果数据(datasetId不存在)':
+        if case_detail in ('HDFS，根据statementId取结果数据(datasetId不存在)', 'HIVE，根据statementId取Dataset数据(datasetId不存在)',
+                           'KAFKA，根据statementId取Dataset数据(datasetId不存在)',
+                           'FTP，根据statementId取Dataset数据(datasetId不存在)'):
+            # 先获取statementId,然后格式化URL，再发送请求
+            statement = statementId_no_dataset(dict_res(data))
+            new_url = url.format(statement)
+            response = requests.post(url=new_url, headers=headers, data=data)
+            print(response.url)
+            # 将返回的status_code和response.text分别写入第10列和第14列
             write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
             write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
-        # 列表作为参数， 如["9d3639f0-02bc-44cd-ac71-9a6d0f572632"]
-        elif data.startswith('[') and data.endswith(']'):
-            # print('data startswith [:', data)
-            data_list = dict_res(data)
-            # print(type(data_list))
-            if data:
-                response = requests.post(url=url, headers=headers, json=data_list)
-                # print(response.status_code)
+        elif case_detail == '获取SQL执行任务结果':
+            # 先获取接口需要使用的statement id 和 数据集分析字段
+            execte_statement_id = get_sql_execte_statement_id(data)  # statement id
+            new_url = url.format(execte_statement_id)
+            print('获取SQL执行任务结果URL:', new_url)
+            execte_use_params = get_sql_analyse_dataset_info(data)  # 数据集分析字段
+            # print(execte_use_params)
+            response = requests.post(url=new_url, headers=get_headers(), json=execte_use_params)
+            write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
+            write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
+            # print(response.status_code)
+            # print(response.text)
+
+        else:
+            #  SQL语句作为参数，需要先将SQL语句执行，数据库查询返回数据作为接口要传递的参数
+            if data.startswith('select'):  # 后续根据需要增加其他select内容，如name或者其他？？？？？？
+                # print('data startswith select:', data)
+                data_select_result = ms.ExecuQuery(data)
+                # print(data_select_result)
+                datas = []
+                if data_select_result:
+                    try:
+                        for i in range(len(data_select_result)):
+                            datas.append(data_select_result[i]["id"])
+                    except:
+                        print('请确认第%d行SQL语句' % row)
+                    else:
+                        response = requests.post(url=url, headers=headers, json=datas)
+                        # 将返回的status_code和response.text分别写入第10列和第14列
+                        write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
+                        write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
+                else:
+                    print('第%d行参数查询无结果' % row)
+            # 字典形式作为参数，如{"id":"7135cf6e-2b12-4282-90c4-bed9e2097d57","name":"gbj_for_jdbcDatasource_create_0301_1_0688","creator":"admin"}
+            elif data.startswith('{') and data.endswith('}'):
+                print('data startswith {:', data)
+                data_dict = dict_res(data)
+                print(data_dict)
+                response = requests.post(url=url, headers=headers, json=data_dict)
                 write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
                 write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
+            # 列表作为参数， 如["9d3639f0-02bc-44cd-ac71-9a6d0f572632"]
+            elif data.startswith('[') and data.endswith(']'):
+                # print('data startswith [:', data)
+                data_list = dict_res(data)
+                # print(type(data_list))
+                if data:
+                    response = requests.post(url=url, headers=headers, json=data_list)
+                    # print(response.status_code)
+                    write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
+                    write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
+                else:
+                    print('请先确认第%d行list参数值' % row)
             else:
-                print('请先确认第%d行list参数值' % row)
-        else:
-                print('第%d行参数不是以startswith或者{,[开头，请先确认参数内容' % row)
+                    print('第%d行参数不是以startswith或者{,[开头，请先确认参数内容' % row)
     else:
         print('请确认第%d行的data形式' % row)
 
 
 # GET请求
 def get_request_result_check(url, headers, data, table_sheet_name, row, column):
-
+    case_detail = case_table_sheet.cell(row=row, column=2).value
     # GET请求需要从parameter中获取参数,并把参数拼装到URL中，
     if data:
         if case_table_sheet.cell(row=row, column=2).value == '根据statement id,获取预览Dataset的结果数据(datasetId存在)':
@@ -117,6 +144,21 @@ def get_request_result_check(url, headers, data, table_sheet_name, row, column):
             parameter_list.append(statement_id)
             url_new = url.format(parameter_list[0], parameter_list[1])
             response = requests.get(url=url_new, headers=get_headers())
+            write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
+            write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
+        elif case_detail == ('根据statement id,获取Sql Analyze结果(获取输出字段)'):
+            print('888888888888888888888888888888')
+            sql_analyse_statement_id = get_sql_analyse_statement_id(data)
+            new_url = url.format(sql_analyse_statement_id)
+            print(new_url)
+            response = requests.get(url=new_url, headers=get_headers())
+            print(response.url, response.text)
+            write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
+            write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
+        elif case_detail == ('结束指定statementId对应的查询任务'):  # 取消SQL analyse接口
+            cancel_statement_id = get_sql_analyse_statement_id(data)
+            new_url = url.format(cancel_statement_id)
+            response = requests.get(url=new_url, headers=get_headers())
             write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
             write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
         else:
