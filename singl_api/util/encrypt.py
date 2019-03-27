@@ -18,7 +18,6 @@ def encrypt_rf(enstr):
     return str_enstr
 
 
-
-# enstr = '123456'
+#
+# enstr = 'default'
 # print(encrypt_rf(enstr=enstr))
-# print(type(encrypt_rf(enstr=enstr)))
