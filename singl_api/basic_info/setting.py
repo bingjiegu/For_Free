@@ -32,7 +32,20 @@ email_to = {
 #     'case_db': 'test'
 # }
 
-# -------189环境使用-------
+# ------83环境使用--------
+# #  HOST
+# HOST_189 = "http://192.168.1.83:8515"
+# # 数据库连接信息
+# MySQL_CONFIG = {
+#     'HOST': '192.168.1.189',
+#     "PORT": 3306,
+#     "USER": 'merce',
+#     "PASSWORD": 'merce',
+#     "DB": 'wac',
+#     'case_db': 'test'
+# }
+
+# # -------189环境使用-------
 # HOST
 HOST_189 = "http://192.168.1.189:8515"
 # # # 数据库连接信息
@@ -60,14 +73,24 @@ MY_LOGIN_INFO = {
  "HOST": "http://192.168.1.189:8515"
 }
 
-# 目前登录使用该账户 admin
+# 目前登录使用该账户 admin，HOST信息和环境信息保持一致
 MY_LOGIN_INFO2 = {
  "HEADERS": {'Content-Type': 'application/x-www-form-urlencoded'},
- "URL": "http://192.168.1.189:8515/api/auth/login",
+ "URL": "%s/api/auth/login" % HOST_189,
  "DATA": {'name': encrypt_rf('admin'), 'password': encrypt_rf('123456'), 'version': 'Europa-3.0.0.19 - 20180428', 'tenant': encrypt_rf('default')},
 "DATA_ERROR_NAME": {'name': encrypt_rf('adminn'), 'password': encrypt_rf('123456'), 'version': 'Europa-3.0.0.19 - 20180428', 'tenant': encrypt_rf('default')},
- "HOST": "http://192.168.1.189:8515"
+ "HOST": "%s" % HOST_189
 }
+
+
+
+
+
+
+
+
+
+
 
 # login user:admin
 owner = "2059750c-a300-4b64-84a6-e8b086dbfd42"
