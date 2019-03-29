@@ -7,7 +7,8 @@ from basic_info.format_res import dict_res
 from basic_info.setting import MySQL_CONFIG
 from basic_info.Open_DB import MYSQL
 import random
-from new_api_cases.get_statementId import statementId, statementId_no_dataset, get_sql_analyse_statement_id, get_sql_analyse_dataset_info, get_sql_execte_statement_id
+from new_api_cases.get_statementId import statementId, statementId_no_dataset, get_sql_analyse_statement_id, get_sql_analyse_dataset_info, get_sql_execte_statement_id, steps_sql_parseinit_statemenId, steps_sql_analyzeinit_statementId
+
 
 
 ms = MYSQL(MySQL_CONFIG["HOST"], MySQL_CONFIG["USER"], MySQL_CONFIG["PASSWORD"], MySQL_CONFIG["DB"])
@@ -70,6 +71,7 @@ def post_request_result_check(row, column, url, headers, data, table_sheet_name)
             response = requests.post(url=new_url, headers=headers, data=data)
             print(response.url)
             # 将返回的status_code和response.text分别写入第10列和第14列
+            clean_vaule(table_sheet_name, row, column)
             write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
             write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
         elif case_detail == '获取SQL执行任务结果':
@@ -80,6 +82,7 @@ def post_request_result_check(row, column, url, headers, data, table_sheet_name)
             execte_use_params = get_sql_analyse_dataset_info(data)  # 数据集分析字段
             # print(execte_use_params)
             response = requests.post(url=new_url, headers=get_headers(), json=execte_use_params)
+            clean_vaule(table_sheet_name, row, column)
             write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
             write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
             # print(response.status_code)
@@ -101,16 +104,18 @@ def post_request_result_check(row, column, url, headers, data, table_sheet_name)
                     else:
                         response = requests.post(url=url, headers=headers, json=datas)
                         # 将返回的status_code和response.text分别写入第10列和第14列
+                        clean_vaule(table_sheet_name, row, column)
                         write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
                         write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
                 else:
                     print('第%d行参数查询无结果' % row)
             # 字典形式作为参数，如{"id":"7135cf6e-2b12-4282-90c4-bed9e2097d57","name":"gbj_for_jdbcDatasource_create_0301_1_0688","creator":"admin"}
             elif data.startswith('{') and data.endswith('}'):
-                print('data startswith {:', data)
+                # print('data startswith {:', data)
                 data_dict = dict_res(data)
-                print(data_dict)
+                # print(data_dict)
                 response = requests.post(url=url, headers=headers, json=data_dict)
+                clean_vaule(table_sheet_name, row, column)
                 write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
                 write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
             # 列表作为参数， 如["9d3639f0-02bc-44cd-ac71-9a6d0f572632"]
@@ -121,6 +126,7 @@ def post_request_result_check(row, column, url, headers, data, table_sheet_name)
                 if data:
                     response = requests.post(url=url, headers=headers, json=data_list)
                     # print(response.status_code)
+                    clean_vaule(table_sheet_name, row, column)
                     write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
                     write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
                 else:
@@ -144,21 +150,55 @@ def get_request_result_check(url, headers, data, table_sheet_name, row, column):
             parameter_list.append(statement_id)
             url_new = url.format(parameter_list[0], parameter_list[1])
             response = requests.get(url=url_new, headers=get_headers())
+            clean_vaule(table_sheet_name, row, column)
             write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
             write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
         elif case_detail == ('根据statement id,获取Sql Analyze结果(获取输出字段)'):
-            print('888888888888888888888888888888')
+            # print('888888888888888888888888888888')
             sql_analyse_statement_id = get_sql_analyse_statement_id(data)
             new_url = url.format(sql_analyse_statement_id)
             print(new_url)
             response = requests.get(url=new_url, headers=get_headers())
             print(response.url, response.text)
+            clean_vaule(table_sheet_name, row, column)
             write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
             write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
         elif case_detail == ('结束指定statementId对应的查询任务'):  # 取消SQL analyse接口
             cancel_statement_id = get_sql_analyse_statement_id(data)
             new_url = url.format(cancel_statement_id)
             response = requests.get(url=new_url, headers=get_headers())
+            clean_vaule(table_sheet_name, row, column)
+            write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
+            write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
+
+        elif case_detail == ('根据解析sql接口返回的statementId,获取dataset name'):
+            datasetName_statementId = steps_sql_parseinit_statemenId(data)
+            new_url = url.format(datasetName_statementId)
+            response = requests.get(url=new_url, headers=get_headers())
+            print(response.text)
+            while response.text in ('{"statement":"waiting"}', '{"statement":"running"}'):
+                response = requests.get(url=new_url, headers=get_headers())
+            print(response.text)
+            clean_vaule(table_sheet_name, row, column)
+            write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
+            write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
+        elif case_detail == ('根据Sql Analyze返回的statementId,获取SqlAnalyze结果'):
+            steps_sql_analyse_statementId = steps_sql_analyzeinit_statementId(data)
+            new_url = url.format(steps_sql_analyse_statementId)
+            response = requests.get(url=new_url, headers=get_headers())
+            print(response.text)
+            while response.text in ('{"statement":"waiting"}', '{"statement":"running"}'):
+                response = requests.get(url=new_url, headers=get_headers())
+            print(response.text)
+            clean_vaule(table_sheet_name, row, column)
+            write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
+            write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
+        elif case_detail == ('结束sqlsource step中指定statementId对应任务'):
+            cancel_sql_parseinit_statementId = steps_sql_parseinit_statemenId(data)
+            new_url = url.format(cancel_sql_parseinit_statementId)
+            response = requests.get(url=new_url, headers=get_headers())
+            print(response.text)
+            clean_vaule(table_sheet_name, row, column)
             write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
             write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
         else:
@@ -177,16 +217,19 @@ def get_request_result_check(url, headers, data, table_sheet_name, row, column):
             if len(parameters) == 1:
                 url_new = url.format(parameters[0])
                 response = requests.get(url=url_new, headers=headers)
+                clean_vaule(table_sheet_name, row, column)
                 write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
                 write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
             elif len(parameters) == 2:
                 url_new = url.format(parameters[0], parameters[1])
                 response = requests.get(url=url_new, headers=headers)
+                clean_vaule(table_sheet_name, row, column)
                 write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
                 write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
             elif len(parameters) == 3:
                 url_new = url.format(parameters[0], parameters[1], parameters[2])
                 response = requests.get(url=url_new, headers=headers)
+                clean_vaule(table_sheet_name, row, column)
                 write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
                 write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
             else:
@@ -194,6 +237,7 @@ def get_request_result_check(url, headers, data, table_sheet_name, row, column):
     # GET 请求参数写在URL中，直接发送请求
     else:
         response = requests.get(url=url, headers=headers)
+        clean_vaule(table_sheet_name, row, column)
         write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
         write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
 
@@ -208,6 +252,7 @@ def put_request_result_check(url, row, data, table_sheet_name, column):
     parameters_data = parameters[-1]
     if parameters_data.startswith('{'):
         response = requests.put(url=new_url, headers=get_headers(), json=dict_res(parameters_data))
+        clean_vaule(table_sheet_name, row, column)
         write_result(table_sheet_name, row, column, response.status_code)
         write_result(table_sheet_name, row, column+4, response.text)
     else:
@@ -220,6 +265,16 @@ def delete_request_result_check():
 #  写入返回结果
 def write_result(sheet, row, column, value):
     sheet.cell(row=row, column=column, value=value)
+
+
+#  写入结果前，先把结果和对比结果全部清空
+def clean_vaule(sheet, row, column):
+    sheet.cell(row=row, column=column, value='')
+    sheet.cell(row=row, column=column+1, value='')
+    sheet.cell(row=row, column=column + 4, value='')
+    sheet.cell(row=row, column=column + 5, value='')
+    sheet.cell(row=row, column=column + 6, value='')
+    sheet.cell(row=row, column=column + 7, value='')
 
 def deal_parameters(data):
     if data:

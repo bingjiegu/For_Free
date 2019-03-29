@@ -76,11 +76,41 @@ def get_sql_execte_statement_id(param):
         return
 
 
+# 根据Sql语句解析表名,初始化ParseSql任务,返回statementID
+def steps_sql_parseinit_statemenId(params):
+    url = 'http://192.168.1.189:8515/api/steps/sql/parseinit'
+    res = requests.post(url=url, headers=get_headers(), data=params)
+    print(res.text)
+    try:
+        res_statementId = json.loads(res.text)
+        steps_sql_parseinit_statemenId = res_statementId['statementId']
+        print(steps_sql_parseinit_statemenId)
+        return steps_sql_parseinit_statemenId
+    except KeyError:
+        return
 
 
-#
-# params = {"sql":"select\n *\nfrom\n gbj_test_ElasticSearch_dataset96521451","ids":"335b252b-c27c-44fc-b915-9ebe7e05cc5a"}
-# get_sql_analyse_dataset_info(params)
+# 初始化Sql Analyze,返回任务的statementID
+def steps_sql_analyzeinit_statementId(params):
+    url = 'http://192.168.1.189:8515/api/steps/sql/analyzeinit'
+    res = requests.post(url=url, headers=get_headers(), data=params)
+    print(res.text)
+    try:
+        res_statementId = json.loads(res.text)
+        steps_sql_analyzeinit_statementId = res_statementId['statementId']
+        print(steps_sql_analyzeinit_statementId)
+        return steps_sql_analyzeinit_statementId
+    except KeyError:
+        return
+
+
+
+
+
+# params = {"datasets":"gbj_mysql_datasource_189_dataset","sql":"select * from gbj_mysql_datasource_189_dataset"}
+# steps_sql_analyzeinit_statementId(params)
+
+
 
 
 
