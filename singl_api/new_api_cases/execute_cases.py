@@ -47,7 +47,7 @@ def deal_request_method():
                 put_request_result_check(url=request_url, row=i, data=request_data, table_sheet_name=case_table_sheet, column=8)
 
             elif request_method_upper == 'DELETE':
-                delete_request_result_check()
+                delete_request_result_check(request_url,request_data,table_sheet_name=case_table_sheet,row=i,column=8, headers=get_headers())
 
             else:
                 print('请求方法%s不在处理范围内' % request_method)
@@ -104,6 +104,7 @@ def post_request_result_check(row, column, url, headers, data, table_sheet_name)
                     else:
                         response = requests.post(url=url, headers=headers, json=datas)
                         # 将返回的status_code和response.text分别写入第10列和第14列
+                        # print(response.text, type(response.text))
                         clean_vaule(table_sheet_name, row, column)
                         write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
                         write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
@@ -150,6 +151,8 @@ def get_request_result_check(url, headers, data, table_sheet_name, row, column):
             parameter_list.append(statement_id)
             url_new = url.format(parameter_list[0], parameter_list[1])
             response = requests.get(url=url_new, headers=get_headers())
+            while response.text in ('{"statement":"waiting"}', '{"statement":"running"}'):
+                response = requests.get(url=url_new, headers=get_headers())
             clean_vaule(table_sheet_name, row, column)
             write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
             write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
@@ -197,6 +200,7 @@ def get_request_result_check(url, headers, data, table_sheet_name, row, column):
             cancel_sql_parseinit_statementId = steps_sql_parseinit_statemenId(data)
             new_url = url.format(cancel_sql_parseinit_statementId)
             response = requests.get(url=new_url, headers=get_headers())
+
             print(response.text)
             clean_vaule(table_sheet_name, row, column)
             write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
@@ -258,8 +262,46 @@ def put_request_result_check(url, row, data, table_sheet_name, column):
     else:
         print('请确认第%d行parameters中需要update的值格式，应为id&{data}' % row)
 
-def delete_request_result_check():
-    print('delete')
+
+def delete_request_result_check(url, data, table_sheet_name, row, column, headers):
+    if isinstance(data, str):
+        if data.startswith('select'):  # sql语句的查询结果当做参数
+            data_select_result = ms.ExecuQuery(data)
+            print(data_select_result)
+            print(type(data_select_result))
+            datas = []
+            if data_select_result:
+                try:
+                    for i in range(len(data_select_result)):
+                        datas.append(data_select_result[i]["id"])
+                except:
+                    print('请确认第%d行SQL语句' % row)
+                else:
+                    if len(datas) == 1:
+                        print(datas)
+                        new_url = url.format(datas[0])
+                        response = requests.delete(url=new_url, headers=headers)
+                        print(response.url)
+                        print(response.text)
+                        # 将返回的status_code和response.text分别写入第10列和第14列
+                        clean_vaule(table_sheet_name, row, column)
+                        write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
+                        write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
+                    else:
+                        print('请确认 select 语句查询返回值是不是只有一个')
+            else:
+                print('第%d行参数查询无结果' % row)
+            # 字典形式作为参数，如{"id":"7135cf6e-2b12-4282-90c4-bed9e2097d57","name":"gbj_for_jdbcDatasource_create_0301_1_0688","creator":"admin"}
+
+        else:
+            new_url = url.format(data)
+            response = requests.delete(url=new_url, headers=headers)
+            # 将返回的status_code和response.text分别写入第10列和第14列
+            clean_vaule(table_sheet_name, row, column)
+            write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
+            write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
+    else:
+        print('请确认第%d行的data形式' % row)
 
 
 #  写入返回结果
@@ -287,7 +329,7 @@ def deal_parameters(data):
 
 
 
-
+# print(case_table_sheet.cell(row=10,column=10).value == case_table_sheet.cell(row=10,column=12).value)
 # deal_request_method()
 #
 # url = case_table_sheet.cell(row=2,column=7).value
