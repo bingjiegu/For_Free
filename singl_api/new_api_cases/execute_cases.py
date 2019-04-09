@@ -6,9 +6,10 @@ from basic_info.get_auth_token import get_headers
 from basic_info.format_res import dict_res
 from basic_info.setting import MySQL_CONFIG
 from basic_info.Open_DB import MYSQL
+from basic_info.setting import HOST_189
 import random
 from new_api_cases.get_statementId import statementId, statementId_no_dataset, get_sql_analyse_statement_id, get_sql_analyse_dataset_info, get_sql_execte_statement_id, steps_sql_parseinit_statemenId, steps_sql_analyzeinit_statementId
-
+from new_api_cases.prepare_datas_for_collectors import get_job_tasks_id
 
 
 ms = MYSQL(MySQL_CONFIG["HOST"], MySQL_CONFIG["USER"], MySQL_CONFIG["PASSWORD"], MySQL_CONFIG["DB"])
@@ -87,7 +88,33 @@ def post_request_result_check(row, column, url, headers, data, table_sheet_name)
             write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
             # print(response.status_code)
             # print(response.text)
-
+        elif case_detail == '批量删除execution':
+            # 需要先查询指定flow下的所有execution，从中取出execution id，拼装成list，传递给删除接口
+            query_execution_url = '%s/api/executions/query' % HOST_189
+            all_exectuions = requests.post(url=query_execution_url, headers=get_headers(), data=data)
+            executions_dict = dict_res(all_exectuions.text)
+            executions_content = executions_dict['content']
+            try:
+                all_ids = [] # 该list用来存储所有的execution id
+                for item in executions_content:
+                    executions_content_id = item['id']
+                    all_ids.append(executions_content_id)
+            except Exception as e:
+                print(e)
+            else:  # 取出一个id放入一个新的list，作为传递给removeLIst接口的参数
+                removelist_data = []
+                removelist_data.append(all_ids[-1])
+                # 执行删除操作
+                removeList_result = requests.post(url=url,headers=get_headers(), json=removelist_data)
+                clean_vaule(table_sheet_name, row, column)
+                write_result(sheet=table_sheet_name, row=row, column=column, value=removeList_result.status_code)
+                write_result(sheet=table_sheet_name, row=row, column=column + 4, value=removeList_result.text)
+        elif case_detail == '停止一个采集器任务的执行':
+            task_id = get_job_tasks_id(data)
+            response = requests.post(url=url, headers=get_headers(), json=task_id)
+            clean_vaule(table_sheet_name, row, column)
+            write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
+            write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
         else:
             #  SQL语句作为参数，需要先将SQL语句执行，数据库查询返回数据作为接口要传递的参数
             if data.startswith('select'):  # 后续根据需要增加其他select内容，如name或者其他？？？？？？
@@ -174,7 +201,7 @@ def get_request_result_check(url, headers, data, table_sheet_name, row, column):
             write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
             write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
 
-        elif case_detail == ('根据解析sql接口返回的statementId,获取dataset name'):
+        elif case_detail == ('根据解析sql parse接口返回的statementId,获取dataset name'):
             datasetName_statementId = steps_sql_parseinit_statemenId(data)
             new_url = url.format(datasetName_statementId)
             response = requests.get(url=new_url, headers=get_headers())
@@ -205,10 +232,33 @@ def get_request_result_check(url, headers, data, table_sheet_name, row, column):
             clean_vaule(table_sheet_name, row, column)
             write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
             write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
+        elif case_detail == '根据execution id查找execution':
+            # 需要先查询指定flow下的所有execution，从中取出第一个execution id，传递给查询接口
+            query_execution_url = '%s/api/executions/query' % HOST_189
+            all_executions = requests.post(url=query_execution_url, headers=get_headers(), data=data)
+            executions_dict = dict_res(all_executions.text)
+            executions_content = executions_dict['content']
+            try:
+                all_ids = []  # 该list用来存储所有的execution id
+                for item in executions_content:
+                    executions_content_id = item['id']
+                    all_ids.append(executions_content_id)
+            except Exception as e:
+                print(e)
+            else:  #
+                # 执行查询操作,将查询到的第一个execution id当做参数传递给查询接口
+                new_url = url.format(all_ids[0])
+                query_response = requests.get(url=new_url, headers=get_headers())
+                print(query_response.status_code)
+                print(query_response.text)
+                clean_vaule(table_sheet_name, row, column)
+                write_result(sheet=table_sheet_name, row=row, column=column, value=query_response.status_code)
+                write_result(sheet=table_sheet_name, row=row, column=column + 4, value=query_response.text)
         else:
             # 分割参数，分割后成为一个列表['61bf20da-f42c-4b35-9142-0fc2a7664e3e', '2']
             parameters = data.split('&')
-            # 处理存在select语句中的参数，并重新赋值后传递给URL
+            print('parameters:', parameters)
+            # 处理存在select语句中的参数，并重新赋值
             for i in range(len(parameters)):
                 if parameters[i].startswith('select id from'):
                     select_result = ms.ExecuQuery(parameters[i])
@@ -216,6 +266,9 @@ def get_request_result_check(url, headers, data, table_sheet_name, row, column):
                 elif parameters[i].startswith('select name from'):
                     select_result = ms.ExecuQuery(parameters[i])
                     parameters[i] = select_result[0]["name"]
+                elif parameters[i].startswith('select execution_id from'):
+                    select_result = ms.ExecuQuery(parameters[i])
+                    parameters[i] = select_result[0]["execution_id"]
 
             # 判断URL中需要的参数个数，并比较和data中的参数个数是否相等
             if len(parameters) == 1:
@@ -265,7 +318,7 @@ def put_request_result_check(url, row, data, table_sheet_name, column):
 
 def delete_request_result_check(url, data, table_sheet_name, row, column, headers):
     if isinstance(data, str):
-        if data.startswith('select'):  # sql语句的查询结果当做参数
+        if data.startswith('select id'):  # sql语句的查询结果当做参数
             data_select_result = ms.ExecuQuery(data)
             print(data_select_result)
             print(type(data_select_result))
@@ -322,16 +375,15 @@ def deal_parameters(data):
     if data:
         if '随机数' in data:
             # print(data)
-            new_data = data.replace('随机数', str(random.randint(0, 99999999)))
+            new_data = data.replace('随机数', str(random.randint(0, 999999999999999)))
             return new_data
         else:
             return data
 
 
 
-# print(case_table_sheet.cell(row=10,column=10).value == case_table_sheet.cell(row=10,column=12).value)
-# deal_request_method()
-#
+deal_request_method()
+# print(case_table_sheet.cell(row=2,column=10).value == case_table_sheet.cell(row=2,column=12).value)
 # url = case_table_sheet.cell(row=2,column=7).value
 # data = case_table_sheet.cell(row=2, column=8).value
 # key_word = case_table_sheet.cell(row=2, column=5).value
