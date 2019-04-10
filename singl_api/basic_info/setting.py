@@ -49,11 +49,19 @@ email_to = {
 # HOST
 HOST_189 = "http://192.168.1.189:8515"
 # # # 数据库连接信息
+# MySQL_CONFIG = {
+#     'HOST': '192.168.1.189',
+#     "PORT": 3306,
+#     "USER": 'merce',
+#     "PASSWORD": 'merce',
+#     "DB": 'merce',
+#     'case_db': 'test'
+# }
 MySQL_CONFIG = {
-    'HOST': '192.168.1.189',
+    'HOST': '192.168.1.199',
     "PORT": 3306,
     "USER": 'merce',
-    "PASSWORD": 'merce',
+    "PASSWORD": '123456',
     "DB": 'merce',
     'case_db': 'test'
 }
@@ -78,10 +86,18 @@ MY_LOGIN_INFO2 = {
  "HEADERS": {'Content-Type': 'application/x-www-form-urlencoded'},
  "URL": "%s/api/auth/login" % HOST_189,
  "DATA": {'name': encrypt_rf('admin'), 'password': encrypt_rf('123456'), 'version': 'Europa-3.0.0.19 - 20180428', 'tenant': encrypt_rf('default')},
-"DATA_ERROR_NAME": {'name': encrypt_rf('adminn'), 'password': encrypt_rf('123456'), 'version': 'Europa-3.0.0.19 - 20180428', 'tenant': encrypt_rf('default')},
+ "DATA_ERROR_NAME": {'name': encrypt_rf('adminn'), 'password': encrypt_rf('123456'), 'version': 'Europa-3.0.0.19 - 20180428', 'tenant': encrypt_rf('default')},
  "HOST": "%s" % HOST_189
 }
 
+# root账户登录信息
+MY_LOGIN_INFO_root = {
+ "HEADERS": {'Content-Type': 'application/x-www-form-urlencoded'},
+ "URL": "%s/api/auth/login" % HOST_189,
+ "DATA": {'name': encrypt_rf('root'), 'password': encrypt_rf('123456'), 'version': 'Europa-3.0.0.19 - 20180428', 'tenant': encrypt_rf('root')},
+ "DATA_ERROR_NAME": {'name': encrypt_rf('adminn'), 'password': encrypt_rf('123456'), 'version': 'Europa-3.0.0.19 - 20180428', 'tenant': encrypt_rf('default')},
+ "HOST": "%s" % HOST_189
+}
 
 
 
