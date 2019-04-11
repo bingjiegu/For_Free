@@ -64,7 +64,7 @@ def get_sql_analyse_dataset_info(params):
 
 # 解析SQL字段后，初始化Sql任务，返回statement id，执行SQL语句使用
 def get_sql_execte_statement_id(param):
-    url = 'http://192.168.1.189:8515/api/datasets/sql/executeinit'
+    url = '%s/api/datasets/sql/executeinit' % HOST_189
     res = requests.post(url=url, headers=get_headers(), data=param)
     print(res.text)
     try:
@@ -78,7 +78,7 @@ def get_sql_execte_statement_id(param):
 
 # 根据Sql语句解析表名,初始化ParseSql任务,返回statementID
 def steps_sql_parseinit_statemenId(params):
-    url = 'http://192.168.1.189:8515/api/steps/sql/parseinit'
+    url = '%s/api/steps/sql/parseinit' % HOST_189
     res = requests.post(url=url, headers=get_headers(), data=params)
     print(res.text)
     try:
@@ -92,7 +92,7 @@ def steps_sql_parseinit_statemenId(params):
 
 # 初始化Sql Analyze,返回任务的statementID
 def steps_sql_analyzeinit_statementId(params):
-    url = 'http://192.168.1.189:8515/api/steps/sql/analyzeinit'
+    url = '%s/api/steps/sql/analyzeinit' % HOST_189
     res = requests.post(url=url, headers=get_headers(), data=params)
     print(res.text)
     try:

@@ -2,14 +2,14 @@
 import os
 from openpyxl import load_workbook
 import requests
-from basic_info.get_auth_token import get_headers
+from basic_info.get_auth_token import get_headers, get_headers_root
 from basic_info.format_res import dict_res
 from basic_info.setting import MySQL_CONFIG
 from basic_info.Open_DB import MYSQL
 from basic_info.setting import HOST_189
 import random
 from new_api_cases.get_statementId import statementId, statementId_no_dataset, get_sql_analyse_statement_id, get_sql_analyse_dataset_info, get_sql_execte_statement_id, steps_sql_parseinit_statemenId, steps_sql_analyzeinit_statementId
-from new_api_cases.prepare_datas_for_collectors import get_job_tasks_id
+from new_api_cases.prepare_datas_for_cases import get_job_tasks_id
 
 
 ms = MYSQL(MySQL_CONFIG["HOST"], MySQL_CONFIG["USER"], MySQL_CONFIG["PASSWORD"], MySQL_CONFIG["DB"])
@@ -30,28 +30,51 @@ def deal_request_method():
         data = case_table_sheet.cell(row=i, column=6).value
         request_data = deal_parameters(data)
         key_word = case_table_sheet.cell(row=i, column=3).value
+        api_name = case_table_sheet.cell(row=i, column=1).value
         # 请求方法转大写
         if request_method:
             request_method_upper = request_method.upper()
-            # 根据不同的请求方法，进行分发
-            if request_method_upper == 'POST':
-                # 调用post方法发送请求
-                post_request_result_check(row=i, column=8, url=request_url, headers=get_headers(),
-                                                data=request_data, table_sheet_name=case_table_sheet)
+            if api_name == 'tenants':
+                # 根据不同的请求方法，进行分发
+                if request_method_upper == 'POST':
+                    # 调用post方法发送请求
+                    post_request_result_check(row=i, column=8, url=request_url, headers=get_headers_root(),
+                                              data=request_data, table_sheet_name=case_table_sheet)
 
-            elif request_method_upper == 'GET':
-                # 调用GET请求
-                get_request_result_check(url=request_url, headers=get_headers(), data=request_data,
-                                         table_sheet_name=case_table_sheet, row=i, column=8)
+                elif request_method_upper == 'GET':
+                    # 调用GET请求
+                    get_request_result_check(url=request_url, headers=get_headers_root(), data=request_data,
+                                             table_sheet_name=case_table_sheet, row=i, column=8)
 
-            elif request_method_upper == 'PUT':
-                put_request_result_check(url=request_url, row=i, data=request_data, table_sheet_name=case_table_sheet, column=8)
+                elif request_method_upper == 'PUT':
+                    put_request_result_check(url=request_url, row=i, data=request_data,
+                                             table_sheet_name=case_table_sheet, column=8, headers=get_headers_root())
 
-            elif request_method_upper == 'DELETE':
-                delete_request_result_check(request_url,request_data,table_sheet_name=case_table_sheet,row=i,column=8, headers=get_headers())
-
+                elif request_method_upper == 'DELETE':
+                    delete_request_result_check(request_url, request_data, table_sheet_name=case_table_sheet, row=i,
+                                                column=8, headers=get_headers_root())
+                else:
+                    print('请求方法%s不在处理范围内' % request_method)
             else:
-                print('请求方法%s不在处理范围内' % request_method)
+                # 根据不同的请求方法，进行分发
+                if request_method_upper == 'POST':
+                    # 调用post方法发送请求
+                    post_request_result_check(row=i, column=8, url=request_url, headers=get_headers(),
+                                                    data=request_data, table_sheet_name=case_table_sheet)
+
+                elif request_method_upper == 'GET':
+                    # 调用GET请求
+                    get_request_result_check(url=request_url, headers=get_headers(), data=request_data,
+                                             table_sheet_name=case_table_sheet, row=i, column=8)
+
+                elif request_method_upper == 'PUT':
+                    put_request_result_check(url=request_url, row=i, data=request_data, table_sheet_name=case_table_sheet, column=8, headers=get_headers())
+
+                elif request_method_upper == 'DELETE':
+                    delete_request_result_check(request_url,request_data,table_sheet_name=case_table_sheet,row=i,column=8, headers=get_headers())
+
+                else:
+                    print('请求方法%s不在处理范围内' % request_method)
         else:
             print('第 %d 行请求方法为空' % i)
     #  执行结束后保存表格
@@ -82,7 +105,7 @@ def post_request_result_check(row, column, url, headers, data, table_sheet_name)
             print('获取SQL执行任务结果URL:', new_url)
             execte_use_params = get_sql_analyse_dataset_info(data)  # 数据集分析字段
             # print(execte_use_params)
-            response = requests.post(url=new_url, headers=get_headers(), json=execte_use_params)
+            response = requests.post(url=new_url, headers=headers, json=execte_use_params)
             clean_vaule(table_sheet_name, row, column)
             write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
             write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
@@ -91,7 +114,7 @@ def post_request_result_check(row, column, url, headers, data, table_sheet_name)
         elif case_detail == '批量删除execution':
             # 需要先查询指定flow下的所有execution，从中取出execution id，拼装成list，传递给删除接口
             query_execution_url = '%s/api/executions/query' % HOST_189
-            all_exectuions = requests.post(url=query_execution_url, headers=get_headers(), data=data)
+            all_exectuions = requests.post(url=query_execution_url, headers=headers, data=data)
             executions_dict = dict_res(all_exectuions.text)
             executions_content = executions_dict['content']
             try:
@@ -105,16 +128,25 @@ def post_request_result_check(row, column, url, headers, data, table_sheet_name)
                 removelist_data = []
                 removelist_data.append(all_ids[-1])
                 # 执行删除操作
-                removeList_result = requests.post(url=url,headers=get_headers(), json=removelist_data)
+                removeList_result = requests.post(url=url,headers=headers, json=removelist_data)
                 clean_vaule(table_sheet_name, row, column)
                 write_result(sheet=table_sheet_name, row=row, column=column, value=removeList_result.status_code)
                 write_result(sheet=table_sheet_name, row=row, column=column + 4, value=removeList_result.text)
         elif case_detail == '停止一个采集器任务的执行':
             task_id = get_job_tasks_id(data)
-            response = requests.post(url=url, headers=get_headers(), json=task_id)
+            response = requests.post(url=url, headers=headers, json=task_id)
             clean_vaule(table_sheet_name, row, column)
             write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
             write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
+        elif case_detail == '指定目录下创建子目录':
+            response = requests.post(url=url, headers=headers, json=dict_res(data))
+            print(response.text)
+            print(response.status_code)
+            new_resource_id = dict_res(response.text)["id"]
+            clean_vaule(table_sheet_name, row, column)
+            write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
+            write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
+
         else:
             #  SQL语句作为参数，需要先将SQL语句执行，数据库查询返回数据作为接口要传递的参数
             if data.startswith('select'):  # 后续根据需要增加其他select内容，如name或者其他？？？？？？
@@ -177,9 +209,9 @@ def get_request_result_check(url, headers, data, table_sheet_name, row, column):
             parameter_list.append(data)
             parameter_list.append(statement_id)
             url_new = url.format(parameter_list[0], parameter_list[1])
-            response = requests.get(url=url_new, headers=get_headers())
+            response = requests.get(url=url_new, headers=headers)
             while response.text in ('{"statement":"waiting"}', '{"statement":"running"}'):
-                response = requests.get(url=url_new, headers=get_headers())
+                response = requests.get(url=url_new, headers=headers)
             clean_vaule(table_sheet_name, row, column)
             write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
             write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
@@ -188,7 +220,7 @@ def get_request_result_check(url, headers, data, table_sheet_name, row, column):
             sql_analyse_statement_id = get_sql_analyse_statement_id(data)
             new_url = url.format(sql_analyse_statement_id)
             print(new_url)
-            response = requests.get(url=new_url, headers=get_headers())
+            response = requests.get(url=new_url, headers=headers)
             print(response.url, response.text)
             clean_vaule(table_sheet_name, row, column)
             write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
@@ -196,7 +228,7 @@ def get_request_result_check(url, headers, data, table_sheet_name, row, column):
         elif case_detail == ('结束指定statementId对应的查询任务'):  # 取消SQL analyse接口
             cancel_statement_id = get_sql_analyse_statement_id(data)
             new_url = url.format(cancel_statement_id)
-            response = requests.get(url=new_url, headers=get_headers())
+            response = requests.get(url=new_url, headers=headers)
             clean_vaule(table_sheet_name, row, column)
             write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
             write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
@@ -204,10 +236,10 @@ def get_request_result_check(url, headers, data, table_sheet_name, row, column):
         elif case_detail == ('根据解析sql parse接口返回的statementId,获取dataset name'):
             datasetName_statementId = steps_sql_parseinit_statemenId(data)
             new_url = url.format(datasetName_statementId)
-            response = requests.get(url=new_url, headers=get_headers())
+            response = requests.get(url=new_url, headers=headers)
             print(response.text)
             while response.text in ('{"statement":"waiting"}', '{"statement":"running"}'):
-                response = requests.get(url=new_url, headers=get_headers())
+                response = requests.get(url=new_url, headers=headers)
             print(response.text)
             clean_vaule(table_sheet_name, row, column)
             write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
@@ -215,10 +247,10 @@ def get_request_result_check(url, headers, data, table_sheet_name, row, column):
         elif case_detail == ('根据Sql Analyze返回的statementId,获取SqlAnalyze结果'):
             steps_sql_analyse_statementId = steps_sql_analyzeinit_statementId(data)
             new_url = url.format(steps_sql_analyse_statementId)
-            response = requests.get(url=new_url, headers=get_headers())
+            response = requests.get(url=new_url, headers=headers)
             print(response.text)
             while response.text in ('{"statement":"waiting"}', '{"statement":"running"}'):
-                response = requests.get(url=new_url, headers=get_headers())
+                response = requests.get(url=new_url, headers=headers)
             print(response.text)
             clean_vaule(table_sheet_name, row, column)
             write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
@@ -226,7 +258,7 @@ def get_request_result_check(url, headers, data, table_sheet_name, row, column):
         elif case_detail == ('结束sqlsource step中指定statementId对应任务'):
             cancel_sql_parseinit_statementId = steps_sql_parseinit_statemenId(data)
             new_url = url.format(cancel_sql_parseinit_statementId)
-            response = requests.get(url=new_url, headers=get_headers())
+            response = requests.get(url=new_url, headers=headers)
 
             print(response.text)
             clean_vaule(table_sheet_name, row, column)
@@ -235,7 +267,7 @@ def get_request_result_check(url, headers, data, table_sheet_name, row, column):
         elif case_detail == '根据execution id查找execution':
             # 需要先查询指定flow下的所有execution，从中取出第一个execution id，传递给查询接口
             query_execution_url = '%s/api/executions/query' % HOST_189
-            all_executions = requests.post(url=query_execution_url, headers=get_headers(), data=data)
+            all_executions = requests.post(url=query_execution_url, headers=headers, data=data)
             executions_dict = dict_res(all_executions.text)
             executions_content = executions_dict['content']
             try:
@@ -248,7 +280,7 @@ def get_request_result_check(url, headers, data, table_sheet_name, row, column):
             else:  #
                 # 执行查询操作,将查询到的第一个execution id当做参数传递给查询接口
                 new_url = url.format(all_ids[0])
-                query_response = requests.get(url=new_url, headers=get_headers())
+                query_response = requests.get(url=new_url, headers=headers)
                 print(query_response.status_code)
                 print(query_response.text)
                 clean_vaule(table_sheet_name, row, column)
@@ -274,6 +306,7 @@ def get_request_result_check(url, headers, data, table_sheet_name, row, column):
             if len(parameters) == 1:
                 url_new = url.format(parameters[0])
                 response = requests.get(url=url_new, headers=headers)
+                print(response.url,response.text)
                 clean_vaule(table_sheet_name, row, column)
                 write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
                 write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
@@ -300,20 +333,52 @@ def get_request_result_check(url, headers, data, table_sheet_name, row, column):
 
 
 # PUT请求
-def put_request_result_check(url, row, data, table_sheet_name, column):
-    # 分隔参数
-    parameters = data.split('&')
-    # 拼接URL
-    new_url = url.format(parameters[0])
-    # 发送的参数体
-    parameters_data = parameters[-1]
-    if parameters_data.startswith('{'):
-        response = requests.put(url=new_url, headers=get_headers(), json=dict_res(parameters_data))
-        clean_vaule(table_sheet_name, row, column)
-        write_result(table_sheet_name, row, column, response.status_code)
-        write_result(table_sheet_name, row, column+4, response.text)
+def put_request_result_check(url, row, data, table_sheet_name, column,headers):
+    if data and isinstance(data, str):
+        if '&' in data:
+            # 分隔参数
+            parameters = data.split('&')
+            # 拼接URL
+            new_url = url.format(parameters[0])
+            # 发送的参数体
+            parameters_data = parameters[-1]
+            if parameters_data.startswith('{'):
+                response = requests.put(url=new_url, headers=headers, json=dict_res(parameters_data))
+                clean_vaule(table_sheet_name, row, column)
+                write_result(table_sheet_name, row, column, response.status_code)
+                write_result(table_sheet_name, row, column+4, response.text)
+            else:
+                print('请确认第%d行parameters中需要update的值格式，应为id&{data}' % row)
+        else:
+            if data.startswith('select id'):
+                result = ms.ExecuQuery(data)
+                new_data = result[0]["id"]
+                print(new_data, type(new_data))
+                new_url = url.format(new_data)
+                print('new_url:', new_url)
+                response = requests.put(url=new_url, headers=headers)
+                print(response.status_code, response.text)
+                clean_vaule(table_sheet_name, row, column)
+                write_result(table_sheet_name, row, column, response.status_code)
+                write_result(table_sheet_name, row, column + 4, response.text)
+            elif data.startswith('{') and data.endswith('}'):
+                response = requests.put(url=url, headers=headers, data=data)
+                print(response.status_code, response.text)
+                clean_vaule(table_sheet_name, row, column)
+                write_result(table_sheet_name, row, column, response.status_code)
+                write_result(table_sheet_name, row, column + 4, response.text)
+            elif data.startswith('[') and data.endswith(']'):
+                pass
+            else:
+                new_url = url.format(data)
+                print('new_url:', new_url)
+                response = requests.put(url=new_url, headers=headers)
+                print(response.status_code, response.text)
+                clean_vaule(table_sheet_name, row, column)
+                write_result(table_sheet_name, row, column, response.status_code)
+                write_result(table_sheet_name, row, column + 4, response.text)
     else:
-        print('请确认第%d行parameters中需要update的值格式，应为id&{data}' % row)
+        print('第%s行的参数为空或格式异常' % row)
 
 
 def delete_request_result_check(url, data, table_sheet_name, row, column, headers):
@@ -381,8 +446,8 @@ def deal_parameters(data):
             return data
 
 
+# deal_request_method()
 
-deal_request_method()
 # print(case_table_sheet.cell(row=2,column=10).value == case_table_sheet.cell(row=2,column=12).value)
 # url = case_table_sheet.cell(row=2,column=7).value
 # data = case_table_sheet.cell(row=2, column=8).value

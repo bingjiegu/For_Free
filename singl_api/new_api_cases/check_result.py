@@ -64,7 +64,7 @@ class CheckResult(unittest.TestCase):
             if relation == '=':   # 只返回id时，判断返回内容中包含id属性，长度为45
                 try:
                     # print('第 %d 行 response_text返回id %s' % (row, response_text_dict.get("id")))
-                    self.assertIsNotNone(response_text_dict.get("id"), '第 %d 行 response_text没有返回id' % row)
+                    # self.assertIsNotNone(response_text_dict.get("id"), '第 %d 行 response_text没有返回id' % row)
                     self.assertEqual(expect_text, len(response_text), '第%d行的response_text长度和预期不一致' % row)
                 except:
                     print('第 %d 行 response_text没有返回id' % row)
@@ -73,7 +73,7 @@ class CheckResult(unittest.TestCase):
                     case_table_sheet.cell(row=row, column=column, value='pass')
             elif relation == 'in':  # 返回多内容时，判断返回内容中包含id属性，并且expect_text包含在response_text中
                 try:
-                    self.assertIsNotNone(response_text_dict.get("id"), '第 %d 行 response_text没有返回id' % row)
+                    # self.assertIsNotNone(response_text_dict.get("id"), '第 %d 行 response_text没有返回id' % row)
                     self.assertIn(expect_text, response_text, '第 %d 行 expect_text没有包含在接口返回的response_text中' % row)
                 except:
                     print('第 %d 行 expect_text没有包含在response_text中， 结果对比失败' % row)
@@ -146,3 +146,4 @@ deal_request_method()
 # 对比用例结果
 g = CheckResult()
 g.deal_result()
+

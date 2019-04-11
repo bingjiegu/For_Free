@@ -34,14 +34,18 @@ def get_job_tasks_id(job_id):
 
 
 def stop_job_task(job_id):
-    ulr = '%s/api/woven/collectors/WOVEN-SERVER/stopTaskList' % HOST_189
+    url = '%s/api/woven/collectors/WOVEN-SERVER/stopTaskList' % HOST_189
     task_id = get_job_tasks_id(job_id)
     print(task_id)
-    response = requests.post(url=ulr, headers=get_headers(), json=task_id)
+    response = requests.post(url=url, headers=get_headers(), json=task_id)
     print(response.url)
     print(response.status_code, response.text)
 
 
+def create_new_user(data):
+    url = '%s/api/woven/users' % HOST_189
+    response = requests.post(url=url, headers=get_headers(),json=data)
+    user_id = dict_res(response.text)["id"]
+    print(user_id)
+    return user_id
 
-
-# stop_job_task('f99e23dc-587b-4cc4-b94d-69189ad59fc6')
