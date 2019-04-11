@@ -95,7 +95,7 @@ MY_LOGIN_INFO_root = {
  "HEADERS": {'Content-Type': 'application/x-www-form-urlencoded'},
  "URL": "%s/api/auth/login" % HOST_189,
  "DATA": {'name': encrypt_rf('root'), 'password': encrypt_rf('123456'), 'version': 'Europa-3.0.0.19 - 20180428', 'tenant': encrypt_rf('root')},
- "DATA_ERROR_NAME": {'name': encrypt_rf('adminn'), 'password': encrypt_rf('123456'), 'version': 'Europa-3.0.0.19 - 20180428', 'tenant': encrypt_rf('default')},
+ "DATA_ERROR_NAME": {'name': encrypt_rf('roo'), 'password': encrypt_rf('123456'), 'version': 'Europa-3.0.0.19 - 20180428', 'tenant': encrypt_rf('root')},
  "HOST": "%s" % HOST_189
 }
 
