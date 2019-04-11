@@ -7,7 +7,7 @@ from basic_info.format_res import dict_res
 from basic_info.setting import MySQL_CONFIG
 from basic_info.Open_DB import MYSQL
 from basic_info.setting import HOST_189
-import random
+import random,json
 from new_api_cases.get_statementId import statementId, statementId_no_dataset, get_sql_analyse_statement_id, get_sql_analyse_dataset_info, get_sql_execte_statement_id, steps_sql_parseinit_statemenId, steps_sql_analyzeinit_statementId
 from new_api_cases.prepare_datas_for_cases import get_job_tasks_id
 
@@ -34,7 +34,7 @@ def deal_request_method():
         # 请求方法转大写
         if request_method:
             request_method_upper = request_method.upper()
-            if api_name == 'tenants':
+            if api_name == 'tenants':  # 租户的用例需要使用root用户登录后操作
                 # 根据不同的请求方法，进行分发
                 if request_method_upper == 'POST':
                     # 调用post方法发送请求
@@ -399,8 +399,7 @@ def delete_request_result_check(url, data, table_sheet_name, row, column, header
                         print(datas)
                         new_url = url.format(datas[0])
                         response = requests.delete(url=new_url, headers=headers)
-                        print(response.url)
-                        print(response.text)
+                        print(response.url, response.status_code)
                         # 将返回的status_code和response.text分别写入第10列和第14列
                         clean_vaule(table_sheet_name, row, column)
                         write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
@@ -446,7 +445,9 @@ def deal_parameters(data):
             return data
 
 
-# deal_request_method()
+
+
+deal_request_method()
 
 # print(case_table_sheet.cell(row=2,column=10).value == case_table_sheet.cell(row=2,column=12).value)
 # url = case_table_sheet.cell(row=2,column=7).value
