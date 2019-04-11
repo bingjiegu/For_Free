@@ -11,6 +11,7 @@ class Check_status(unittest.TestCase):
     def test_case01(self):
         """查询系统服务状态"""
         res = requests.get(url=query_component_status_url, headers=get_headers())
+        print(res.text)
         # 检查响应状态码是否200
         self.assertEqual(res.status_code, 200, '系统服务状态接口响应状态码不是200，服务异常')
 
