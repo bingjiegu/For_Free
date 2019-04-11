@@ -81,6 +81,7 @@ def deal_request_method():
     case_table.save(ab_dir("api_cases.xlsx"))
 
 
+
 # POST请求
 def post_request_result_check(row, column, url, headers, data, table_sheet_name):
     if isinstance(data, str):
@@ -189,6 +190,7 @@ def post_request_result_check(row, column, url, headers, data, table_sheet_name)
                     clean_vaule(table_sheet_name, row, column)
                     write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
                     write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
+                    # case_table.save(ab_dir("api_cases.xlsx"))
                 else:
                     print('请先确认第%d行list参数值' % row)
             else:
@@ -447,7 +449,7 @@ def deal_parameters(data):
 
 
 
-deal_request_method()
+# deal_request_method()
 
 # print(case_table_sheet.cell(row=2,column=10).value == case_table_sheet.cell(row=2,column=12).value)
 # url = case_table_sheet.cell(row=2,column=7).value

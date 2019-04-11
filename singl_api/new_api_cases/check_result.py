@@ -9,6 +9,7 @@ case_table = load_workbook(table_dir('api_cases.xlsx'))
 case_table_sheet = case_table.get_sheet_by_name('tester')
 all_rows = case_table_sheet.max_row
 
+
 class CheckResult(unittest.TestCase):
 
     def compare_code_result(self):
@@ -142,7 +143,7 @@ class CheckResult(unittest.TestCase):
 
 # 调试
 # 执行用例
-# deal_request_method()
+deal_request_method()
 # 对比用例结果
 g = CheckResult()
 g.deal_result()
