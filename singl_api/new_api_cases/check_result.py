@@ -66,6 +66,7 @@ class CheckResult(unittest.TestCase):
                 try:
                     # print('第 %d 行 response_text返回id %s' % (row, response_text_dict.get("id")))
                     # self.assertIsNotNone(response_text_dict.get("id"), '第 %d 行 response_text没有返回id' % row)
+                    print(len(response_text))
                     self.assertEqual(expect_text, len(response_text), '第%d行的response_text长度和预期不一致' % row)
                 except:
                     print('第 %d 行 response_text没有返回id' % row)
@@ -143,6 +144,7 @@ class CheckResult(unittest.TestCase):
 
 # 调试
 # 执行用例
+# from new_api_cases.execute_cases import deal_request_method
 deal_request_method()
 # 对比用例结果
 g = CheckResult()
