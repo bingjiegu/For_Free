@@ -1,6 +1,7 @@
 # coding:utf-8
 import os
 import time
+from selenium import webdriver
 
 from openpyxl import load_workbook
 import requests
@@ -11,7 +12,7 @@ from basic_info.Open_DB import MYSQL
 from basic_info.setting import HOST_189
 import random,json
 from new_api_cases.get_statementId import statementId, statementId_no_dataset, get_sql_analyse_statement_id, get_sql_analyse_dataset_info, get_sql_execte_statement_id, steps_sql_parseinit_statemenId, steps_sql_analyzeinit_statementId
-from new_api_cases.prepare_datas_for_cases import get_job_tasks_id,collector_schema_sync,get_flow_id
+from new_api_cases.prepare_datas_for_cases import get_job_tasks_id,collector_schema_sync,get_flow_id,get_applicationId
 
 
 ms = MYSQL(MySQL_CONFIG["HOST"], MySQL_CONFIG["USER"], MySQL_CONFIG["PASSWORD"], MySQL_CONFIG["DB"])
@@ -203,6 +204,7 @@ def post_request_result_check(row, column, url, headers, data, table_sheet_name)
 # GET请求
 def get_request_result_check(url, headers, data, table_sheet_name, row, column):
     case_detail = case_table_sheet.cell(row=row, column=2).value
+
     # GET请求需要从parameter中获取参数,并把参数拼装到URL中，
     if data:
         if case_table_sheet.cell(row=row, column=2).value == '根据statement id,获取预览Dataset的结果数据(datasetId存在)':
@@ -331,6 +333,7 @@ def get_request_result_check(url, headers, data, table_sheet_name, row, column):
             clean_vaule(table_sheet_name, row, column)
             write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
             write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
+
         else:
             # 分割参数，分割后成为一个列表['61bf20da-f42c-4b35-9142-0fc2a7664e3e', '2']
             parameters = data.split('&')
@@ -371,10 +374,20 @@ def get_request_result_check(url, headers, data, table_sheet_name, row, column):
                 print('请确认第%d行parameters' % row)
     # GET 请求参数写在URL中，直接发送请求
     else:
-        response = requests.get(url=url, headers=headers)
-        clean_vaule(table_sheet_name, row, column)
-        write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
-        write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
+        if case_detail in('根据applicationId获取yarnAppliction任务运行状态','根据applicationId获取yarnAppliction任务的日志command line log'):
+            print(case_detail)
+            application_id = get_applicationId()
+            new_url = url.format(application_id)
+            response = requests.get(url=new_url, headers=get_headers())
+            print(response.url, response.text)
+            clean_vaule(table_sheet_name, row, column)
+            write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
+            write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
+        else:
+            response = requests.get(url=url, headers=headers)
+            clean_vaule(table_sheet_name, row, column)
+            write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
+            write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
 
 
 # PUT请求
