@@ -9,6 +9,7 @@ from basic_info.format_res import dict_res
 from basic_info.setting import MySQL_CONFIG
 from basic_info.Open_DB import MYSQL
 from basic_info.setting import HOST_189
+from selenium import webdriver
 # from new_api_cases.execute_cases import deal_parameters
 from requests_toolbelt.multipart.encoder import MultipartEncoder
 import random
@@ -93,5 +94,27 @@ def get_flow_id():
     print(flow_id)
     return flow_id
 
+def get_applicationId():
+    """进入yarn页面，获取状态为finished的application id"""
+    # 进入yarn页面，获取状态为finished的application id
+    driver = webdriver.Chrome()
+    driver.maximize_window()
+    driver.implicitly_wait(10)
+    # 进入ambari页面，然后进入yarn页面
+    driver.get('http://192.168.1.81:8080/#/main/services/YARN/heatmaps')
+    driver.find_element_by_xpath('.//div[@class="well login span4"]/input[1]').send_keys('admin')
+    driver.find_element_by_xpath('.//div[@class="well login span4"]/input[2]').send_keys('admin')
+    driver.find_element_by_xpath('.//div[@class="well login span4"]/button').click()
+    driver.get('http://info2:8088/cluster')
+    driver.get('http://info2:8088/cluster/apps/FINISHED')
+    # 获取所有finished状态的application id
+    all_applications = driver.find_elements_by_xpath('.//*[@id="apps"]/tbody/tr/td[1]/a')
+    # 返回第一个application id，提供给case进行查询该applicationId的log
+    application_id = all_applications[0].text
+    time.sleep(3)
+    # print(application_id)
+    # print(type(application_id))
+    return application_id
 
-# get_flow_id()
+
+# get_applicationId()
