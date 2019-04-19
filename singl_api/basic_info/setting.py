@@ -99,6 +99,15 @@ MY_LOGIN_INFO_root = {
  "HOST": "%s" % HOST_189
 }
 
+# # upload_file使用该用户
+# MY_LOGIN_INFO_upload_file_use = {
+#  "HEADERS": {'Content-Type': 'multipart/form-data; boundary=----WebKitFormBoundaryqa6thIhrtfSBTQCH'},
+#  "URL": "%s/api/auth/login" % HOST_189,
+#  "DATA": {'name': encrypt_rf('admin'), 'password': encrypt_rf('123456'), 'version': 'Europa-3.0.0.19 - 20180428', 'tenant': encrypt_rf('default')},
+#  "DATA_ERROR_NAME": {'name': encrypt_rf('adminn'), 'password': encrypt_rf('123456'), 'version': 'Europa-3.0.0.19 - 20180428', 'tenant': encrypt_rf('default')},
+#  "HOST": "%s" % HOST_189
+# }
+
 
 
 
