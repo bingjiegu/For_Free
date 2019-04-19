@@ -108,19 +108,24 @@ def steps_sql_analyzeinit_statementId(params):
 
 def get_step_output_init_statementId(params):
     url = '%s/api/steps/output/fields/init' % HOST_189
-    res = requests.post(url=url, headers=get_headers(), json=params)
-    print(dict_res(res.text)["statementId"])
+    res = requests.post(url=url, headers=get_headers(), data=params)
+    print(res.status_code, res.text)
+    # print(dict_res(res.text)["statementId"])
     return dict_res(res.text)["statementId"]
 
 def get_step_output_ensure_statementId(params):
     url = '%s/api/steps/validateinit/dataflow' % HOST_189
     res = requests.post(url=url, headers=get_headers(), data=params)
-    print(dict_res(res.text)["statementId"])
-    return dict_res(res.text)["statementId"]
+    try:
+        print(dict_res(res.text)["statementId"])
+        return dict_res(res.text)["statementId"]
+    except:
+        return
 
 # params = '{"id":"source_9","name":"source_9","type":"source","x":168,"y":239,"otherConfigurations":{"schema":"schema_for_students_startjoin_step","schemaId":"31caabd3-ed37-415d-bc51-5c039f5b7689","sessionCache":"","datasetId":"5ebd5da6-793d-4cf9-bb4a-f84301eb0c4e","interceptor":"","dataset":"gbj_use_students_short_84","ignoreMissingPath":false},"outputConfigurations":[{"id":"output","fields":[{"column":"sId","alias":""},{"column":"sName","alias":""},{"column":"sex","alias":""},{"column":"age","alias":""},{"column":"class","alias":""}]}]}'
 # get_step_output_ensure_statementId(params)
 
+params = '{"id":"source_9","name":"source_9","type":"source","x":168,"y":239,"otherConfigurations":{"schema":"schema_for_students_startjoin_step","schemaId":"31caabd3-ed37-415d-bc51-5c039f5b7689","sessionCache":"","datasetId":"5ebd5da6-793d-4cf9-bb4a-f84301eb0c4e","interceptor":"","dataset":"gbj_use_students_short_84","ignoreMissingPath":false},"outputConfigurations":[{"id":"output","fields":[{"column":"sId","alias":""},{"column":"sName","alias":""},{"column":"sex","alias":""},{"column":"age","alias":""},{"column":"class","alias":""}]}]}'
 
-
+# get_step_output_init_statementId(params)
 

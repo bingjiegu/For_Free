@@ -22,10 +22,6 @@ class GetCheckoutDataSet(object):
         self.ms = MYSQL(MySQL_CONFIG["HOST"], MySQL_CONFIG["USER"], MySQL_CONFIG["PASSWORD"], MySQL_CONFIG["DB"])
 
     def file_flowid_count(self):
-        # ------读取xsl表中的flow_id，然后把它装到list里返回------
-        # flow_table = xlrd.open_workbook(abs_dir("flow_dataset_info.xlsx"))
-        # info_sheet = flow_table.sheet_by_name("flow_info")
-        # info_sheet_row = info_sheet.nrows
         # ---使用openpyxl处理表格 12.26update---
         flow_table = load_workbook(abs_dir("flow_dataset_info.xlsx"))
         # info_sheet_names = flow_table.get_sheet_names()

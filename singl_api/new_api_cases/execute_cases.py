@@ -94,19 +94,21 @@ def post_request_result_check(row, column, url, headers, data, table_sheet_name)
                            'KAFKA，根据statementId取Dataset数据(datasetId不存在)',
                            'FTP，根据statementId取Dataset数据(datasetId不存在)'):
             # 先获取statementId,然后格式化URL，再发送请求
+            print('开始执行：', case_detail)
             statement = statementId_no_dataset(dict_res(data))
             new_url = url.format(statement)
             response = requests.post(url=new_url, headers=headers, data=data)
-            print(response.url)
+            # print(response.url)
             # 将返回的status_code和response.text分别写入第10列和第14列
             clean_vaule(table_sheet_name, row, column)
             write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
             write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
         elif case_detail == '获取SQL执行任务结果':
+            print('开始执行：', case_detail)
             # 先获取接口需要使用的statement id 和 数据集分析字段
             execte_statement_id = get_sql_execte_statement_id(data)  # statement id
             new_url = url.format(execte_statement_id)
-            print('获取SQL执行任务结果URL:', new_url)
+            # print('获取SQL执行任务结果URL:', new_url)
             execte_use_params = get_sql_analyse_dataset_info(data)  # 数据集分析字段
             # print(execte_use_params)
             response = requests.post(url=new_url, headers=headers, json=execte_use_params)
@@ -119,11 +121,12 @@ def post_request_result_check(row, column, url, headers, data, table_sheet_name)
             # print(response.status_code)
             # print(response.text)
         elif case_detail == '批量删除execution':
+            print('开始执行：', case_detail)
             # 需要先查询指定flow下的所有execution，从中取出execution id，拼装成list，传递给删除接口
             query_execution_url = '%s/api/executions/query' % HOST_189
             all_exectuions = requests.post(url=query_execution_url, headers=headers, data=data)
             executions_dict = dict_res(all_exectuions.text)
-            print(executions_dict)
+            # print(executions_dict)
             try:
                 executions_content = executions_dict['content']
                 all_ids = [] # 该list用来存储所有的execution id
@@ -141,20 +144,23 @@ def post_request_result_check(row, column, url, headers, data, table_sheet_name)
                 write_result(sheet=table_sheet_name, row=row, column=column, value=removeList_result.status_code)
                 write_result(sheet=table_sheet_name, row=row, column=column + 4, value=removeList_result.text)
         elif case_detail == '停止一个采集器任务的执行':
+            print('开始执行：', case_detail)
             task_id = get_job_tasks_id(data)
             response = requests.post(url=url, headers=headers, json=task_id)
             clean_vaule(table_sheet_name, row, column)
             write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
             write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
         elif case_detail == '指定目录下创建子目录':
+            print('开始执行：', case_detail)
             response = requests.post(url=url, headers=headers, json=dict_res(data))
-            print(response.text)
-            print(response.status_code)
+            # print(response.text)
+            # print(response.status_code)
             clean_vaule(table_sheet_name, row, column)
             write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
             write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
 
         else:
+            print('开始执行：', case_detail)
             #  SQL语句作为参数，需要先将SQL语句执行，数据库查询返回数据作为接口要传递的参数
             if data.startswith('select'):  # 后续根据需要增加其他select内容，如name或者其他？？？？？？
                 # print('data startswith select:', data)
@@ -212,7 +218,8 @@ def get_request_result_check(url, headers, data, table_sheet_name, row, column):
     # GET请求需要从parameter中获取参数,并把参数拼装到URL中，
     if data:
         if case_table_sheet.cell(row=row, column=2).value == '根据statement id,获取预览Dataset的结果数据(datasetId存在)':
-            print(data)
+            # print(data)
+            print('开始执行：', case_detail)
             statement_id = statementId(data)
             parameter_list = []
             parameter_list.append(data)
@@ -225,16 +232,17 @@ def get_request_result_check(url, headers, data, table_sheet_name, row, column):
             write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
             write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
         elif case_detail == ('根据statement id,获取Sql Analyze结果(获取输出字段)'):
-            # print('888888888888888888888888888888')
+            print('开始执行：', case_detail)
             sql_analyse_statement_id = get_sql_analyse_statement_id(data)
             new_url = url.format(sql_analyse_statement_id)
-            print(new_url)
+            # print(new_url)
             response = requests.get(url=new_url, headers=headers)
-            print(response.url, response.text)
+            # print(response.url, response.text)
             clean_vaule(table_sheet_name, row, column)
             write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
             write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
         elif case_detail == ('结束指定statementId对应的查询任务'):  # 取消SQL analyse接口
+            print('开始执行：', case_detail)
             cancel_statement_id = get_sql_analyse_statement_id(data)
             new_url = url.format(cancel_statement_id)
             response = requests.get(url=new_url, headers=headers)
@@ -243,36 +251,40 @@ def get_request_result_check(url, headers, data, table_sheet_name, row, column):
             write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
 
         elif case_detail == ('根据解析sql parse接口返回的statementId,获取dataset name'):
+            print('开始执行：', case_detail)
             datasetName_statementId = steps_sql_parseinit_statemenId(data)
             new_url = url.format(datasetName_statementId)
             response = requests.get(url=new_url, headers=headers)
-            print(response.text)
+            # print(response.text)
             while response.text in ('{"statement":"waiting"}', '{"statement":"running"}'):
                 response = requests.get(url=new_url, headers=headers)
-            print(response.text)
+            # print(response.text)
             clean_vaule(table_sheet_name, row, column)
             write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
             write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
         elif case_detail == ('根据Sql Analyze返回的statementId,获取SqlAnalyze结果'):
+            print('开始执行：', case_detail)
             steps_sql_analyse_statementId = steps_sql_analyzeinit_statementId(data)
             new_url = url.format(steps_sql_analyse_statementId)
             response = requests.get(url=new_url, headers=headers)
-            print(response.text)
+            # print(response.text)
             while "waiting" in response.text or "running"in response.text:
                 response = requests.get(url=new_url, headers=headers)
-            print(response.text)
+            # print(response.text)
             clean_vaule(table_sheet_name, row, column)
             write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
             write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
         elif case_detail == ('结束sqlsource step中指定statementId对应任务'):
+            print('开始执行：', case_detail)
             cancel_sql_parseinit_statementId = steps_sql_parseinit_statemenId(data)
             new_url = url.format(cancel_sql_parseinit_statementId)
             response = requests.get(url=new_url, headers=headers)
-            print(response.text)
+            # print(response.text)
             clean_vaule(table_sheet_name, row, column)
             write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
             write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
         elif case_detail == '根据execution id查找execution':
+            print('开始执行：', case_detail)
             # 需要先查询指定flow下的所有execution，从中取出第一个execution id，传递给查询接口
             query_execution_url = '%s/api/executions/query' % HOST_189
             all_executions = requests.post(url=query_execution_url, headers=headers, data=data)
@@ -289,85 +301,93 @@ def get_request_result_check(url, headers, data, table_sheet_name, row, column):
                 # 执行查询操作,将查询到的第一个execution id当做参数传递给查询接口
                 new_url = url.format(all_ids[0])
                 query_response = requests.get(url=new_url, headers=headers)
-                print(query_response.status_code)
-                print(query_response.text)
+                # print(query_response.status_code)
+                # print(query_response.text)
                 clean_vaule(table_sheet_name, row, column)
                 write_result(sheet=table_sheet_name, row=row, column=column, value=query_response.status_code)
                 write_result(sheet=table_sheet_name, row=row, column=column + 4, value=query_response.text)
         elif case_detail == '查看元数据同步任务的日志进度':
+            print('开始执行：', case_detail)
             task_id = collector_schema_sync(data)
-            print(task_id)
+            # print(task_id)
             time.sleep(5)
             new_url = url.format(task_id)
             # time.sleep(2)
             response = requests.get(url=new_url, headers=headers)
-            print(response.url, response.text)
+            # print(response.url, response.text)
             clean_vaule(table_sheet_name, row, column)
             write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
             write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
 
         elif case_detail == '拉取元数据同步任务的日志':
+            print('开始执行：', case_detail)
             task_id = collector_schema_sync(data)
-            print(task_id)
+            # print(task_id)
             time.sleep(5)
             new_url = url.format(task_id)
             response = requests.get(url=new_url, headers=headers)
-            print(response.url)
-            print(response.text)
+            # print(response.url)
+            # print(response.text)
             clean_vaule(table_sheet_name, row, column)
             write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
             write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
         elif case_detail == '根据tasks id 查看完整log':
+            print('开始执行：', case_detail)
             task_id = collector_schema_sync(data)
-            print(task_id)
+            # print(task_id)
             time.sleep(5)
             new_url = url.format(task_id)
             response = requests.get(url=new_url, headers=headers)
-            print(response.url, response.text)
+            # print(response.url, response.text)
             clean_vaule(table_sheet_name, row, column)
             write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
             write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
 
         elif case_detail == '导出flow':
+            print('开始执行：', case_detail)
             token = get_auth_token()
             new_url = url.format(token)
-            print(token)
+            # print(token)
             response = requests.get(url=new_url,headers=get_headers())
-            print(response.url, response.text)
+            # print(response.url, response.text)
             clean_vaule(table_sheet_name, row, column)
             write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
             write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
         elif case_detail == '根据statementID获取step的输出字段':
+            print('开始执行：', case_detail)
             init_statementId = get_step_output_init_statementId(data)
-            print(init_statementId)
+            # print(init_statementId)
             new_url = url.format(init_statementId)
             response = requests.get(url=new_url, headers=get_headers())
-            print(response.url)
-            print(response.status_code,response.text)
+
             while "running" in response.text or "waiting" in response.text:
+                time.sleep(5)
                 response = requests.get(url=new_url, headers=get_headers())
-            print(response.url, response.text)
+            # print(response.url, response.text)
             clean_vaule(table_sheet_name, row, column)
             write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
             write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
         elif case_detail == '根据statementID确认step':
+            print('开始执行：', case_detail)
             ensure_statementId = get_step_output_ensure_statementId(data)
-            print(ensure_statementId)
+            # print(ensure_statementId)
             new_url = url.format(ensure_statementId)
             response = requests.get(url=new_url, headers=get_headers())
-            print(response.url)
-            print(response.status_code,response.text)
+            # print(response.url)
+            # print(response.status_code,response.text)
             while "running" in response.text or "waiting" in response.text:
+                time.sleep(5)
                 response = requests.get(url=new_url, headers=get_headers())
-            print(response.url, response.text)
+            # print(response.url, response.text)
             clean_vaule(table_sheet_name, row, column)
             write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
             write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
 
         else:
+            print('开始执行：', case_detail)
             # 分割参数，分割后成为一个列表['61bf20da-f42c-4b35-9142-0fc2a7664e3e', '2']
             parameters = data.split('&')
-            print('parameters:', parameters)
+            # print('parameters:', parameters)
             # 处理存在select语句中的参数，并重新赋值
             for i in range(len(parameters)):
                 if parameters[i].startswith('select id from'):
@@ -407,15 +427,16 @@ def get_request_result_check(url, headers, data, table_sheet_name, row, column):
     # GET 请求参数写在URL中，直接发送请求
     else:
         if case_detail in('根据applicationId获取yarnAppliction任务运行状态','根据applicationId获取yarnAppliction任务的日志command line log'):
-            print(case_detail)
+            print('开始执行：', case_detail)
             application_id = get_applicationId()
             new_url = url.format(application_id)
             response = requests.get(url=new_url, headers=get_headers())
-            print(response.status_code, response.text, type(response.text))
+            # print(response.status_code, response.text, type(response.text))
             clean_vaule(table_sheet_name, row, column)
             write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
             write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
         elif case_detail == '根据质量分析结果path预览dataset-获取datasetId':
+            print('开始执行：', case_detail)
             dataset_path = get_woven_qaoutput_dataset_path()[0]
             new_url = url.format(dataset_path)
             print(new_url)
@@ -426,6 +447,7 @@ def get_request_result_check(url, headers, data, table_sheet_name, row, column):
             write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
             write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
         else:
+            print('开始执行：', case_detail)
             response = requests.get(url=url, headers=headers)
             clean_vaule(table_sheet_name, row, column)
             write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
@@ -453,17 +475,17 @@ def put_request_result_check(url, row, data, table_sheet_name, column,headers):
             if data.startswith('select id'):
                 result = ms.ExecuQuery(data)
                 new_data = result[0]["id"]
-                print(new_data, type(new_data))
+                # print(new_data, type(new_data))
                 new_url = url.format(new_data)
-                print('new_url:', new_url)
+                # print('new_url:', new_url)
                 response = requests.put(url=new_url, headers=headers)
-                print(response.status_code, response.text)
+                # print(response.status_code, response.text)
                 clean_vaule(table_sheet_name, row, column)
                 write_result(table_sheet_name, row, column, response.status_code)
                 write_result(table_sheet_name, row, column + 4, response.text)
             elif data.startswith('{') and data.endswith('}'):
                 response = requests.put(url=url, headers=headers, data=data)
-                print(response.status_code, response.text)
+                # print(response.status_code, response.text)
                 clean_vaule(table_sheet_name, row, column)
                 write_result(table_sheet_name, row, column, response.status_code)
                 write_result(table_sheet_name, row, column + 4, response.text)
@@ -471,9 +493,9 @@ def put_request_result_check(url, row, data, table_sheet_name, column,headers):
                 pass
             else:
                 new_url = url.format(data)
-                print('new_url:', new_url)
+                # print('new_url:', new_url)
                 response = requests.put(url=new_url, headers=headers)
-                print(response.status_code, response.text)
+                # print(response.status_code, response.text)
                 clean_vaule(table_sheet_name, row, column)
                 write_result(table_sheet_name, row, column, response.status_code)
                 write_result(table_sheet_name, row, column + 4, response.text)
@@ -489,8 +511,8 @@ def delete_request_result_check(url, data, table_sheet_name, row, column, header
         else:
             if data.startswith('select id'):  # sql语句的查询结果当做参数
                 data_select_result = ms.ExecuQuery(data)
-                print(data_select_result)
-                print(type(data_select_result))
+                # print(data_select_result)
+                # print(type(data_select_result))
                 datas = []
                 if data_select_result:
                     try:
@@ -500,10 +522,10 @@ def delete_request_result_check(url, data, table_sheet_name, row, column, header
                         print('请确认第%d行SQL语句' % row)
                     else:
                         if len(datas) == 1:
-                            print(datas)
+                            # print(datas)
                             new_url = url.format(datas[0])
                             response = requests.delete(url=new_url, headers=headers)
-                            print(response.url, response.status_code)
+                            # print(response.url, response.status_code)
                             # 将返回的status_code和response.text分别写入第10列和第14列
                             clean_vaule(table_sheet_name, row, column)
                             write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
@@ -522,8 +544,8 @@ def delete_request_result_check(url, data, table_sheet_name, row, column, header
                 write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
                 write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
     else:
-        print(data)
-        print(type(data))
+        # print(data)
+        # print(type(data))
         print('请确认第%d行的data形式' % row)
 
 
@@ -701,6 +723,6 @@ class CheckResult(unittest.TestCase):
 # 调试
 # 执行用例
 # deal_request_method()
-# 对比用例结果
-g = CheckResult()
-g.deal_result()
+# # 对比用例结果
+CheckResult()
+# g.deal_result()

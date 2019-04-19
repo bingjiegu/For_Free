@@ -11,9 +11,7 @@ from basic_info.setting import email_to
 from smtplib import SMTP_SSL
 from openpyxl import load_workbook
 from api_test_cases.get_execution_output_json import abs_dir, GetCheckoutDataSet
-from new_api_cases.check_result import table_dir
-
-# abs_dir2 = lambda n: os.path.abspath(os.path.join(os.path.dirname(__file__), n))
+from new_api_cases.execute_cases import ab_dir
 
 
 def sendEmail(content, title, from_name, from_address, to_address, serverport, serverip, username, password):
@@ -74,12 +72,12 @@ def main2():
 
 
 # 使用该方法发送邮件
-def main3(report_path):
+def main3():
     # 163邮箱smtp服务器
     host_server = "smtp.163.com"
-    # sender_163为发件人的163邮箱
+    # 发件人
     sender_163 = "ruifan_test@163.com"
-    # pwd为163邮箱的授权码
+    # pwd为发件人163邮箱的授权码
     pwd = "ruifantest2018"
     # 发件人的邮箱
     sender_163_mail = "ruifan_test@163.com"
@@ -99,7 +97,7 @@ def main3(report_path):
     flow_failed_detail = []
     flow_id_list = GetCheckoutDataSet().file_flowid_count()
     total = len(flow_id_list)
-    print('flow总数total:', total)
+    # print('flow总数total:', total)
     detail_msg = ''' '''
     for row in range(2, rows+1):
         if f_sheet.cell(row=row, column=9).value == "fail":
@@ -124,73 +122,80 @@ def main3(report_path):
     succeed_flow_s = list(set(succeed_flow))
     for disct_id in (disct_ids for disct_ids in failed_flow_s if disct_ids in succeed_flow_s):
         succeed_flow_s.remove(disct_id)
+
+
     # 邮件的正文内容----API执行结果
-    # 统计api执行结果，加入到邮件正文中，失败的用例name，失败的原因
-    api_cases_table = load_workbook(table_dir('api_cases.xlsx'))
+    # 统计api执行结果，加入到邮件正文中，失败的用例name：失败的原因
+    api_cases_table = load_workbook(ab_dir('api_cases.xlsx'))
     cases_sheet = api_cases_table.get_sheet_by_name('tester')
     sheet_rows = cases_sheet.max_row
     cases_num = sheet_rows - 1
     pass_cases = 0
     failed_cases = 0
-    failed_cases_list = []
+    failed_cases_detail = {}
     for row in range(2, sheet_rows+1):
         if cases_sheet.cell(row=row, column=14).value == 'pass':
             pass_cases += 1
-        elif cases_sheet.cell(row=row, column=14).value == 'fail':
-            failed_cases += 1
-            # k = cases_sheet.cell(row=row, column=2).value
-            # v = cases_sheet.cell(row=row, column=15).value
-            # dict = {k: v}
-            failed_cases_list.append(cases_sheet.cell(row=row, column=15).value)
         else:
-            print('请确认第%d行测试用例测试结果' % row)
+            failed_cases += 1
+            case_name = cases_sheet.cell(row=row, column=2).value
+            failed_cases_detail[case_name] = cases_sheet.cell(row=row, column=15).value   # 将用例name和失败原因列出
 
 
     # 邮件的正文内容
     filename = time.strftime("%Y%m%d%H", time.localtime()) + '_report.html'
-    if len(failed_flow_s) > 0:
-        mail_content = '\n各位好:'+'\n' + '\n' + \
-                    '一、API的测试用例结果请参考附件<<%s>>' % filename + '\n'\
-                    + '-------------------------------------------------------------' + '\n'\
-                       + '二、Flow用例共 %d 个\n成功%d个, 失败 %d个\n失败的flow name为 %s\n失败原因为：\n ' % (total, len(succeed_flow_s), len(failed_flow_s), failed_flow_s) + detail_msg + \
-                       '-------------------------------------------------------------' + '\n' + \
-                       '三、 API测试用例共%d个，\n成功%d个， 失败%d个,失败的case info： \n%s' \
-                       % (cases_num, pass_cases, failed_cases, failed_cases_list)
-    else:
-        mail_content = '\n各位好:' + '\n' + \
-                       '一、API的测试用例结果请参考附件<<%s>>' % filename + '\n' \
-                   + '--------------------------------------------------------------' + '\n' \
-                       + '二、flow用例共 %d 个\n成功%d个, 失败 %d个\n' % (total, len(succeed_flow_s), len(failed_flow_s)) + '\n' \
-                       + '--------------------------------------------------------------' + '\n' + \
-                       '三、API测试用例共%d个，\n成功%d个， 失败%d个,失败的case info: \n%s' \
-                       % (cases_num, pass_cases, failed_cases, failed_cases_list)
+    # if len(failed_flow_s) > 0:
+    #     mail_content = '\n各位好:'+'\n' + '\n' + \
+    #                 '一、API的测试用例结果请参考附件<<%s>>' % filename + '\n'\
+    #                 + '-------------------------------------------------------------' + '\n'\
+    #                    + '二、Flow用例共 %d 个\n成功%d个, 失败 %d个\n失败的flow name为 %s\n失败原因为：\n ' % (total, len(succeed_flow_s), len(failed_flow_s), failed_flow_s) + detail_msg + \
+    #                    '-------------------------------------------------------------' + '\n' + \
+    #                    '三、 API测试用例共%d个，\n成功%d个， 失败%d个,失败的case info： \n%s' \
+    #                    % (cases_num, pass_cases, failed_cases, failed_cases_detail)
+    # else:
+    #     mail_content = '\n各位好:' + '\n' + \
+    #                    '一、API的测试用例结果请参考附件<<%s>>' % filename + '\n' \
+    #                + '--------------------------------------------------------------' + '\n' \
+    #                    + '二、flow用例共 %d 个\n成功%d个, 失败 %d个\n' % (total, len(succeed_flow_s), len(failed_flow_s)) + '\n' \
+    #                    + '--------------------------------------------------------------' + '\n' + \
+    #                    '三、API测试用例共%d个，\n成功%d个， 失败%d个,失败的case info: \n%s' \
+    #                    % (cases_num, pass_cases, failed_cases, failed_cases_detail)
+    mail_content = '\n各位好:' + '\n' + '\n' + \
+                   '一、Flow用例共 %d 个\n成功%d个, 失败 %d个\n失败的flow name为 %s\n失败原因为：\n ' % (
+                   total, len(succeed_flow_s), len(failed_flow_s), failed_flow_s) + detail_msg + \
+                   '-------------------------------------------------------------' + '\n' + \
+                   '二、 API测试用例共%d个，\n成功%d个， 失败%d个,失败的用例信息： \n%s' \
+                   % (cases_num, pass_cases, failed_cases, failed_cases_detail)
     # print(mail_content)
     # 邮件标题
-    # mail_title = time.strftime("%Y-%m-%d 自动化日报", time.localtime())
-    mail_title = time.strftime("%Y-%m-%d", time.localtime()) + ' API自动化测试日报'
+    mail_title = time.strftime("%Y-%m-%d", time.localtime()) + ' BayMax系统API自动化测试日报'
+
     # 添加邮件正文，格式 MIMEText:
     msg.attach(MIMEText(mail_content, "plain", 'utf-8'))
 
+
+    # filename = time.strftime("%Y%m%d%H", time.localtime()) + '_report.html'
+    # with open(report_path, 'rb') as f:
+    #     # 设置附件的MIME和文件名，这里是html类型:
+    #     mime = MIMEBase('report', 'html', filename=filename)
+    #     # 加上必要的头信息:
+    #     mime.add_header('Content-Disposition', 'attachment', filename=filename)
+    #     mime.add_header('Content-ID', '<0>')
+    #     mime.add_header('X-Attachment-Id', '0')
+    #     # 把附件的内容读进来:
+    #     mime.set_payload(f.read())
+    #     # # 用Base64编码:
+    #     encoders.encode_base64(mime)
+    #     # 添加到MIMEMultipart:
+    #     msg.attach(mime)
+
+    # 添加api用例 excel表格
+
     # 添加附件，就是加上一个MIMEBase，从本地读取一个文件:
     # 添加API用例集执行报告
-    filename = time.strftime("%Y%m%d%H", time.localtime()) + '_report.html'
-    with open(report_path, 'rb') as f:
-        # 设置附件的MIME和文件名，这里是html类型:
-        mime = MIMEBase('report', 'html', filename=filename)
-        # 加上必要的头信息:
-        mime.add_header('Content-Disposition', 'attachment', filename=filename)
-        mime.add_header('Content-ID', '<0>')
-        mime.add_header('X-Attachment-Id', '0')
-        # 把附件的内容读进来:
-        mime.set_payload(f.read())
-        # # 用Base64编码:
-        encoders.encode_base64(mime)
-        # 添加到MIMEMultipart:
-        msg.attach(mime)
-    # 添加api用例 excel表格
-    apicases_filepath = table_dir('api_cases.xlsx')
+    apicases_filepath = ab_dir('api_cases.xlsx')
     with open(apicases_filepath, 'rb') as a:
-        # 设置附件的MIME和文件名，这里是html类型:
+        # 设置附件的MIME和文件名:
         mime = MIMEBase('report', 'xlsx', filename='api_cases.xlsx')
         # 加上必要的头信息:
         mime.add_header('Content-Disposition', 'attachment', filename='api_casex.xlsx')
@@ -206,32 +211,32 @@ def main3(report_path):
     flow_filepath = abs_dir('flow_dataset_info.xlsx')
     with open(flow_filepath, 'rb') as ff:
         # 设置附件的MIME和文件名，这里是html类型:
-        mime = MIMEBase('report', 'xlsx', filename='flow_info.xlsx')
+        flow_mime = MIMEBase('report', 'xlsx', filename='flow_info.xlsx')
         # 加上必要的头信息:
-        mime.add_header('Content-Disposition', 'attachment', filename='flow_info.xlsx')
-        mime.add_header('Content-ID', '<0>')
-        mime.add_header('X-Attachment-Id', '0')
+        flow_mime.add_header('Content-Disposition', 'attachment', filename='flow_info.xlsx')
+        flow_mime.add_header('Content-ID', '<0>')
+        flow_mime.add_header('X-Attachment-Id', '0')
         # 把附件的内容读进来:
-        mime.set_payload(ff.read())
+        flow_mime.set_payload(ff.read())
         # # 用Base64编码:
-        encoders.encode_base64(mime)
+        encoders.encode_base64(flow_mime)
         # 添加到MIMEMultipart:
-        msg.attach(mime)
+        msg.attach(flow_mime)
 
     # ssl登录
     smtp = SMTP_SSL(host_server)
     # set_debuglevel()是用来调试的。参数值为1表示开启调试模式，参数值为0关闭调试模式
     smtp.set_debuglevel(0)
     smtp.ehlo(host_server)
-    smtp.login(sender_163, pwd)
+    smtp.login(sender_163_mail, pwd)
     msg["Subject"] = Header(mail_title, 'utf-8')
-    msg["From"] = sender_163_mail
+    msg["From"] = sender_163
     msg["To"] = Header("顾冰洁，王志明，彭媛", 'utf-8')  # 接收者的别名
     smtp.sendmail(sender_163_mail, receivers, msg.as_string())
     print('%s----发送邮件成功' % time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
     smtp.quit()
 
 # report_path = 'E:\Reports\\2018122813_report.html'
-# main3(report_path)
+# main3()
 # apicases_filepath = table_dir('api_cases.xlse')
 # # # print(apicases_filepath)

@@ -116,14 +116,9 @@ def get_woven_qaoutput_dataset_path():
     contents = dict_res(response.text)["content"]
     path = []
     for content in contents:
-        content_paths = 'woven/qaoutput/' + content["name"]
-        print(content_paths)
-        content_path = b'%s' % content_paths
-        print(content_path, type(content_path))
-    #     new_content_path = parse.quote(parse.quote('%s' % content_path, safe=b''))
-    #     print(new_content_path)
-    #     path.append(new_content_path)
-    # # print(path)
-    # return path
+        content_path = 'woven/qaoutput/' + content["name"]
+        content_path.replace('/', '%252F')   # 应该使用parse.quote() 进行URL编码进行处理。稍后解决
+        path.append(content_path.replace('/', '%252F'))
+    # print(path)
+    return path
 
-# get_woven_qaoutput_dataset_path()

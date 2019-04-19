@@ -9,7 +9,7 @@ case_table = load_workbook(table_dir('api_cases.xlsx'))
 case_table_sheet = case_table.get_sheet_by_name('tester')
 all_rows = case_table_sheet.max_row
 
-class CheckResult(unittest.TestCase):
+class CheckResultOld(unittest.TestCase):
     # def __init__(self):
     #     self.case_table = load_workbook(table_dir('api_cases.xlsx'))
     #     self.case_table_sheet = self.case_table.get_sheet_by_name('tester')
@@ -147,8 +147,8 @@ class CheckResult(unittest.TestCase):
 # 调试
 # 执行用例
 # from new_api_cases.execute_cases import deal_request_method
-deal_request_method()
-# 对比用例结果
-g = CheckResult()
-g.deal_result()
+# deal_request_method()
+# # 对比用例结果
+# g = CheckResult()
+# g.deal_result()
 
