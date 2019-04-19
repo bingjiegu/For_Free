@@ -1,6 +1,7 @@
 # coding:utf-8
 import os
 import time
+from urllib import parse
 
 from openpyxl import load_workbook
 import requests
@@ -38,13 +39,13 @@ def get_job_tasks_id(job_id):
         return all_task_id
 
 
-def stop_job_task(job_id):
-    url = '%s/api/woven/collectors/WOVEN-SERVER/stopTaskList' % HOST_189
-    task_id = get_job_tasks_id(job_id)
-    print(task_id)
-    response = requests.post(url=url, headers=get_headers(), json=task_id)
-    print(response.url)
-    print(response.status_code, response.text)
+# def stop_job_task(job_id):
+#     url = '%s/api/woven/collectors/WOVEN-SERVER/stopTaskList' % HOST_189
+#     task_id = get_job_tasks_id(job_id)
+#     print(task_id)
+#     response = requests.post(url=url, headers=get_headers(), json=task_id)
+#     print(response.url)
+#     print(response.status_code, response.text)
 
 
 def create_new_user(data):
@@ -53,27 +54,6 @@ def create_new_user(data):
     user_id = dict_res(response.text)["id"]
     print(user_id)
     return user_id
-
-def upload_files():
-    url = 'http://192.168.1.189:8515/api/woven/upload/read/excel?maxSheet=1&maxRow=10000&maxColumn=3'
-    # files = {'file': open(r'民族国家标准代码表.xls'', 'rb')}
-    # file = 'E:\standbd\民族国家标准代码表.xls'
-    # multipart_encoder = MultipartEncoder(
-    #     fields={
-    #         ('民族国家标准代码表.xls', open('E:\standbd\民族国家标准代码表.xls', 'rb'), 'application/octet-stream')
-    #     },
-    #     boundary='----------------'+str(random.randint(1e28, 1e29 - 1))
-    #
-    # )
-    # headers = get_headers_upload()
-    # headers['Content-Type'] = multipart_encoder.content_type
-
-#     with open(r'E:\standbd\民族国家标准代码表.xls','rb') as f:
-#         res = requests.post(url=url, headers=get_headers(), files=f)
-#         print(res.status_code)
-#         print(res.text)
-# upload_files()
-
 
 def collector_schema_sync(data):
     """获取采集器元数据同步后返回的task id"""
@@ -117,4 +97,33 @@ def get_applicationId():
     return application_id
 
 
-# get_applicationId()
+def upload_files():
+    url = 'http://192.168.1.189:8515/api/woven/upload/read/excel?maxSheet=1&maxRow=10000&maxColumn=3'
+    headers = get_headers()
+    headers['Content-Type'] = 'multipart/form-data; boundary=----WebKitFormBoundarydCTDwRoe6Ox1gnPn'
+    headers['Cookie'] = 'userName=admin; userPwd=123456; AMBARISESSIONID=1rmk20wkx3urr1hjkp6ujf5rqn'
+    with open(r'E:\standbd\性别分类.xls', 'rb') as f:
+        res = requests.post(url=url, headers=headers, files=f)
+        print(res.status_code)
+        print(res.text)
+
+
+def get_woven_qaoutput_dataset_path():
+    """查找woven/qaoutput下的所有数据集name，并组装成woven/qaoutput/datasetname的格式"""
+    url = '%s/api/datasets/query' % HOST_189
+    data = {"fieldList":[{"fieldName":"parentId","fieldValue":"4f4d687c-12b3-4e09-9ba9-bcf881249ea0","comparatorOperator":"EQUAL","logicalOperator":"AND"},{"fieldName":"owner","fieldValue":"2059750c-a300-4b64-84a6-e8b086dbfd42","comparatorOperator":"EQUAL","logicalOperator":"AND"}],"sortObject":{"field":"lastModifiedTime","orderDirection":"DESC"},"offset":0,"limit":8}
+    response = requests.post(url=url,headers=get_headers(), json=data)
+    contents = dict_res(response.text)["content"]
+    path = []
+    for content in contents:
+        content_paths = 'woven/qaoutput/' + content["name"]
+        print(content_paths)
+        content_path = b'%s' % content_paths
+        print(content_path, type(content_path))
+    #     new_content_path = parse.quote(parse.quote('%s' % content_path, safe=b''))
+    #     print(new_content_path)
+    #     path.append(new_content_path)
+    # # print(path)
+    # return path
+
+# get_woven_qaoutput_dataset_path()

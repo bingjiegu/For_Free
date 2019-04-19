@@ -1,6 +1,7 @@
 import requests,json
 from basic_info.get_auth_token import get_headers
 from basic_info.setting import HOST_189, tenant_id
+from basic_info.format_res import dict_res
 
 # datasetId存在时
 def statementId(datasetId):
@@ -46,11 +47,13 @@ def get_sql_analyse_dataset_info(params):
     # print(sql_analyse_statement_id)
     url = ' %s/api/datasets/sql/analyzeresult?statementId=%s' % (HOST_189, sql_analyse_statement_id)
     res = requests.get(url=url, headers=get_headers())
-    while res.text in('{"statement":"waiting"}', '{"statement":"running"}'):
-        # print('再次查询前',res.text)
+    print(res.text)
+    while ("waiting") in res.text or ("running") in res.text:
+        print('再次查询前',res.text)
         res = requests.get(url=url, headers=get_headers())
-        # print('再次查询后', res.text)
+        print('再次查询后', res.text)
     # 返回的是str类型
+    print(res.text)
     if '"statement":"available"' in res.text:
         text_dict = json.loads(res.text)
         text_dict_content = text_dict["content"]
@@ -78,7 +81,7 @@ def get_sql_execte_statement_id(param):
 
 # 根据Sql语句解析表名,初始化ParseSql任务,返回statementID
 def steps_sql_parseinit_statemenId(params):
-    url = '%s/api/steps/sql/parseinit' % HOST_189
+    url = '%s/api/steps/sql/parseinit/dataflow' % HOST_189
     res = requests.post(url=url, headers=get_headers(), data=params)
     print(res.text)
     try:
@@ -92,7 +95,7 @@ def steps_sql_parseinit_statemenId(params):
 
 # 初始化Sql Analyze,返回任务的statementID
 def steps_sql_analyzeinit_statementId(params):
-    url = '%s/api/steps/sql/analyzeinit' % HOST_189
+    url = '%s/api/steps/sql/analyzeinit/dataflow' % HOST_189
     res = requests.post(url=url, headers=get_headers(), data=params)
     print(res.text)
     try:
@@ -103,13 +106,20 @@ def steps_sql_analyzeinit_statementId(params):
     except KeyError:
         return
 
+def get_step_output_init_statementId(params):
+    url = '%s/api/steps/output/fields/init' % HOST_189
+    res = requests.post(url=url, headers=get_headers(), json=params)
+    print(dict_res(res.text)["statementId"])
+    return dict_res(res.text)["statementId"]
 
+def get_step_output_ensure_statementId(params):
+    url = '%s/api/steps/validateinit/dataflow' % HOST_189
+    res = requests.post(url=url, headers=get_headers(), data=params)
+    print(dict_res(res.text)["statementId"])
+    return dict_res(res.text)["statementId"]
 
-
-
-# params = {"datasets":"gbj_mysql_datasource_189_dataset","sql":"select * from gbj_mysql_datasource_189_dataset"}
-# steps_sql_analyzeinit_statementId(params)
-
+# params = '{"id":"source_9","name":"source_9","type":"source","x":168,"y":239,"otherConfigurations":{"schema":"schema_for_students_startjoin_step","schemaId":"31caabd3-ed37-415d-bc51-5c039f5b7689","sessionCache":"","datasetId":"5ebd5da6-793d-4cf9-bb4a-f84301eb0c4e","interceptor":"","dataset":"gbj_use_students_short_84","ignoreMissingPath":false},"outputConfigurations":[{"id":"output","fields":[{"column":"sId","alias":""},{"column":"sName","alias":""},{"column":"sex","alias":""},{"column":"age","alias":""},{"column":"class","alias":""}]}]}'
+# get_step_output_ensure_statementId(params)
 
 
 
