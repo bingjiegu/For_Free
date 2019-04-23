@@ -4,6 +4,7 @@ from basic_info.get_auth_token import get_headers
 from basic_info.setting import MySQL_CONFIG, flow_id_list
 from basic_info.format_res import dict_res, get_time
 from basic_info.setting import HOST_189
+from util.encrypt import encrypt_decode
 import time, random, requests, xlrd
 from xlutils.copy import copy
 from openpyxl import load_workbook
