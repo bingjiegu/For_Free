@@ -283,29 +283,29 @@ def get_request_result_check(url, headers, data, table_sheet_name, row, column):
             clean_vaule(table_sheet_name, row, column)
             write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
             write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
-        elif case_detail == '根据execution id查找execution':
-            print('开始执行：', case_detail)
-            # 需要先查询指定flow下的所有execution，从中取出第一个execution id，传递给查询接口
-            query_execution_url = '%s/api/executions/query' % HOST_189
-            all_executions = requests.post(url=query_execution_url, headers=headers, data=data)
-            executions_dict = dict_res(all_executions.text)
-            executions_content = executions_dict['content']
-            try:
-                all_ids = []  # 该list用来存储所有的execution id
-                for item in executions_content:
-                    executions_content_id = item['id']
-                    all_ids.append(executions_content_id)
-            except Exception as e:
-                print(e)
-            else:  #
-                # 执行查询操作,将查询到的第一个execution id当做参数传递给查询接口
-                new_url = url.format(all_ids[0])
-                query_response = requests.get(url=new_url, headers=headers)
-                # print(query_response.status_code)
-                # print(query_response.text)
-                clean_vaule(table_sheet_name, row, column)
-                write_result(sheet=table_sheet_name, row=row, column=column, value=query_response.status_code)
-                write_result(sheet=table_sheet_name, row=row, column=column + 4, value=query_response.text)
+        # elif case_detail == '根据execution id查找execution':
+        #     print('开始执行：', case_detail)
+        #     # 需要先查询指定flow下的所有execution，从中取出第一个execution id，传递给查询接口
+        #     query_execution_url = '%s/api/executions/query' % HOST_189
+        #     all_executions = requests.post(url=query_execution_url, headers=headers, data=data)
+        #     executions_dict = dict_res(all_executions.text)
+        #     executions_content = executions_dict['content']
+        #     try:
+        #         all_ids = []  # 该list用来存储所有的execution id
+        #         for item in executions_content:
+        #             executions_content_id = item['id']
+        #             all_ids.append(executions_content_id)
+        #     except Exception as e:
+        #         print(e)
+        #     else:  #
+        #         # 执行查询操作,将查询到的第一个execution id当做参数传递给查询接口
+        #         new_url = url.format(all_ids[0])
+        #         query_response = requests.get(url=new_url, headers=headers)
+        #         # print(query_response.status_code)
+        #         # print(query_response.text)
+        #         clean_vaule(table_sheet_name, row, column)
+        #         write_result(sheet=table_sheet_name, row=row, column=column, value=query_response.status_code)
+        #         write_result(sheet=table_sheet_name, row=row, column=column + 4, value=query_response.text)
         elif case_detail == '查看元数据同步任务的日志进度':
             print('开始执行：', case_detail)
             task_id = collector_schema_sync(data)
@@ -391,34 +391,44 @@ def get_request_result_check(url, headers, data, table_sheet_name, row, column):
             # 处理存在select语句中的参数，并重新赋值
             for i in range(len(parameters)):
                 if parameters[i].startswith('select id from'):
-                    select_result = ms.ExecuQuery(parameters[i])
-                    parameters[i] = select_result[0]["id"]
-                elif parameters[i].startswith('select name from'):
-                    select_result = ms.ExecuQuery(parameters[i])
-                    parameters[i] = select_result[0]["name"]
-                elif parameters[i].startswith('select execution_id from'):
-                    select_result = ms.ExecuQuery(parameters[i])
-                    parameters[i] = select_result[0]["execution_id"]
+                    # select_result = ms.ExecuQuery(parameters[i])
+                    try:
+                        select_result = ms.ExecuQuery(parameters[i])
+                        parameters[i] = select_result[0]["id"]
+                    except:
+                        print('第%s行参数没有返回结果' % row)
 
+                elif parameters[i].startswith('select name from'):
+                    try:
+                        select_result = ms.ExecuQuery(parameters[i])
+                        parameters[i] = select_result[0]["name"]
+                    except:
+                        print('第%s行参数没有返回结果' % row)
+                elif parameters[i].startswith('select execution_id from'):
+                    try:
+                        select_result = ms.ExecuQuery(parameters[i])
+                        parameters[i] = select_result[0]["execution_id"]
+                    except:
+                        print('第%s行参数没有返回结果' % row)
             # 判断URL中需要的参数个数，并比较和data中的参数个数是否相等
             if len(parameters) == 1:
                 url_new = url.format(parameters[0])
                 response = requests.get(url=url_new, headers=headers)
-                print(response.url, response.text)
+                print(response.url, response.status_code,response.text)
                 clean_vaule(table_sheet_name, row, column)
                 write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
                 write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
             elif len(parameters) == 2:
                 url_new = url.format(parameters[0], parameters[1])
                 response = requests.get(url=url_new, headers=headers)
-                print(response.url, response.text)
+                print(response.url, response.status_code, response.text)
                 clean_vaule(table_sheet_name, row, column)
                 write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
                 write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
             elif len(parameters) == 3:
                 url_new = url.format(parameters[0], parameters[1], parameters[2])
                 response = requests.get(url=url_new, headers=headers)
-                print(response.url, response.text)
+                print(response.url, response.status_code, response.text)
                 clean_vaule(table_sheet_name, row, column)
                 write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
                 write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
@@ -485,7 +495,7 @@ def put_request_result_check(url, row, data, table_sheet_name, column,headers):
                 write_result(table_sheet_name, row, column + 4, response.text)
             elif data.startswith('{') and data.endswith('}'):
                 response = requests.put(url=url, headers=headers, data=data)
-                # print(response.status_code, response.text)
+                print(response.status_code, response.text)
                 clean_vaule(table_sheet_name, row, column)
                 write_result(table_sheet_name, row, column, response.status_code)
                 write_result(table_sheet_name, row, column + 4, response.text)
@@ -722,7 +732,7 @@ class CheckResult(unittest.TestCase):
 
 # 调试
 # 执行用例
-# deal_request_method()
+deal_request_method()
 # # 对比用例结果
-CheckResult()
-# g.deal_result()
+g = CheckResult()
+g.deal_result()
