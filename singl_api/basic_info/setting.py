@@ -47,32 +47,37 @@ email_to = {
 
 # # -------189环境使用-------
 # HOST
-HOST_189 = "http://192.168.1.189:8515"
-# # # 数据库连接信息
+# HOST_189 = "http://192.168.1.189:8515"
+# 数据库的连接配置，需要根据不同环境进行变更
 # MySQL_CONFIG = {
-#     'HOST': '192.168.1.189',
+#     'HOST': '192.168.1.199',
 #     "PORT": 3306,
 #     "USER": 'merce',
-#     "PASSWORD": 'merce',
+#     "PASSWORD": '123456',
 #     "DB": 'merce',
 #     'case_db': 'test'
 # }
+
+
+# # -------57环境使用-------
+# HOST
+HOST_189 = "http://192.168.1.57:8515"
+# # # # 数据库连接信息
 MySQL_CONFIG = {
-    'HOST': '192.168.1.199',
+    'HOST': '192.168.1.57',
     "PORT": 3306,
     "USER": 'merce',
-    "PASSWORD": '123456',
-    "DB": 'merce',
-    'case_db': 'test'
+    "PASSWORD": 'merce',
+    "DB": 'merce'
 }
 
-MySQL_CONFIG_85 = {
-    'HOST': '192.168.1.85',
-    "PORT": 3306,
-    "USER": 'europa',
-    "PASSWORD": 'europa',
-    "DB": 'europa'
-}
+# MySQL_CONFIG_85 = {
+#     'HOST': '192.168.1.85',
+#     "PORT": 3306,
+#     "USER": 'europa',
+#     "PASSWORD": 'europa',
+#     "DB": 'europa'
+# }
 
 MY_LOGIN_INFO = {
  "HEADERS": {'Content-Type': 'application/x-www-form-urlencoded'},
