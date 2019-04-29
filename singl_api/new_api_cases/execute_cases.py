@@ -2,11 +2,10 @@
 import os
 import time
 from selenium import webdriver
-
 from openpyxl import load_workbook
 import requests
 from basic_info.get_auth_token import get_headers, get_headers_root,get_auth_token
-from basic_info.format_res import dict_res
+from basic_info.format_res import dict_res,get_time
 from basic_info.setting import MySQL_CONFIG
 from basic_info.Open_DB import MYSQL
 from basic_info.setting import HOST_189
@@ -14,7 +13,8 @@ import random,json,unittest
 from new_api_cases.get_statementId import statementId, statementId_no_dataset, get_sql_analyse_statement_id, \
     get_sql_analyse_dataset_info, get_sql_execte_statement_id, steps_sql_parseinit_statemenId, \
     steps_sql_analyzeinit_statementId,get_step_output_init_statementId,get_step_output_ensure_statementId
-from new_api_cases.prepare_datas_for_cases import get_job_tasks_id,collector_schema_sync,get_flow_id,get_applicationId,get_woven_qaoutput_dataset_path
+from new_api_cases.prepare_datas_for_cases import get_job_tasks_id,collector_schema_sync,get_flow_id,get_applicationId,\
+    get_woven_qaoutput_dataset_path,upload_jar_file_workflow,upload_jar_file_dataflow,upload_jar_file_filter
 
 
 ms = MYSQL(MySQL_CONFIG["HOST"], MySQL_CONFIG["USER"], MySQL_CONFIG["PASSWORD"], MySQL_CONFIG["DB"])
@@ -159,6 +159,45 @@ def post_request_result_check(row, column, url, headers, data, table_sheet_name)
             write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
             write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
 
+        elif case_detail == '数据源状态监控分析图数据':
+            data = {"fieldList":[{"fieldName":"createTime","fieldValue":get_time(),"comparatorOperator":"GREATER_THAN","logicalOperator":"AND"},{"fieldName":"createTime","fieldValue":1555516800000,"comparatorOperator":"LESS_THAN"}],"sortObject":{"field":"lastModifiedTime","orderDirection":"DESC"},"offset":0,"limit":8,"groupBy":"testTime"}
+            response = requests.post(url=url,headers=get_headers(),json=data)
+            print(response.status_code,response.text)
+            clean_vaule(table_sheet_name, row, column)
+            write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
+            write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
+        elif case_detail in ('配置工作流选择器-上传jar包', '配置过滤器-上传jar包', '配置批处理选择器-上传jar包'):
+            files = {"file": open("woven-common-3.0.jar", 'rb')}
+            headers.pop('Content-Type')
+            response = requests.post(url=url, files=files, headers=headers)
+            print(response.text)
+            clean_vaule(table_sheet_name, row, column)
+            write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
+            write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
+        elif case_detail == '注册工作流选择器':
+            fileName = upload_jar_file_workflow()
+            new_url = url.format(fileName)
+            response = requests.post(url=new_url, headers=headers, data=data)
+            print(response.text)
+            clean_vaule(table_sheet_name, row, column)
+            write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
+            write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
+        elif case_detail == '注册批处理选择器':
+            fileName = upload_jar_file_dataflow()
+            new_url = url.format(fileName)
+            response = requests.post(url=new_url, headers=headers, data=data)
+            print(response.text)
+            clean_vaule(table_sheet_name, row, column)
+            write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
+            write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
+        elif case_detail == '注册过滤器':
+            fileName = upload_jar_file_filter()
+            new_url = url.format(fileName)
+            response = requests.post(url=new_url, headers=headers, data=data)
+            print(response.text)
+            clean_vaule(table_sheet_name, row, column)
+            write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
+            write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
         else:
             print('开始执行：', case_detail)
             #  SQL语句作为参数，需要先将SQL语句执行，数据库查询返回数据作为接口要传递的参数
@@ -634,7 +673,7 @@ class CheckResult(unittest.TestCase):
     #  根据expect_text, response_text的关系，进行断言, 目前只处理了等于和包含两种关系
     def assert_deal(self, key_word, relation, expect_text, response_text, response_text_dict, row, column):
         if key_word == 'create':
-            if relation == '=':   # 只返回id时，判断返回内容中包含id属性，长度为45
+            if relation == '=':   # 只返回id时，判断返回内容中包含id属性，id长度为36
                 if isinstance(response_text_dict, dict):
                     if response_text_dict.get("id"):
                         # 返回的内容中包含 id属性，判断返回的id长度和预期给定的id长度一致
@@ -645,11 +684,19 @@ class CheckResult(unittest.TestCase):
                             case_table_sheet.cell(row=row, column=column, value='fail')
                         else:
                             case_table_sheet.cell(row=row, column=column, value='pass')
+                    else:
+                        try:
+                            self.assertEqual(expect_text, response_text, '第%d行的response_text长度和预期不一致' % row)
+                        except:
+                            print('第 %d 行 response_text和预期text不相等' % row)
+                            case_table_sheet.cell(row=row, column=column, value='fail')
+                        else:
+                            case_table_sheet.cell(row=row, column=column, value='pass')
                 else:
                     try:
-                        self.assertEqual(expect_text, len(response_text_dict), '第%d行的response_text长度和预期不一致' % row)
+                        self.assertEqual(expect_text, response_text_dict, '第%d行的response_text长度和预期不一致' % row)
                     except:
-                        print('第 %d 行 response_text返回的id和预期id长度不一致' % row)
+                        print('第 %d 行 response_text和预期text不相等' % row)
                         case_table_sheet.cell(row=row, column=column, value='fail')
                     else:
                         case_table_sheet.cell(row=row, column=column, value='pass')
