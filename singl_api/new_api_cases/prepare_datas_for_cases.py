@@ -132,15 +132,20 @@ def upload_jar_file_filter():
     filter_fileName = dict_res(response.text)["fileName"]
     return filter_fileName
 
+
 def upload_jar_file_workflow():
     url = "%s/api/processconfigs/uploadjar/workflow%20selector" % HOST_189
+    print(url)
     files = {"file": open('woven-common-3.0.jar', 'rb')}
     headers = get_headers()
     headers.pop('Content-Type')
+
     response = requests.post(url, files=files, headers=headers)
-    # print(response.text)
+    print(response.text)
     workflow_fileName = dict_res(response.text)["fileName"]
     return workflow_fileName
+
+# upload_jar_file_workflow()
 
 def upload_jar_file_dataflow():
     url = "%s/api/processconfigs/uploadjar/dataflow%20selector" % HOST_189

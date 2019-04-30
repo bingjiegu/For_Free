@@ -48,9 +48,13 @@ def get_sql_analyse_dataset_info(params):
     url = ' %s/api/datasets/sql/analyzeresult?statementId=%s' % (HOST_189, sql_analyse_statement_id)
     res = requests.get(url=url, headers=get_headers())
     print(res.text)
+    count_num = 0
     while ("waiting") in res.text or ("running") in res.text:
         print('再次查询前',res.text)
         res = requests.get(url=url, headers=get_headers())
+        count_num += 1
+        if count_num == 100:
+            return
         print('再次查询后', res.text)
     # 返回的是str类型
     print(res.text)

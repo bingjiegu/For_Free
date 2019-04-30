@@ -112,9 +112,13 @@ def post_request_result_check(row, column, url, headers, data, table_sheet_name)
             execte_use_params = get_sql_analyse_dataset_info(data)  # 数据集分析字段
             # print(execte_use_params)
             response = requests.post(url=new_url, headers=headers, json=execte_use_params)
+            count_num = 0
             while ("waiting") in response.text or ("running") in response.text:
                 # print('再次查询前',res.text)
                 response = requests.post(url=new_url, headers=headers, json=execte_use_params)
+                count_num += 1
+                if count_num == 100:
+                    return
             clean_vaule(table_sheet_name, row, column)
             write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
             write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
@@ -198,6 +202,38 @@ def post_request_result_check(row, column, url, headers, data, table_sheet_name)
             clean_vaule(table_sheet_name, row, column)
             write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
             write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
+        elif case_detail == '创建name为dudu666666的用户':
+            user_search = 'select id from merce_user where name = "dudu666666"'
+            user_search_result = ms.ExecuQuery(user_search)
+            # 先判断dudu666666用户是否存在，若存在，先执行删除操作，再创建
+            if user_search_result:
+                user_id_list = []
+                user_id = user_search_result[0]["id"]
+                user_id_list.append(user_id)
+                print(user_id_list)
+                disable_user_url = '%s/api/woven/users/disable' % HOST_189
+                remove_user_url = '%s/api/woven/users/removeList' % HOST_189
+                # 先停用该用户
+                res = requests.post(url=disable_user_url, headers=headers, json=user_id_list)
+                print(headers)
+                print(res.content,res.status_code)
+                # 删除该用户
+                res = requests.post(url=remove_user_url, headers=headers, json=user_id_list)
+                # 创建dudu666666用户
+                response = requests.post(url=url, headers=headers, data=data)
+                print(response.text)
+                clean_vaule(table_sheet_name, row, column)
+                write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
+                write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
+            else:
+                print('不存在dudu666666用户，开始执行创建用户的用例')
+                # 创建dudu666666用户
+                response = requests.post(url=url, headers=headers, data=data)
+                print(response.text)
+                clean_vaule(table_sheet_name, row, column)
+                write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
+                write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
+
         else:
             print('开始执行：', case_detail)
             #  SQL语句作为参数，需要先将SQL语句执行，数据库查询返回数据作为接口要传递的参数
@@ -265,8 +301,12 @@ def get_request_result_check(url, headers, data, table_sheet_name, row, column):
             parameter_list.append(statement_id)
             url_new = url.format(parameter_list[0], parameter_list[1])
             response = requests.get(url=url_new, headers=headers)
+            count_num = 0
             while response.text in ('{"statement":"waiting"}', '{"statement":"running"}'):
                 response = requests.get(url=url_new, headers=headers)
+                count_num += 1
+                if count_num == 100:
+                    return
             clean_vaule(table_sheet_name, row, column)
             write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
             write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
@@ -295,8 +335,12 @@ def get_request_result_check(url, headers, data, table_sheet_name, row, column):
             new_url = url.format(datasetName_statementId)
             response = requests.get(url=new_url, headers=headers)
             # print(response.text)
+            count_num = 0
             while response.text in ('{"statement":"waiting"}', '{"statement":"running"}'):
                 response = requests.get(url=new_url, headers=headers)
+                count_num += 1
+                if count_num == 100:
+                    return
             # print(response.text)
             clean_vaule(table_sheet_name, row, column)
             write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
@@ -307,8 +351,12 @@ def get_request_result_check(url, headers, data, table_sheet_name, row, column):
             new_url = url.format(steps_sql_analyse_statementId)
             response = requests.get(url=new_url, headers=headers)
             # print(response.text)
+            count_num = 0
             while "waiting" in response.text or "running"in response.text:
                 response = requests.get(url=new_url, headers=headers)
+                count_num += 1
+                if count_num == 100:
+                    return
             # print(response.text)
             clean_vaule(table_sheet_name, row, column)
             write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
@@ -398,10 +446,13 @@ def get_request_result_check(url, headers, data, table_sheet_name, row, column):
             # print(init_statementId)
             new_url = url.format(init_statementId)
             response = requests.get(url=new_url, headers=get_headers())
-
+            count_num = 1
             while "running" in response.text or "waiting" in response.text:
                 time.sleep(5)
                 response = requests.get(url=new_url, headers=get_headers())
+                count_num += 1
+                if count_num == 100:
+                    return
             # print(response.url, response.text)
             clean_vaule(table_sheet_name, row, column)
             write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
@@ -414,9 +465,13 @@ def get_request_result_check(url, headers, data, table_sheet_name, row, column):
             response = requests.get(url=new_url, headers=get_headers())
             # print(response.url)
             # print(response.status_code,response.text)
+            count_num = 0
             while "running" in response.text or "waiting" in response.text:
                 time.sleep(5)
                 response = requests.get(url=new_url, headers=get_headers())
+                count_num += 1
+                if count_num == 100:
+                    return
             # print(response.url, response.text)
             clean_vaule(table_sheet_name, row, column)
             write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
@@ -692,9 +747,9 @@ class CheckResult(unittest.TestCase):
                             case_table_sheet.cell(row=row, column=column, value='fail')
                         else:
                             case_table_sheet.cell(row=row, column=column, value='pass')
-                else:
+                else:  # 只返回一个id串的情况下，判断预期长度和id长度一致
                     try:
-                        self.assertEqual(expect_text, response_text_dict, '第%d行的response_text长度和预期不一致' % row)
+                        self.assertEqual(expect_text, len(response_text), '第%d行的response_text长度和预期不一致' % row)
                     except:
                         print('第 %d 行 response_text和预期text不相等' % row)
                         case_table_sheet.cell(row=row, column=column, value='fail')
@@ -715,16 +770,16 @@ class CheckResult(unittest.TestCase):
                 case_table_sheet.cell(row=row, column=column, value='请确认预期text和接口response.text的relatrion')
         elif key_word in ('query', 'update', 'delete'):
             if relation == '=':
-                if expect_text:
+                if response_text and '-' in response_text:
                     try:
-                        self.assertEqual(expect_text, response_text, '第%s行expect_text和response_text不相等' % row)
+                        self.assertEqual(expect_text, len(response_text), '第%s行expect_text和response_text不相等' % row)
                     except:
                         case_table_sheet.cell(row=row, column=column, value='fail')
                     else:
                         case_table_sheet.cell(row=row, column=column, value='pass')
                 else:
                     try:
-                        self.assertEqual(expect_text, response_text_dict, '第%s行expect_text和response_text不相等' % row)
+                        self.assertEqual(expect_text, response_text, '第%s行expect_text和response_text不相等' % row)
                     except:
                         case_table_sheet.cell(row=row, column=column, value='fail')
                     else:
