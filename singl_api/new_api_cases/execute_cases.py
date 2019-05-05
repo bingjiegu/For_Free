@@ -236,6 +236,14 @@ def post_request_result_check(row, column, url, headers, data, table_sheet_name)
                 clean_vaule(table_sheet_name, row, column)
                 write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
                 write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
+        elif case_detail == '数据标准导入文件':
+            files = {'file': open('gender.xls', 'rb')}
+            # headers = get_headers()
+            headers.pop('Content-Type')
+            response = requests.post(url, files=files, headers=headers, params=dict_res(data))
+            clean_vaule(table_sheet_name, row, column)
+            write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
+            write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
 
         else:
             print('开始执行：', case_detail)
