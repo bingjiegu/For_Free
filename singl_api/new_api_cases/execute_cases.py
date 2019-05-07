@@ -1,5 +1,6 @@
 # coding:utf-8
 import os
+import re
 import time
 from selenium import webdriver
 from openpyxl import load_workbook
@@ -781,7 +782,10 @@ class CheckResult(unittest.TestCase):
                 case_table_sheet.cell(row=row, column=column, value='请确认预期text和接口response.text的relatrion')
         elif key_word in ('query', 'update', 'delete'):
             if relation == '=':
-                if response_text and '-' in response_text:
+                compare_result = re.findall('[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}', '%s' % (response_text))
+                print(compare_result,type(compare_result))
+                print(response_text,type(response_text))
+                if compare_result == response_text:
                     try:
                         self.assertEqual(expect_text, len(response_text), '第%s行expect_text和response_text不相等' % row)
                     except:
@@ -795,6 +799,7 @@ class CheckResult(unittest.TestCase):
                         case_table_sheet.cell(row=row, column=column, value='fail')
                     else:
                         case_table_sheet.cell(row=row, column=column, value='pass')
+
             elif relation == 'in':
                 try:
                     self.assertIn(expect_text, response_text, '第 %d 行 expect_text没有包含在接口返回的response_text中' % row)
@@ -845,7 +850,7 @@ class CheckResult(unittest.TestCase):
 
 # 调试
 # 执行用例
-deal_request_method()
+# deal_request_method()
 # # 对比用例结果
 g = CheckResult()
 g.deal_result()
