@@ -47,8 +47,27 @@ email_to = {
 
 # # -------189环境使用-------
 # HOST
-# HOST_189 = "http://192.168.1.189:8515"
+HOST_189 = "http://192.168.1.189:8515"
 # 数据库的连接配置，需要根据不同环境进行变更
+MySQL_CONFIG = {
+    'HOST': '192.168.1.199',
+    "PORT": 3306,
+    "USER": 'merce',
+    "PASSWORD": '123456',
+    "DB": 'merce',
+    'case_db': 'test'}
+
+# # -------57环境使用-------
+# HOST
+# HOST_189 = "http://192.168.1.57:8515"
+# # # # # 数据库连接信息
+# MySQL_CONFIG = {
+#     'HOST': '192.168.1.57',
+#     "PORT": 3306,
+#     "USER": 'merce',
+#     "PASSWORD": 'merce',
+#     "DB": 'merce'
+# }
 # MySQL_CONFIG = {
 #     'HOST': '192.168.1.199',
 #     "PORT": 3306,
@@ -59,17 +78,7 @@ email_to = {
 # }
 
 
-# # -------57环境使用-------
-# HOST
-HOST_189 = "http://192.168.1.57:8515"
-# # # # 数据库连接信息
-MySQL_CONFIG = {
-    'HOST': '192.168.1.57',
-    "PORT": 3306,
-    "USER": 'merce',
-    "PASSWORD": 'merce',
-    "DB": 'merce'
-}
+
 
 # MySQL_CONFIG_85 = {
 #     'HOST': '192.168.1.85',
@@ -127,7 +136,8 @@ owner = "2059750c-a300-4b64-84a6-e8b086dbfd42"
 # login user:gbj_use
 owner2 = "d2fee4a4-d296-4db8-9b62-46bd9bc46a94"
 
-tenant_id = "2d7ad891-41c5-4fba-9ff2-03aef3c729e5"  # default租戶ID
+tenant_id_189 = "2d7ad891-41c5-4fba-9ff2-03aef3c729e5"  # 189环境default租戶ID
+tenant_id_57 = ""  # 57环境default租戶ID
 dataset_resource = {"id": "39386f75-9b28-43a6-a6bf-bd5e0e85d437"}
 schema_resource = {"id": "9123ca72-ebd1-422b-b8b0-e150b7c69dc5"}
 
