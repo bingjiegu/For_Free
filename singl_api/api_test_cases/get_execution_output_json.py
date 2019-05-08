@@ -3,15 +3,17 @@ from basic_info.Open_DB import MYSQL
 from basic_info.get_auth_token import get_headers
 from basic_info.setting import MySQL_CONFIG, flow_id_list
 from basic_info.format_res import dict_res, get_time
-from basic_info.setting import HOST_189
-from util.encrypt import encrypt_decode
-import time, random, requests, xlrd
-from xlutils.copy import copy
+from basic_info.setting import HOST_189,tenant_id_189,tenant_id_57
+from new_api_cases.get_statementId import statementId_flow_use,preview_result_flow_use
+from util.encrypt import encrypt_decode, parameter_ungzip
+import time, random, requests
 from openpyxl import load_workbook
-from xlutils.copy import copy
 import json
 import os,threading
-import datetime
+
+
+
+
 abs_dir = lambda n: os.path.abspath(os.path.join(os.path.dirname(__file__), n))
 
 
@@ -61,10 +63,15 @@ class GetCheckoutDataSet(object):
                     print('flow_name: ', flow_name)
                     flow_type = flow_info[0]["flow_type"]
                     flow_parameters = flow_info[0]["parameters"]
-                    flow_parameters_list = dict_res(flow_parameters)
+                    parameters_use = parameter_ungzip(flow_parameters)  # 将加密后的参数进行解密和解压缩处理
+                    print('flow返回的参数：', parameters_use)
+                    print('参数类型：', type(parameters_use))
+                    flow_parameters_list = dict_res(parameters_use)   # 为空的处理？？？？？
+                    print('json.loads处理后的参数：',flow_parameters_list)
+                    print('参数类型：', type(flow_parameters_list))
                     arguments_list = []
                     arguments = {}
-                    print('flow_parameters_list:', flow_parameters_list)
+                    # print('flow_parameters_list:', flow_parameters_list)
                     if flow_parameters_list != [] and flow_parameters_list != None:
                         arguments["name"] = flow_parameters_list[0]["name"]
                         arguments["category"] = flow_parameters_list[0]["category"]
@@ -172,7 +179,7 @@ class GetCheckoutDataSet(object):
             print('第%d 个scheduler' % scheduler_number)
             scheduler_number += 1
             time.sleep(2)
-            print(res.status_code, res.text)
+            # print(res.status_code, res.text)
             if res.status_code == 201 and res.text:
                 scheduler_id_format = dict_res(res.text)
                 try:
@@ -333,7 +340,7 @@ class GetCheckoutDataSet(object):
                     else:
                         print("execution不存在")
                         return
-            print('最后返回的sink_dataset_list\n', sink_dataset_list)
+            print('最后返回的sink_dataset_lisrt\n', sink_dataset_list)
             print("------check_out_put(self)执行结束------\n")
             # 调用get_json()方法获取dataset_json
             return sink_dataset_list
@@ -357,34 +364,36 @@ class GetCheckoutDataSet(object):
             dataset_id = sink_dataset[i]["o_dataset"]
             # 第二步：判断dataset id是否存在，存在则取回预览结果并找到表中相等的dataset id，写入预览结果
             # print('dataset_id: ', dataset_id)
-            for j in range(2, sheet_rows + 1):  # 按照行数进行循环
-                # print('dataset_id:', dataset_id)
-                # 通过dataset预览接口，获取dataset json串
-                priview_url = "%s/api/datasets/%s/preview?rows=5000&tenant=2d7ad891-41c5-4fba-9ff2-03aef3c729e5" % (
-                HOST_189, dataset_id)
-                result = requests.get(url=priview_url, headers=get_headers())
+            # 通过dataset预览接口，获取dataset json串
+            # nokia环境代码使用的是旧版的预览接口，0.8.11及以后高版本代码使用的是新预览接口
+            if '57' in HOST_189:
+                priview_url = "%s/api/datasets/%s/preview?rows=5000&tenant=%s" % (
+                    HOST_189, dataset_id, tenant_id_57)
+                res = requests.get(url=priview_url, headers=get_headers())
+                result = res.text
                 # print('预览接口返回的dataset json串', '\n', result.json())
-                # 如果dataset id相等就写入实际结果，不相等就向下找
-                # if dataset_id:
-                    # for n in range(j, sheet_rows+1):
-                if dataset_id == flow_sheet.cell(row=j, column=4).value:
-                    flow_sheet.cell(row=j, column=8, value=result.text)  # dataset id 相等，实际结果写入表格
-                # flow id 相等时，将execution id 和执行状态写入
-                if sink_dataset[i]["flow_id"] == flow_sheet.cell(row=j, column=2).value:
-                    # print(sink_dataset[i]["flow_id"])
-                    flow_sheet.cell(row=j, column=5, value=sink_dataset[i]["execution_id"])
-                    flow_sheet.cell(row=j, column=6, value=sink_dataset[i]["e_final_status"])
-
-                else:
-                    for t in range(j, 2, -1):
-                        if sink_dataset[i]["flow_id"] == flow_sheet.cell(row=t-1, column=2).value:
-                            flow_sheet.cell(row=j, column=5, value=sink_dataset[i]["execution_id"])
-                            flow_sheet.cell(row=j, column=6, value=sink_dataset[i]["e_final_status"])
-                            # flow_sheet.cell(row=j, column=8, value=result.text)  # 实际结果写入表格
-                            break
-            # else:
-            #     print('请确认flow id = %s 的dataset id' % sink_dataset[i]["flow_id"])
-
+            else:
+                # 高版本代码使用新的数据集预览接口；先获取statementID,再根据statementID查询数据集内容
+                statementID = statementId_flow_use(HOST_189, dataset_id, tenant_id_189)
+                print('数据集%s 的statementID: %s' % (dataset_id, statementID))
+                result = preview_result_flow_use(HOST_189, dataset_id, tenant_id_189, statementID)
+                print(result)
+            for j in range(2, sheet_rows + 1):  # 按照行数进行循环
+                    # 如果dataset id相等就写入实际结果，不相等就向下找
+                    if dataset_id == flow_sheet.cell(row=j, column=4).value:
+                        flow_sheet.cell(row=j, column=8, value=str(result))  # dataset id 相等，实际结果写入表格
+                    # flow id 相等时，将execution id 和执行状态写入
+                    if sink_dataset[i]["flow_id"] == flow_sheet.cell(row=j, column=2).value:
+                        # print(sink_dataset[i]["flow_id"])
+                        flow_sheet.cell(row=j, column=5, value=sink_dataset[i]["execution_id"])
+                        flow_sheet.cell(row=j, column=6, value=sink_dataset[i]["e_final_status"])
+                    else:
+                        for t in range(j, 2, -1):
+                            if sink_dataset[i]["flow_id"] == flow_sheet.cell(row=t - 1, column=2).value:
+                                flow_sheet.cell(row=j, column=5, value=sink_dataset[i]["execution_id"])
+                                flow_sheet.cell(row=j, column=6, value=sink_dataset[i]["e_final_status"])
+                                # flow_sheet.cell(row=j, column=8, value=result.text)  # 实际结果写入表格
+                                break
         flow_table.save(abs_dir("flow_dataset_info.xlsx"))
         # copy_table.save(abs_dir("flow_dataset_info.xlsx"))
         # ---使用openpyxl处理表格 12.26update---
@@ -441,8 +450,8 @@ class GetCheckoutDataSet(object):
                             va7_k = va7[0].keys()
                             va7_key = list(va7_k)
                             # print('va7_key', va7_key)
-                            S_va7 = sorted(va7, key=lambda item: item[va7_key[0]], reverse=True)    # 没有 id时候的排序
-                            S_va8 = sorted(va8, key=lambda item: item[va7_key[0]], reverse=True)
+                            # S_va7 = sorted(va7, key=lambda item: item[va7_key[0]], reverse=True)    # 没有 id时候的排序
+                            # S_va8 = sorted(va8, key=lambda item: item[va7_key[0]], reverse=True)
                             # print('flow_id', table_sheet.cell(row=i, column=2).value)
                             # print(S_va7, '\n', S_va8)
                             # 安排不同的key进行排序，只要有其中一个key排序后相等，就认为两个结果相等
