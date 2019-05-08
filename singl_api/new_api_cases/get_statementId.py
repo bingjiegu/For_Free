@@ -1,11 +1,11 @@
 import requests,json
 from basic_info.get_auth_token import get_headers
-from basic_info.setting import HOST_189, tenant_id
+from basic_info.setting import HOST_189, tenant_id_189
 from basic_info.format_res import dict_res
 
 # datasetId存在时
 def statementId(datasetId):
-    url = '%s/api/datasets/%s/previewinit?tenant=%s' % (HOST_189, datasetId, tenant_id)
+    url = '%s/api/datasets/%s/previewinit?tenant=%s' % (HOST_189, datasetId, tenant_id_189)
     res = requests.get(url=url, headers=get_headers())
     try:
         res_statementId = json.loads(res.text)
@@ -15,9 +15,48 @@ def statementId(datasetId):
         return
 
 
+def statementId_flow_use(HOST,datasetId, tenant):
+    url = '%s/api/datasets/%s/previewinit?tenant=%s&rows=500' % (HOST, datasetId, tenant)
+    res = requests.get(url=url, headers=get_headers())
+    try:
+        res_statementId = dict_res(res.text)
+        print('%s数据集获取的statementID信息：%s' %(datasetId, res_statementId))
+        statementId = res_statementId['statementId']
+        print('%s数据集获取的statementID：%s' % (datasetId, statementId))
+    except:
+        print('数据集%s的statementID返回空' % datasetId)
+        return
+    else:
+        return statementId
+
+
+def preview_result_flow_use(HOST, datasetId, tenant, statementID):
+    if isinstance(statementID, int):
+        url = "%s/api/datasets/%s/previewresult?tenant=%s&statementId=%d" % (HOST, datasetId, tenant, statementID)
+        res = requests.get(url=url, headers=get_headers())
+        print(res.url)
+        print('%s数据集preview_result:%s' % (datasetId, res.text))
+        count_num = 0
+        while 'waiting' in res.text or 'running' in res.text:
+            res = requests.get(url=url, headers=get_headers())
+        dataset_result = dict_res(res.text)['content']
+        print('%s数据集dataset_result: %s ' % (datasetId, dataset_result))
+        return dataset_result
+    else:
+        print('%s数据集返回的statementID为空')
+
+
+# dataset_ID = '0a9ebfdc-20e8-4d76-a042-ed2ec1ab2393'
+# tenant = tenant_id_189
+# statementID = statementId_flow_use(HOST_189, dataset_ID, tenant)
+# print(statementID)
+# preview_result_flow_use(HOST_189, dataset_ID, tenant, statementID)
+
+
+
 # datasetId不存在时
 def statementId_no_dataset(param):
-    url = '%s/api/datasets/new/previewinit?tenant=%s' % (HOST_189, tenant_id)
+    url = '%s/api/datasets/new/previewinit?tenant=%s' % (HOST_189, tenant_id_189)
     res = requests.post(url=url, headers=get_headers(), json=param)
     try:
         res_statementId = json.loads(res.text)
@@ -129,7 +168,7 @@ def get_step_output_ensure_statementId(params):
 # params = '{"id":"source_9","name":"source_9","type":"source","x":168,"y":239,"otherConfigurations":{"schema":"schema_for_students_startjoin_step","schemaId":"31caabd3-ed37-415d-bc51-5c039f5b7689","sessionCache":"","datasetId":"5ebd5da6-793d-4cf9-bb4a-f84301eb0c4e","interceptor":"","dataset":"gbj_use_students_short_84","ignoreMissingPath":false},"outputConfigurations":[{"id":"output","fields":[{"column":"sId","alias":""},{"column":"sName","alias":""},{"column":"sex","alias":""},{"column":"age","alias":""},{"column":"class","alias":""}]}]}'
 # get_step_output_ensure_statementId(params)
 
-params = '{"id":"source_9","name":"source_9","type":"source","x":168,"y":239,"otherConfigurations":{"schema":"schema_for_students_startjoin_step","schemaId":"31caabd3-ed37-415d-bc51-5c039f5b7689","sessionCache":"","datasetId":"5ebd5da6-793d-4cf9-bb4a-f84301eb0c4e","interceptor":"","dataset":"gbj_use_students_short_84","ignoreMissingPath":false},"outputConfigurations":[{"id":"output","fields":[{"column":"sId","alias":""},{"column":"sName","alias":""},{"column":"sex","alias":""},{"column":"age","alias":""},{"column":"class","alias":""}]}]}'
+# params = '{"id":"source_9","name":"source_9","type":"source","x":168,"y":239,"otherConfigurations":{"schema":"schema_for_students_startjoin_step","schemaId":"31caabd3-ed37-415d-bc51-5c039f5b7689","sessionCache":"","datasetId":"5ebd5da6-793d-4cf9-bb4a-f84301eb0c4e","interceptor":"","dataset":"gbj_use_students_short_84","ignoreMissingPath":false},"outputConfigurations":[{"id":"output","fields":[{"column":"sId","alias":""},{"column":"sName","alias":""},{"column":"sex","alias":""},{"column":"age","alias":""},{"column":"class","alias":""}]}]}'
 
 # get_step_output_init_statementId(params)
 

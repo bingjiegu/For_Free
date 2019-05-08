@@ -2,7 +2,6 @@
 import os
 import time
 from urllib import parse
-
 from openpyxl import load_workbook
 import requests
 from basic_info.get_auth_token import get_headers, get_headers_upload
@@ -139,7 +138,6 @@ def upload_jar_file_workflow():
     files = {"file": open('woven-common-3.0.jar', 'rb')}
     headers = get_headers()
     headers.pop('Content-Type')
-
     response = requests.post(url, files=files, headers=headers)
     print(response.text)
     workflow_fileName = dict_res(response.text)["fileName"]
@@ -149,11 +147,15 @@ def upload_jar_file_workflow():
 # upload_jar_file_workflow()
 
 def upload_jar_file_dataflow():
-    url = "%s/api/processconfigs/uploadjar/dataflow%20selector" % HOST_189
+    url = "%s/api/processconfigs/uploadjar/dataflow selector" % HOST_189
+    unquote_url = parse.unquote(url)
     files = {"file": open('woven-common-3.0.jar', 'rb')}
     headers = get_headers()
     headers.pop('Content-Type')
     response = requests.post(url, files=files, headers=headers)
     # print(response.text)
     data_fileName = dict_res(response.text)["fileName"]
+    print(data_fileName)
     return data_fileName
+
+# upload_jar_file_dataflow()

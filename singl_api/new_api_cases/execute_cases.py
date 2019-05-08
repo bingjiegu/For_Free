@@ -783,15 +783,24 @@ class CheckResult(unittest.TestCase):
         elif key_word in ('query', 'update', 'delete'):
             if relation == '=':
                 compare_result = re.findall('[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}', '%s' % (response_text))
-                print(compare_result,type(compare_result))
-                print(response_text,type(response_text))
-                if compare_result == response_text:
+                response_text_list = []
+                response_text_list.append(response_text)
+                print('response_text_dict', response_text_dict)
+                print(type(response_text_dict))
+                print('expect_text', expect_text)
+                print(type(expect_text))
+                # 返回值是id 串，字母和数字的组合
+                if compare_result == response_text_list:
                     try:
                         self.assertEqual(expect_text, len(response_text), '第%s行expect_text和response_text不相等' % row)
                     except:
                         case_table_sheet.cell(row=row, column=column, value='fail')
                     else:
                         case_table_sheet.cell(row=row, column=column, value='pass')
+                # 返回空值
+                elif expect_text == None and response_text == "":
+                    case_table_sheet.cell(row=row, column=column, value='pass')
+
                 else:
                     try:
                         self.assertEqual(expect_text, response_text, '第%s行expect_text和response_text不相等' % row)
@@ -850,7 +859,7 @@ class CheckResult(unittest.TestCase):
 
 # 调试
 # 执行用例
-# deal_request_method()
+deal_request_method()
 # # 对比用例结果
 g = CheckResult()
 g.deal_result()
