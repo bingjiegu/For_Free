@@ -2,7 +2,7 @@
 import os
 import re
 import time
-from selenium import webdriver
+# from selenium import webdriver
 from openpyxl import load_workbook
 import requests
 from basic_info.get_auth_token import get_headers, get_headers_root,get_auth_token

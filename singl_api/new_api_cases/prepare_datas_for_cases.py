@@ -10,8 +10,6 @@ from basic_info.setting import MySQL_CONFIG
 from basic_info.Open_DB import MYSQL
 from basic_info.setting import HOST_189
 from selenium import webdriver
-# from new_api_cases.execute_cases import deal_parameters
-from requests_toolbelt.multipart.encoder import MultipartEncoder
 import random
 from new_api_cases.get_statementId import statementId, statementId_no_dataset, get_sql_analyse_statement_id, get_sql_analyse_dataset_info, get_sql_execte_statement_id, steps_sql_parseinit_statemenId, steps_sql_analyzeinit_statementId
 
