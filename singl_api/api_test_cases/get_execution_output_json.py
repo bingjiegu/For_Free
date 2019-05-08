@@ -49,26 +49,26 @@ class GetCheckoutDataSet(object):
         for flow_id in flowid_count:
             # print('------',flow_id, '--------')
             # print(i, flow_id)
-            print('flow_id', flow_id)
+            # print('flow_id', flow_id)
             try:
                 sql = 'select name, flow_type, parameters from merce_flow where id = "%s"' % flow_id
-                print(sql)
+                # print(sql)
                 flow_info = self.ms.ExecuQuery(sql)
-                print('flow_info:', flow_info)
+                # print('flow_info:', flow_info)
             except Exception as e:
                 raise e
             else:
                 try:
                     flow_name = flow_info[0]["name"]
-                    print('flow_name: ', flow_name)
+                    # print('flow_name: ', flow_name)
                     flow_type = flow_info[0]["flow_type"]
                     flow_parameters = flow_info[0]["parameters"]
                     parameters_use = parameter_ungzip(flow_parameters)  # 将加密后的参数进行解密和解压缩处理
-                    print('flow返回的参数：', parameters_use)
-                    print('参数类型：', type(parameters_use))
+                    # print('flow返回的参数：', parameters_use)
+                    # print('参数类型：', type(parameters_use))
                     flow_parameters_list = dict_res(parameters_use)   # 为空的处理？？？？？
-                    print('json.loads处理后的参数：',flow_parameters_list)
-                    print('参数类型：', type(flow_parameters_list))
+                    # print('json.loads处理后的参数：',flow_parameters_list)
+                    # print('参数类型：', type(flow_parameters_list))
                     arguments_list = []
                     arguments = {}
                     # print('flow_parameters_list:', flow_parameters_list)
@@ -79,7 +79,7 @@ class GetCheckoutDataSet(object):
                         arguments["refs"] = flow_parameters_list[0]["refs"]
                         arguments["description"] = flow_parameters_list[0]["description"]
                         arguments_list.append(arguments)
-                        print('arguments:', arguments)
+                        # print('arguments:', arguments)
 
                 except KeyError as e:
                     raise e
@@ -192,7 +192,7 @@ class GetCheckoutDataSet(object):
                 print("flow: %s scheduler创建失败" % data["flowid"])
                 # return None
         print("------create_new_scheduler(self)执行结束, 返回scheduler_id_list------\n")
-        print('scheduler_id_list', scheduler_id_list)
+        # print('scheduler_id_list', scheduler_id_list)
         return scheduler_id_list
 
     def get_execution_info(self):
@@ -231,15 +231,15 @@ class GetCheckoutDataSet(object):
             execution_sql = 'select id, status_type, flow_id , flow_scheduler_id from merce_flow_execution where flow_scheduler_id = "%s" ' % scheduler_id
             time.sleep(10)
             select_result = self.ms.ExecuQuery(execution_sql)
-            print(execution_sql)
-            print('查询execution 结果：', select_result)
+            # print(execution_sql)
+            # print('查询execution 结果：', select_result)
             # print("根据scheduler id %s 查询execution，查询结果 %s: " % (scheduler_id, select_result))
             if select_result:
                 e_info = {}
                 # 从查询结果中取值
                 try:
                     e_id = select_result[0]["id"]
-                    print(e_id)
+                    # print(e_id)
                     e_info["e_id"] = e_id
                     e_info["flow_id"] = select_result[0]["flow_id"]
                     e_info["flow_scheduler_id"] = select_result[0]["flow_scheduler_id"]
@@ -274,7 +274,7 @@ class GetCheckoutDataSet(object):
         if len(e_info_list) == len(self.file_flowid_count()):  # 与填入表的flowid数一样
             sink_dataset_list = []
             for i in range(len(e_info_list)):
-                print('e_info_list', e_info_list)
+                # print('e_info_list', e_info_list)
                 sink_dataset_dict = {}
                 try:
                     e_id = e_info_list[i]["e_id"]
@@ -316,14 +316,14 @@ class GetCheckoutDataSet(object):
                             # 成功后查询flow_execution_output表中的dataset, 即sink对应的输出dataset，取出dataset id 并返回该ID，后续调用预览接口查看数据`
                             # print("查询data_json_sql:")
                             sink_dataset_dict["e_final_status"] = e_final_status
-                            print(e_final_status, e_id)
+                            # print(e_final_status, e_id)
                             data_json_sql = 'select b.dataset_json from merce_flow_execution as a  LEFT JOIN merce_flow_execution_output as b on a.id = b.execution_id where a.id ="%s"' % e_id
                             # print(data_json_sql)
                             data_json = self.ms.ExecuQuery(data_json_sql)
                             # print("打印data_json:", data_json)
                             for n in range(len(data_json)):
                                 sink_dataset = data_json[n]["dataset_json"]  # 返回结果为元祖
-                                print('-----sink_dataset-----', sink_dataset)
+                                # print('-----sink_dataset-----', sink_dataset)
                                 # print('sink_dataset:', sink_dataset)
                                 if sink_dataset:
                                     sink_dataset_id = dict_res(sink_dataset)["id"]  # 取出json串中的dataset id
@@ -333,14 +333,14 @@ class GetCheckoutDataSet(object):
                                 else:
                                     continue
 
-                            print('第%d次的sink_dataset_list %s' % (i, sink_dataset_list))
+                            # print('第%d次的sink_dataset_list %s' % (i, sink_dataset_list))
                         else:
                             print("返回的execution 执行状态不正确")
                             return
                     else:
                         print("execution不存在")
                         return
-            print('最后返回的sink_dataset_lisrt\n', sink_dataset_list)
+            # print('最后返回的sink_dataset_lisrt\n', sink_dataset_list)
             print("------check_out_put(self)执行结束------\n")
             # 调用get_json()方法获取dataset_json
             return sink_dataset_list
@@ -351,7 +351,7 @@ class GetCheckoutDataSet(object):
     def get_json(self):
         print("------开始执行get_json()------\n")
         sink_dataset = self.check_out_put()
-        print('打印sink_dataset', sink_dataset)
+        # print('打印sink_dataset', sink_dataset)
         sink_dataset_json = []
         # ---使用openpyxl处理表格 12.26update---
         flow_table = load_workbook(abs_dir("flow_dataset_info.xlsx"))
@@ -377,7 +377,7 @@ class GetCheckoutDataSet(object):
                 statementID = statementId_flow_use(HOST_189, dataset_id, tenant_id_189)
                 print('数据集%s 的statementID: %s' % (dataset_id, statementID))
                 result = preview_result_flow_use(HOST_189, dataset_id, tenant_id_189, statementID)
-                print(result)
+                # print(result)
             for j in range(2, sheet_rows + 1):  # 按照行数进行循环
                     # 如果dataset id相等就写入实际结果，不相等就向下找
                     if dataset_id == flow_sheet.cell(row=j, column=4).value:
@@ -421,7 +421,7 @@ class GetCheckoutDataSet(object):
                         # print(actual_result)
                         # print(expect_result)
                         table_sheet.cell(row=i, column=9, value="pass")
-                        print('test_result:', table_sheet.cell(row=i, column=9).value)
+                        # print('test_result:', table_sheet.cell(row=i, column=9).value)
                         table_sheet.cell(row=i, column=10, value="")
                     else:
                         table_sheet.cell(row=i, column=9, value="fail")
@@ -471,7 +471,7 @@ class GetCheckoutDataSet(object):
                                                                          (table_sheet.cell(row=i, column=3).value))
                         elif va7 == [] and va8 == []:
                             table_sheet.cell(row=i, column=9, value="pass")
-                            print('test_result:', table_sheet.cell(row=i, column=9).value)
+                            # print('test_result:', table_sheet.cell(row=i, column=9).value)
                             table_sheet.cell(row=i, column=10, value="")
                         else:
                             table_sheet.cell(row=i, column=9, value="")
