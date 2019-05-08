@@ -6,4 +6,8 @@ import requests,json
 def get_flow_update_body():
     from basic_info.url_info import flow_update_flowid_url
     res = requests.get(url=flow_update_flowid_url, headers=get_headers())
+    # print(res.text)
     return json.loads(res.text)
+
+
+get_flow_update_body()
