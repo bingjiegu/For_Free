@@ -18,6 +18,7 @@ def dict_res(res):
             return res
         else:
             print("返回值类型无法转化为dictionary")
+            return res
     else:
         print("没有返回值或返回值为空")
         return None
