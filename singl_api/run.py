@@ -40,6 +40,7 @@ deal_request_method()
 # 对比API用例结果
 CheckResult().deal_result()
 # 发送邮件
+print('用例执行完毕，开始发送邮件')
 main3()
 stop_time = datetime.datetime.now()
 print('耗时:', stop_time-start_time)
