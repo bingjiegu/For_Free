@@ -859,9 +859,9 @@ class CheckResult(unittest.TestCase):
 
 # 调试
 # 执行用例
-# deal_request_method()
-# # # 对比用例结果
-# g = CheckResult()
-# g.deal_result()
 # if __name__ == '__main__':
-    
+deal_request_method()
+# # 对比用例结果
+g = CheckResult()
+g.deal_result()
+# if __name__ == '__main__':
