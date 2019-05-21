@@ -104,6 +104,7 @@ def post_request_result_check(row, column, url, headers, data, table_sheet_name)
             clean_vaule(table_sheet_name, row, column)
             write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
             write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
+
         elif case_detail == '获取SQL执行任务结果':
             print('开始执行：', case_detail)
             # 先获取接口需要使用的statement id 和 数据集分析字段
@@ -148,6 +149,12 @@ def post_request_result_check(row, column, url, headers, data, table_sheet_name)
                 clean_vaule(table_sheet_name, row, column)
                 write_result(sheet=table_sheet_name, row=row, column=column, value=removeList_result.status_code)
                 write_result(sheet=table_sheet_name, row=row, column=column + 4, value=removeList_result.text)
+        # elif case_detail == '元数据同步':
+        #     response = collector_schema_sync(data)
+        #     print(response)
+        #     clean_vaule(table_sheet_name, row, column)
+        #     write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
+        #     write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
         elif case_detail == '停止一个采集器任务的执行':
             print('开始执行：', case_detail)
             task_id = get_job_tasks_id(data)
@@ -382,32 +389,11 @@ def get_request_result_check(url, headers, data, table_sheet_name, row, column):
             clean_vaule(table_sheet_name, row, column)
             write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
             write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
-        # elif case_detail == '根据execution id查找execution':
-        #     print('开始执行：', case_detail)
-        #     # 需要先查询指定flow下的所有execution，从中取出第一个execution id，传递给查询接口
-        #     query_execution_url = '%s/api/executions/query' % HOST_189
-        #     all_executions = requests.post(url=query_execution_url, headers=headers, data=data)
-        #     executions_dict = dict_res(all_executions.text)
-        #     executions_content = executions_dict['content']
-        #     try:
-        #         all_ids = []  # 该list用来存储所有的execution id
-        #         for item in executions_content:
-        #             executions_content_id = item['id']
-        #             all_ids.append(executions_content_id)
-        #     except Exception as e:
-        #         print(e)
-        #     else:  #
-        #         # 执行查询操作,将查询到的第一个execution id当做参数传递给查询接口
-        #         new_url = url.format(all_ids[0])
-        #         query_response = requests.get(url=new_url, headers=headers)
-        #         # print(query_response.status_code)
-        #         # print(query_response.text)
-        #         clean_vaule(table_sheet_name, row, column)
-        #         write_result(sheet=table_sheet_name, row=row, column=column, value=query_response.status_code)
-        #         write_result(sheet=table_sheet_name, row=row, column=column + 4, value=query_response.text)
-        elif case_detail == '查看元数据同步任务的日志进度':
+        elif case_detail in ('查看元数据同步任务的日志进度','拉取元数据同步任务的日志','根据tasks id 查看完整log'):
             print('开始执行：', case_detail)
+            time.sleep(10)
             task_id = collector_schema_sync(data)
+            print(task_id)
             # print(task_id)
             time.sleep(5)
             new_url = url.format(task_id)
@@ -417,31 +403,6 @@ def get_request_result_check(url, headers, data, table_sheet_name, row, column):
             clean_vaule(table_sheet_name, row, column)
             write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
             write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
-
-        elif case_detail == '拉取元数据同步任务的日志':
-            print('开始执行：', case_detail)
-            task_id = collector_schema_sync(data)
-            # print(task_id)
-            time.sleep(5)
-            new_url = url.format(task_id)
-            response = requests.get(url=new_url, headers=headers)
-            # print(response.url)
-            # print(response.text)
-            clean_vaule(table_sheet_name, row, column)
-            write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
-            write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
-        elif case_detail == '根据tasks id 查看完整log':
-            print('开始执行：', case_detail)
-            task_id = collector_schema_sync(data)
-            # print(task_id)
-            time.sleep(5)
-            new_url = url.format(task_id)
-            response = requests.get(url=new_url, headers=headers)
-            # print(response.url, response.text)
-            clean_vaule(table_sheet_name, row, column)
-            write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
-            write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
-
         elif case_detail == '导出flow':
             print('开始执行：', case_detail)
             token = get_auth_token()
