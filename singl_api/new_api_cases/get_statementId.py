@@ -39,9 +39,13 @@ def preview_result_flow_use(HOST, datasetId, tenant, statementID):
         count_num = 0
         while 'waiting' in res.text or 'running' in res.text:
             res = requests.get(url=url, headers=get_headers())
-        dataset_result = dict_res(res.text)['content']
-        print('%s数据集dataset_result: %s ' % (datasetId, dataset_result))
-        return dataset_result
+        try:
+            dataset_result = dict_res(res.text)['content']
+        except KeyError:
+            return
+        else:
+            print('%s数据集dataset_result: %s ' % (datasetId, dataset_result))
+            return dataset_result
     else:
         print('%s数据集返回的statementID为空')
 
@@ -153,7 +157,7 @@ def get_step_output_init_statementId(params):
     url = '%s/api/steps/output/fields/init' % HOST_189
     res = requests.post(url=url, headers=get_headers(), data=params)
     print(res.status_code, res.text)
-    # print(dict_res(res.text)["statementId"])
+    print(dict_res(res.text)["statementId"])
     return dict_res(res.text)["statementId"]
 
 def get_step_output_ensure_statementId(params):
