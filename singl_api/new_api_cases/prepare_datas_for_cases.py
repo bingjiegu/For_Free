@@ -6,7 +6,7 @@ from openpyxl import load_workbook
 import requests
 from basic_info.get_auth_token import get_headers, get_headers_upload
 from basic_info.format_res import dict_res
-from basic_info.setting import MySQL_CONFIG
+from basic_info.setting import MySQL_CONFIG,collector_id
 from basic_info.Open_DB import MYSQL
 from basic_info.setting import HOST_189
 from selenium import webdriver
@@ -22,9 +22,10 @@ def get_job_tasks_id(job_id):
     url = '%s/api/woven/collectors/%s/tasks' % (HOST_189, job_id)
     data = {"fieldList": [], "sortObject": {"field": "lastModifiedTime", "orderDirection": "DESC"}, "offset": 0, "limit": 8}
     response = requests.post(url=url, headers=get_headers(), json=data)
-    tasks = dict_res(response.text)['content']
+
     all_task_id = []
     try:
+        tasks = dict_res(response.text)['content']
         for item in tasks:
             task_id = item['id']
     except Exception as e:
@@ -52,14 +53,19 @@ def create_new_user(data):
     print(user_id)
     return user_id
 
-def collector_schema_sync(data):
+def collector_schema_sync():
     """获取采集器元数据同步后返回的task id"""
-    collector_id = 'c1'
+    collector = 'c9'
     # data = '{"useSystemStore": true, "dataSource":{"id": "f8523e1f-b1ff-48cd-be8d-02ab91290d5b", "name": "mysql_test_bj", "type": "JDBC", "driver": "com.mysql.jdbc.Driver", "url": "jdbc:mysql://192.168.1.189:3306/test", "username": "merce", "password": "merce", "dateToTimestamp":false, "catalog": "", "schema": "", "table": "", "selectSQL": "", "dbType": "DB"}, "dataStore":{"path": "/tmp/c1/mysql_test_bj", "format": "csv", "separator": ",", "type": "HDFS"}}'
-    url = '%s/api/woven/collectors/%s/schema/fetch' % (HOST_189, collector_id)
+    data = '{"useSystemStore":true,"dataSource":{"id":"874de010-c05a-4210-91bb-aca51f3b5619","name":"gbj_0523","type":"JDBC","driver":"com.mysql.jdbc.Driver","url":"jdbc:mysql://192.168.1.199:3306/test","username":"merce","password":"123456","dateToTimestamp":false,"catalog":"","schema":"","table":"","selectSQL":"","dbType":"DB"},"dataStore":{"path":"/tmp/c9/gbj_0523","format":"csv","separator":",","type":"HDFS"}}'
+    url = '%s/api/woven/collectors/%s/schema/fetch' % (HOST_189, collector)
     response = requests.post(url=url, headers=get_headers(), data=data)
     time.sleep(3)
+    print(response.text)
     return response.text
+collector_schema_sync()
+
+
 
 def get_flow_id():
     name = "gbj_for_project_removeList" + str(random.randint(0,999999999999))
@@ -92,17 +98,6 @@ def get_applicationId():
     # print(application_id)
     # print(type(application_id))
     return application_id
-
-
-def upload_files():
-    url = 'http://192.168.1.189:8515/api/woven/upload/read/excel?maxSheet=1&maxRow=10000&maxColumn=3'
-    headers = get_headers()
-    headers['Content-Type'] = 'multipart/form-data; boundary=----WebKitFormBoundarydCTDwRoe6Ox1gnPn'
-    headers['Cookie'] = 'userName=admin; userPwd=123456; AMBARISESSIONID=1rmk20wkx3urr1hjkp6ujf5rqn'
-    with open(r'E:\standbd\性别分类.xls', 'rb') as f:
-        res = requests.post(url=url, headers=headers, files=f)
-        print(res.status_code)
-        print(res.text)
 
 
 def get_woven_qaoutput_dataset_path():

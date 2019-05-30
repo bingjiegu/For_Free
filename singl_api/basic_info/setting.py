@@ -47,7 +47,7 @@ email_to = {
 
 # # -------189环境使用-------
 # HOST
-HOST_189 = "http://192.168.1.189:8515"
+HOST_189 = "http://192.168.1.199:8515"
 # 数据库的连接配置，需要根据不同环境进行变更
 MySQL_CONFIG = {
     'HOST': '192.168.1.199',
@@ -241,3 +241,5 @@ rule_id = rule_id_list[0]["id"]
 zmod_id = ["e2dbfd88-0e2d-4fa2-b145-75c1a13ab455"]
 # 分析任务执行信息execution
 zmod_exectuion_id = "c462b867-db09-4adc-b49f-005c646960a6"
+# API用例使用
+collector_id = 'c9'
