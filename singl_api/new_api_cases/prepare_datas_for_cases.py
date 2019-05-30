@@ -53,17 +53,17 @@ def create_new_user(data):
     print(user_id)
     return user_id
 
-def collector_schema_sync():
+def collector_schema_sync(data):
     """获取采集器元数据同步后返回的task id"""
     collector = 'c9'
     # data = '{"useSystemStore": true, "dataSource":{"id": "f8523e1f-b1ff-48cd-be8d-02ab91290d5b", "name": "mysql_test_bj", "type": "JDBC", "driver": "com.mysql.jdbc.Driver", "url": "jdbc:mysql://192.168.1.189:3306/test", "username": "merce", "password": "merce", "dateToTimestamp":false, "catalog": "", "schema": "", "table": "", "selectSQL": "", "dbType": "DB"}, "dataStore":{"path": "/tmp/c1/mysql_test_bj", "format": "csv", "separator": ",", "type": "HDFS"}}'
-    data = '{"useSystemStore":true,"dataSource":{"id":"874de010-c05a-4210-91bb-aca51f3b5619","name":"gbj_0523","type":"JDBC","driver":"com.mysql.jdbc.Driver","url":"jdbc:mysql://192.168.1.199:3306/test","username":"merce","password":"123456","dateToTimestamp":false,"catalog":"","schema":"","table":"","selectSQL":"","dbType":"DB"},"dataStore":{"path":"/tmp/c9/gbj_0523","format":"csv","separator":",","type":"HDFS"}}'
+    # data = '{"useSystemStore":true,"dataSource":{"id":"874de010-c05a-4210-91bb-aca51f3b5619","name":"gbj_0523","type":"JDBC","driver":"com.mysql.jdbc.Driver","url":"jdbc:mysql://192.168.1.199:3306/test","username":"merce","password":"123456","dateToTimestamp":false,"catalog":"","schema":"","table":"","selectSQL":"","dbType":"DB"},"dataStore":{"path":"/tmp/c9/gbj_0523","format":"csv","separator":",","type":"HDFS"}}'
     url = '%s/api/woven/collectors/%s/schema/fetch' % (HOST_189, collector)
     response = requests.post(url=url, headers=get_headers(), data=data)
     time.sleep(3)
     print(response.text)
     return response.text
-collector_schema_sync()
+# collector_schema_sync()
 
 
 
