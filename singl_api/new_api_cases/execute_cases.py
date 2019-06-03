@@ -179,7 +179,7 @@ def post_request_result_check(row, column, url, headers, data, table_sheet_name)
             write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
             write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
         elif case_detail in ('配置工作流选择器-上传jar包', '配置过滤器-上传jar包', '配置批处理选择器-上传jar包'):
-            files = {"file": open("woven-common-3.0.jar", 'rb')}
+            files = {"file": open("./new_api_cases/woven-common-3.0.jar", 'rb')}
             headers.pop('Content-Type')
             response = requests.post(url=url, files=files, headers=headers)
             # print(response.text)
