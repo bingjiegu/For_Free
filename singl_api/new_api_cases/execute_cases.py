@@ -311,7 +311,7 @@ def get_request_result_check(url, headers, data, table_sheet_name, row, column):
 
     # GET请求需要从parameter中获取参数,并把参数拼装到URL中，
     if data:
-        if case_table_sheet.cell(row=row, column=2).value == '根据statement id,获取预览Dataset的结果数据(datasetId存在)':
+        if case_detail == '根据statement id,获取预览Dataset的结果数据(datasetId存在)':
             # print(data)
             print('开始执行：', case_detail)
             statement_id = statementId(data)
@@ -821,8 +821,8 @@ class CheckResult(unittest.TestCase):
 # 调试
 # 执行用例
 # if __name__ == '__main__':
-deal_request_method()
-# # 对比用例结果
-g = CheckResult()
-g.deal_result()
+# deal_request_method()
+# # # 对比用例结果
+# g = CheckResult()
+# g.deal_result()
 # if __name__ == '__main__':
