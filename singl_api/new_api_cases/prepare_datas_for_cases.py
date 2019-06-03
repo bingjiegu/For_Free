@@ -119,10 +119,14 @@ def upload_jar_file_filter():
     files = {"file": open('woven-common-3.0.jar', 'rb')}
     headers = get_headers()
     headers.pop('Content-Type')
-    response = requests.post(url, files=files, headers=headers)
+    try:
+        response = requests.post(url, files=files, headers=headers)
     # print(response.text)
-    filter_fileName = dict_res(response.text)["fileName"]
-    return filter_fileName
+        filter_fileName = dict_res(response.text)["fileName"]
+    except:
+        return
+    else:
+        return filter_fileName
 
 
 def upload_jar_file_workflow():
@@ -131,11 +135,15 @@ def upload_jar_file_workflow():
     files = {"file": open('woven-common-3.0.jar', 'rb')}
     headers = get_headers()
     headers.pop('Content-Type')
-    response = requests.post(url, files=files, headers=headers)
-    print(response.text)
-    workflow_fileName = dict_res(response.text)["fileName"]
-    print(workflow_fileName)
-    return workflow_fileName
+    try:
+        response = requests.post(url, files=files, headers=headers)
+        print(response.text)
+        workflow_fileName = dict_res(response.text)["fileName"]
+        print(workflow_fileName)
+    except:
+        return
+    else:
+        return workflow_fileName
 
 # upload_jar_file_workflow()
 
@@ -145,10 +153,14 @@ def upload_jar_file_dataflow():
     files = {"file": open('woven-common-3.0.jar', 'rb')}
     headers = get_headers()
     headers.pop('Content-Type')
-    response = requests.post(url, files=files, headers=headers)
+    try:
+        response = requests.post(url, files=files, headers=headers)
     # print(response.text)
-    data_fileName = dict_res(response.text)["fileName"]
-    print(data_fileName)
-    return data_fileName
+        data_fileName = dict_res(response.text)["fileName"]
+        print(data_fileName)
+    except:
+        return
+    else:
+        return data_fileName
 
 # upload_jar_file_dataflow()
