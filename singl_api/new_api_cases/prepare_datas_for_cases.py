@@ -116,7 +116,7 @@ def get_woven_qaoutput_dataset_path():
 
 def upload_jar_file_filter():
     url = "%s/api/processconfigs/uploadjar/filter class" % HOST_189
-    files = {"file": open('woven-common-3.0.jar', 'rb')}
+    files = {"file": open('./new_api_cases/woven-common-3.0.jar', 'rb')}
     headers = get_headers()
     headers.pop('Content-Type')
     try:
@@ -132,7 +132,7 @@ def upload_jar_file_filter():
 def upload_jar_file_workflow():
     url = "%s/api/processconfigs/uploadjar/workflow selector" % HOST_189
     print(url)
-    files = {"file": open('woven-common-3.0.jar', 'rb')}
+    files = {"file": open('./new_api_cases/woven-common-3.0.jar', 'rb')}
     headers = get_headers()
     headers.pop('Content-Type')
     try:
@@ -150,7 +150,7 @@ def upload_jar_file_workflow():
 def upload_jar_file_dataflow():
     url = "%s/api/processconfigs/uploadjar/dataflow selector" % HOST_189
     unquote_url = parse.unquote(url)
-    files = {"file": open('woven-common-3.0.jar', 'rb')}
+    files = {"file": open('./new_api_cases/woven-common-3.0.jar', 'rb')}
     headers = get_headers()
     headers.pop('Content-Type')
     try:
