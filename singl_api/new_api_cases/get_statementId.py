@@ -155,10 +155,14 @@ def steps_sql_analyzeinit_statementId(params):
 
 def get_step_output_init_statementId(params):
     url = '%s/api/steps/output/fields/init' % HOST_189
-    res = requests.post(url=url, headers=get_headers(), data=params)
-    print(res.status_code, res.text)
-    print(dict_res(res.text)["statementId"])
-    return dict_res(res.text)["statementId"]
+    try:
+        res = requests.post(url=url, headers=get_headers(), data=params)
+        print(res.status_code, res.text)
+        print(dict_res(res.text)["statementId"])
+    except:
+        return
+    else:
+        return dict_res(res.text)["statementId"]
 
 def get_step_output_ensure_statementId(params):
     url = '%s/api/steps/validateinit/dataflow' % HOST_189
