@@ -20,7 +20,8 @@ for test_suite in discover:
         testcase.addTest(test_case)
 filename = time.strftime("%Y%m%d%H", time.localtime()) + '_report.html'
 # report_path = 'E:\Reports\\' + filename
-report_path = '/root/gbj/Reports/' + filename  # 192.168.1.87环境Jenkins使用
+# report_path = '/root/gbj/Reports/' + filename  # 192.168.1.87环境Jenkins使用
+report_path = './Reports/' + filename  # 192.168.1.87环境Jenkins使用
 fp = open(report_path, 'wb')
 runner = HTMLTestRunner.HTMLTestRunner(stream=fp, title='API自动化测试报告', description='覆盖dataset,schema,schedulers,execution等测试场景')
 print('开始执行用例集用例')
@@ -30,8 +31,8 @@ print('------开始执行用例-------')
 start_time = datetime.datetime.now()
 print('------开始执行flow用例------')
 # 执行flow用例
-obj = GetCheckoutDataSet()
-sink_dataet_json = obj.get_json()
+# obj = GetCheckoutDataSet()
+# sink_dataet_json = obj.get_json()
 print('------开始执行api case------')
 # 执行API用例
 deal_request_method()
