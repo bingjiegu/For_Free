@@ -13,7 +13,6 @@ from new_api_cases.execute_cases import deal_request_method, CheckResult
 # 添加用例集的API用例。暂停
 testcase = unittest.TestSuite()
 discover = unittest.defaultTestLoader.discover(start_dir='./api_test_cases', pattern='cases_for_*.py')
-
 for test_suite in discover:
     for test_case in test_suite:
         # print(test_case)
