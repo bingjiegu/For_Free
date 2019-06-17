@@ -47,15 +47,15 @@ email_to = {
 
 # # -------189环境使用-------
 # HOST
-HOST_189 = "http://192.168.1.189:8515"
-# 数据库的连接配置，需要根据不同环境进行变更
-MySQL_CONFIG = {
-    'HOST': '192.168.1.199',
-    "PORT": 3306,
-    "USER": 'merce',
-    "PASSWORD": '123456',
-    "DB": 'merce',
-    'case_db': 'test'}
+# HOST_189 = "http://192.168.1.189:8515"
+# # 数据库的连接配置，需要根据不同环境进行变更
+# MySQL_CONFIG = {
+#     'HOST': '192.168.1.199',
+#     "PORT": 3306,
+#     "USER": 'merce',
+#     "PASSWORD": '123456',
+#     "DB": 'merce',
+#     'case_db': 'test'}
 
 # # -------57环境使用-------
 # HOST
@@ -76,9 +76,17 @@ MySQL_CONFIG = {
 #     "DB": 'merce',
 #     'case_db': 'test'
 # }
-
-
-
+# -------81环境使用-------
+# HOST
+HOST_189 = "http://192.168.1.81:8515"
+# # # # 数据库连接信息
+MySQL_CONFIG = {
+    'HOST': '192.168.1.57',
+    "PORT": 3306,
+    "USER": 'merce',
+    "PASSWORD": 'merce',
+    "DB": 'merce_57'
+}
 
 # MySQL_CONFIG_85 = {
 #     'HOST': '192.168.1.85',
@@ -87,6 +95,21 @@ MySQL_CONFIG = {
 #     "PASSWORD": 'europa',
 #     "DB": 'europa'
 # }
+
+tenant_id_189 = "2d7ad891-41c5-4fba-9ff2-03aef3c729e5"  # 189环境default租戶ID
+tenant_id_81 = "55f7f910-b1c9-41d2-9771-e734e6b8285f"  # 57环境default租戶ID
+
+
+
+
+
+
+
+
+
+
+
+
 
 MY_LOGIN_INFO = {
  "HEADERS": {'Content-Type': 'application/x-www-form-urlencoded'},
@@ -136,8 +159,7 @@ owner = "2059750c-a300-4b64-84a6-e8b086dbfd42"
 # login user:gbj_use
 owner2 = "d2fee4a4-d296-4db8-9b62-46bd9bc46a94"
 
-tenant_id_189 = "2d7ad891-41c5-4fba-9ff2-03aef3c729e5"  # 189环境default租戶ID
-tenant_id_57 = ""  # 57环境default租戶ID
+
 dataset_resource = {"id": "39386f75-9b28-43a6-a6bf-bd5e0e85d437"}
 schema_resource = {"id": "9123ca72-ebd1-422b-b8b0-e150b7c69dc5"}
 
@@ -234,7 +256,12 @@ ms = Open_DB.MYSQL(MySQL_CONFIG["HOST"], MySQL_CONFIG["USER"], MySQL_CONFIG["PAS
 # 查询最新创建的分析规则id
 rule_id_sql = 'select id from merce_zrule ORDER BY create_time desc limit 1'
 rule_id_list = ms.ExecuQuery(rule_id_sql)
-rule_id = rule_id_list[0]["id"]
+
+try:
+    rule_id = rule_id_list[0]["id"]
+except IndexError:
+    print('没有查询到最新的分析规则，返回空')
+
 # print(rule_id_list)
 
 # 创建分析任务使用的分析模板

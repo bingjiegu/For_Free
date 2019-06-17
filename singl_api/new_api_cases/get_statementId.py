@@ -1,11 +1,26 @@
 import requests,json
 from basic_info.get_auth_token import get_headers
-from basic_info.setting import HOST_189, tenant_id_189
+from basic_info.setting import HOST_189, tenant_id_189, tenant_id_81
 from basic_info.format_res import dict_res
+
+
+# 根据host信息返回tenant信息
+def get_tenant(host):
+    global tenant_id
+    if '81' in host:
+        tenant_id = tenant_id_81
+        return tenant_id
+    elif '189' in host:
+        tenant_id = tenant_id_189
+        return tenant_id
+    else:
+        print('请确认host信息')
+        return
+
 
 # datasetId存在时
 def statementId(datasetId):
-    url = '%s/api/datasets/%s/previewinit?tenant=%s' % (HOST_189, datasetId, tenant_id_189)
+    url = '%s/api/datasets/%s/previewinit?tenant=%s' % (HOST_189, datasetId, get_tenant(HOST_189))
     res = requests.get(url=url, headers=get_headers())
     try:
         res_statementId = json.loads(res.text)
@@ -14,8 +29,7 @@ def statementId(datasetId):
     except KeyError:
         return
 
-
-def statementId_flow_use(HOST,datasetId, tenant):
+def statementId_flow_use(HOST, datasetId, tenant):
     url = '%s/api/datasets/%s/previewinit?tenant=%s&rows=500' % (HOST, datasetId, tenant)
     res = requests.get(url=url, headers=get_headers())
     try:
@@ -48,14 +62,6 @@ def preview_result_flow_use(HOST, datasetId, tenant, statementID):
             return dataset_result
     else:
         print('%s数据集返回的statementID为空')
-
-
-# dataset_ID = '0a9ebfdc-20e8-4d76-a042-ed2ec1ab2393'
-# tenant = tenant_id_189
-# statementID = statementId_flow_use(HOST_189, dataset_ID, tenant)
-# print(statementID)
-# preview_result_flow_use(HOST_189, dataset_ID, tenant, statementID)
-
 
 
 # datasetId不存在时

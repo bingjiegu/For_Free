@@ -6,11 +6,11 @@ import time
 from openpyxl import load_workbook
 import requests
 from basic_info.get_auth_token import get_headers, get_headers_root,get_auth_token
-from basic_info.format_res import dict_res,get_time
+from basic_info.format_res import dict_res, get_time
 from basic_info.setting import MySQL_CONFIG
 from basic_info.Open_DB import MYSQL
 from basic_info.setting import HOST_189
-import random,json,unittest
+import random, json, unittest
 from new_api_cases.get_statementId import statementId, statementId_no_dataset, get_sql_analyse_statement_id, \
     get_sql_analyse_dataset_info, get_sql_execte_statement_id, steps_sql_parseinit_statemenId, \
     steps_sql_analyzeinit_statementId,get_step_output_init_statementId,get_step_output_ensure_statementId
@@ -24,6 +24,8 @@ case_table = load_workbook(ab_dir("api_cases.xlsx"))
 case_table_sheet = case_table.get_sheet_by_name('tester')
 all_rows = case_table_sheet.max_row
 # print(case_table_sheet.cell(row=2, column=10).value, case_table_sheet.cell(row=2,column=12).value)
+jar_dir = os.path.abspath('woven-common-3.0.jar')
+
 
 # 判断请求方法，并根据不同的请求方法调用不同的处理方式
 def deal_request_method():
@@ -179,8 +181,7 @@ def post_request_result_check(row, column, url, headers, data, table_sheet_name)
             write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
             write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
         elif case_detail in ('配置工作流选择器-上传jar包', '配置过滤器-上传jar包', '配置批处理选择器-上传jar包'):
-            # files = {"file": open("./new_api_cases/woven-common-3.0.jar", 'rb')}
-            files = {"file": open("./new_api_cases/woven-common-3.0.jar", 'rb')}
+            files = {"file": open(jar_dir, 'rb')}
             headers.pop('Content-Type')
             response = requests.post(url=url, files=files, headers=headers)
             # print(response.text)
@@ -533,13 +534,15 @@ def get_request_result_check(url, headers, data, table_sheet_name, row, column):
 
 
 # PUT请求
-def put_request_result_check(url, row, data, table_sheet_name, column,headers):
+def put_request_result_check(url, row, data, table_sheet_name, column, headers):
     if data and isinstance(data, str):
         if '&' in data:
             # 分隔参数
             parameters = data.split('&')
             # 拼接URL
             new_url = url.format(parameters[0])
+            print(new_url)
+            print(parameters)
             # 发送的参数体
             parameters_data = parameters[-1]
             if parameters_data.startswith('{'):
@@ -563,7 +566,8 @@ def put_request_result_check(url, row, data, table_sheet_name, column,headers):
                 write_result(table_sheet_name, row, column + 4, response.text)
             elif data.startswith('{') and data.endswith('}'):
                 response = requests.put(url=url, headers=headers, data=data)
-                # print(response.status_code, response.text)
+                print(response.status_code, response.text)
+                print(response.url, response.content)
                 clean_vaule(table_sheet_name, row, column)
                 write_result(table_sheet_name, row, column, response.status_code)
                 write_result(table_sheet_name, row, column + 4, response.text)
@@ -821,9 +825,8 @@ class CheckResult(unittest.TestCase):
 
 # 调试
 # 执行用例
-# if __name__ == '__main__':
-# deal_request_method()
+deal_request_method()
 # # # 对比用例结果
-# g = CheckResult()
-# g.deal_result()
-# if __name__ == '__main__':
+g = CheckResult()
+g.deal_result()
+
