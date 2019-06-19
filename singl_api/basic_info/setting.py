@@ -85,7 +85,7 @@ MySQL_CONFIG = {
     "PORT": 3306,
     "USER": 'merce',
     "PASSWORD": 'merce',
-    "DB": 'merce_57'
+    "DB": 'database_81'
 }
 
 # MySQL_CONFIG_85 = {
