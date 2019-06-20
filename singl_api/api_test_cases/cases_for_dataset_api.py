@@ -5,7 +5,7 @@ import unittest
 import requests
 import json
 import time
-from basic_info.setting import MySQL_CONFIG, HOST_189, tenant_id
+from basic_info.setting import MySQL_CONFIG, HOST_189
 from basic_info.Open_DB import MYSQL
 
 # 配置数据库连接
@@ -34,7 +34,7 @@ class CreateDataSet(unittest.TestCase):
             schema_id["id"] = schema[0]["id"]
             # print(schema_id)
             data = {"name": self.dataset_name, "expiredPeriod": 0, "storage": "JDBC", "storageConfigurations": self.storage, "schema": schema_id, "owner": "2059750c-a300-4b64-84a6-e8b086dbfd42", "resource": {"id": "39386f75-9b28-43a6-a6bf-bd5e0e85d437"}}
-            res = requests.post(url=self.create_dataset_url, headers=get_headers(), data=json.dumps(data))
+            res = requests.post(url=self.create_dataset_url, headers=get_headers(HOST_189), data=json.dumps(data))
 
             # print(res.status_code, res.text)
             self.assertEqual(res.status_code, 201, 'DB-dataset创建失败')
@@ -46,7 +46,7 @@ class CreateDataSet(unittest.TestCase):
         schema_info = schema()  # data_from_db中schema()查询schema
         data = {"name": dataset_name, "schema": schema_info, "storage": "HDFS", "expiredPeriod": 0,
         "storageConfigurations": self.storageConfigurations, "owner": "2059750c-a300-4b64-84a6-e8b086dbfd42", "resource": {"id": "39386f75-9b28-43a6-a6bf-bd5e0e85d437"}}
-        res = requests.post(url=self.create_dataset_url, headers=get_headers(), data=json.dumps(data))
+        res = requests.post(url=self.create_dataset_url, headers=get_headers(HOST_189), data=json.dumps(data))
         # 断言成功时响应状态码为201
         print("开始创建hdfs")
         print(res.status_code, res.text)
@@ -79,8 +79,8 @@ class Get_DataSet(unittest.TestCase):
         except Exception as e:
             raise e
         else:
-            url2 = '%s/api/datasets/%s?tenant=%s' % (HOST_189, dataset_id, tenant_id)
-            response = requests.get(url=url2, headers=get_headers()).text
+            url2 = '%s/api/datasets/%s?tenant=%s' % (HOST_189, dataset_id, tenant)
+            response = requests.get(url=url2, headers=get_headers(HOST_189)).text
             response = json.loads(response)
             response_id = response["id"]
             response_name = response["name"]
