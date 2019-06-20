@@ -1,9 +1,8 @@
-t1 = '{"id":"14fea344-72cf-4ee5-97e9-6c68f8b4c4ab","name":"for_datasource_api_test_use","creator":"admin","createTime":1554973626000,"lastModifier":"admin","lastModifiedTime":1558441293000,"owner":"2059750c-a300-4b64-84a6-e8b086dbfd42","version":5,"moduleVersion":0,"enabled":1,"description":"","tenant":{"id":"2d7ad891-41c5-4fba-9ff2-03aef3c729e5","name":"default","creator":"root","createTime":1532942318000,"lastModifier":"f8aff341-9303-4135-b393-1d322e4638e2","lastModifiedTime":1544078372000,"owner":"f8aff341-9303-4135-b393-1d322e4638e2","version":0,"moduleVersion":0,"enabled":1,"resourceQueues":["default","merce.normal"],"hdfsSpaceQuota":0,"zid":"","expiredPeriod":0},"tableName":"merce_dss","type":"DB","attributes":{"schema":"","jarPath":"/app/flowconfig/jarUploadPath/save/43b0571d-c8e8-4053-b936-600ed5ee03de_mysql-connector-java-5.1.38.jar","catalog":"","DBType":"Mysql","batchsize":100000,"url":"jdbc:mysql://192.168.1.199:3306/test","database":"test","password":"123456","driver":"com.mysql.jdbc.Driver","port":3306,"host":"192.168.1.199","chineseName":"","name":"Mysql","user":"merce","properties":[{"name":"","value":""}],"dateToTimestamp":false},"expiredPeriod":0}'
-t1 = '{"id":"14fea344-72cf-4ee5-97e9-6c68f8b4c4ab","name":"for_datasource_api_test_use","creator":"admin","createTime":1554973626000,"lastModifier":"admin","lastModifiedTime":1554973626000,"owner":"2059750c-a300-4b64-84a6-e8b086dbfd42","version":1,"moduleVersion":0,"enabled":1,"description":"","tenant":{"id":"2d7ad891-41c5-4fba-9ff2-03aef3c729e5","name":"default","creator":"root","createTime":1532942318000,"lastModifier":"f8aff341-9303-4135-b393-1d322e4638e2","lastModifiedTime":1544078372000,"owner":"f8aff341-9303-4135-b393-1d322e4638e2","version":0,"moduleVersion":0,"enabled":1,"resourceQueues":["default","merce.normal"],"hdfsSpaceQuota":0,"zid":"","expiredPeriod":0},"tableName":"merce_dss","type":"DB","attributes":{"schema":"","jarPath":"/app/flowconfig/jarUploadPath/save/43b0571d-c8e8-4053-b936-600ed5ee03de_mysql-connector-java-5.1.38.jar","catalog":"","DBType":"Mysql","url":"jdbc:mysql://192.168.1.199:3306/merce","database":"merce","password":"123456","driver":"com.mysql.jdbc.Driver","port":3306,"host":"192.168.1.199","chineseName":"","name":"Mysql","user":"merce","properties":[{"name":"","value":""}],"dateToTimestamp":false},"expiredPeriod":0}'
+from urllib.parse import urlparse
 
 
-import json
-t1 = '{"name":"1123"}'
-t2 = json.loads(t1)
-print(type(t1))
-print(type(t2))
+url = 'http://192.168.1.57:8515/api/flows/create'
+host = urlparse(url).scheme + '://' + urlparse(url).netloc
+print(host)
+if '57' in host:
+    print(1)

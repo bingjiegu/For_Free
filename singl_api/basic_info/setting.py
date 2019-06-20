@@ -4,7 +4,6 @@ from basic_info import Open_DB
 from util.encrypt import encrypt_rf
 
 
-
 BASE_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__name__)))
 DATA_PATH = os.path.join(BASE_PATH, 'test_cases')
 REPORT_PATH = os.path.join(BASE_PATH, 'report')
@@ -16,9 +15,8 @@ email_list = {
 email_to = {
     "gubingjie": "bingjie.gu@inforefiner.com",
     "daming": "zhiming.wang@inforefiner.com",
-    "pengyuan": "yuan.peng@inforefiner.com"
+            }
 
-}
 # ------84环境使用--------
 #  HOST
 # HOST_189 = "http://192.168.1.84:8515"
@@ -59,15 +57,16 @@ email_to = {
 
 # # -------57环境使用-------
 # HOST
-# HOST_189 = "http://192.168.1.57:8515"
-# # # # # 数据库连接信息
-# MySQL_CONFIG = {
-#     'HOST': '192.168.1.57',
-#     "PORT": 3306,
-#     "USER": 'merce',
-#     "PASSWORD": 'merce',
-#     "DB": 'merce'
-# }
+HOST_189 = "http://192.168.1.57:8515"
+# # # # 数据库连接信息
+MySQL_CONFIG = {
+    'HOST': '192.168.1.57',
+    "PORT": 3306,
+    "USER": 'merce',
+    "PASSWORD": 'merce',
+    "DB": 'merce'
+}
+
 # MySQL_CONFIG = {
 #     'HOST': '192.168.1.199',
 #     "PORT": 3306,
@@ -78,37 +77,19 @@ email_to = {
 # }
 # -------81环境使用-------
 # HOST
-HOST_189 = "http://192.168.1.81:8515"
-# # # # 数据库连接信息
-MySQL_CONFIG = {
-    'HOST': '192.168.1.57',
-    "PORT": 3306,
-    "USER": 'merce',
-    "PASSWORD": 'merce',
-    "DB": 'database_81'
-}
-
-# MySQL_CONFIG_85 = {
-#     'HOST': '192.168.1.85',
+# HOST_189 = "http://192.168.1.81:8515"
+# # # # # 数据库连接信息
+# MySQL_CONFIG = {
+#     'HOST': '192.168.1.57',
 #     "PORT": 3306,
-#     "USER": 'europa',
-#     "PASSWORD": 'europa',
-#     "DB": 'europa'
+#     "USER": 'merce',
+#     "PASSWORD": 'merce',
+#     "DB": 'database_81'
 # }
 
+
 tenant_id_189 = "2d7ad891-41c5-4fba-9ff2-03aef3c729e5"  # 189环境default租戶ID
-tenant_id_81 = "55f7f910-b1c9-41d2-9771-e734e6b8285f"  # 57环境default租戶ID
-
-
-
-
-
-
-
-
-
-
-
+tenant_id_81 = "55f7f910-b1c9-41d2-9771-e734e6b8285f"  # 81环境default租戶ID
 
 
 MY_LOGIN_INFO = {
@@ -118,7 +99,7 @@ MY_LOGIN_INFO = {
  "HOST": "http://192.168.1.189:8515"
 }
 
-# 目前登录使用该账户 admin，HOST信息和环境信息保持一致
+# base64加密使用该账户 admin，HOST信息和环境信息保持一致
 MY_LOGIN_INFO2 = {
  "HEADERS": {'Content-Type': 'application/x-www-form-urlencoded'},
  "URL": "%s/api/auth/login" % HOST_189,
@@ -135,6 +116,27 @@ MY_LOGIN_INFO_root = {
  "DATA_ERROR_NAME": {'name': encrypt_rf('roo'), 'password': encrypt_rf('123456'), 'version': 'Europa-3.0.0.19 - 20180428', 'tenant': encrypt_rf('root')},
  "HOST": "%s" % HOST_189
 }
+
+# AES加密方式使用以下登录信息
+
+# DAM1.0不同的加密方式
+MY_LOGIN_INFO_dam = {
+ "HEADERS": {'Content-Type': 'application/x-www-form-urlencoded'},
+ "URL": "%s/api/auth/login" % HOST_189,
+ "DATA": {'name': '13ec4fe486e87d0b1145f2248a090db5', 'password': '3cde4fd05c58aee9937bfb2db12c9a91', 'version': 'Baymax-3.0.0.23-20180606', 'tenant': '1463a3ec85fbfbeb2fe07183d7518a48'},
+ "DATA_ERROR_NAME": {'name': encrypt_rf('adminn'), 'password': encrypt_rf('123456'), 'version': 'Europa-3.0.0.19 - 20180428', 'tenant': encrypt_rf('default')},
+ "HOST": "%s" % HOST_189
+}
+
+#DAM1.0使用
+MY_LOGIN_INFO_root_dam = {
+ "HEADERS": {'Content-Type': 'application/x-www-form-urlencoded'},
+ "URL": "%s/api/auth/login" % HOST_189,
+ "DATA": {'name': '5a8987fa3b9573f0708fe61f30fd2393', 'password': '3cde4fd05c58aee9937bfb2db12c9a91', 'version': 'Baymax-3.0.0.23-20180606', 'tenant': '5a8987fa3b9573f0708fe61f30fd2393'},
+ "DATA_ERROR_NAME": {'name': encrypt_rf('roo'), 'password': encrypt_rf('123456'), 'version': 'Europa-3.0.0.19 - 20180428', 'tenant': encrypt_rf('root')},
+ "HOST": "%s" % HOST_189
+}
+
 
 # # upload_file使用该用户
 # MY_LOGIN_INFO_upload_file_use = {

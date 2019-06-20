@@ -21,7 +21,7 @@ ab_dir = lambda n: os.path.abspath(os.path.join(os.path.dirname(__file__), n))
 def get_job_tasks_id(job_id):
     url = '%s/api/woven/collectors/%s/tasks' % (HOST_189, job_id)
     data = {"fieldList": [], "sortObject": {"field": "lastModifiedTime", "orderDirection": "DESC"}, "offset": 0, "limit": 8}
-    response = requests.post(url=url, headers=get_headers(), json=data)
+    response = requests.post(url=url, headers=get_headers(HOST_189), json=data)
 
     all_task_id = []
     try:
@@ -48,7 +48,7 @@ def get_job_tasks_id(job_id):
 
 def create_new_user(data):
     url = '%s/api/woven/users' % HOST_189
-    response = requests.post(url=url, headers=get_headers(),json=data)
+    response = requests.post(url=url, headers=get_headers(HOST_189), json=data)
     user_id = dict_res(response.text)["id"]
     print(user_id)
     return user_id
@@ -59,7 +59,7 @@ def collector_schema_sync(data):
     # data = '{"useSystemStore": true, "dataSource":{"id": "f8523e1f-b1ff-48cd-be8d-02ab91290d5b", "name": "mysql_test_bj", "type": "JDBC", "driver": "com.mysql.jdbc.Driver", "url": "jdbc:mysql://192.168.1.189:3306/test", "username": "merce", "password": "merce", "dateToTimestamp":false, "catalog": "", "schema": "", "table": "", "selectSQL": "", "dbType": "DB"}, "dataStore":{"path": "/tmp/c1/mysql_test_bj", "format": "csv", "separator": ",", "type": "HDFS"}}'
     # data = '{"useSystemStore":true,"dataSource":{"id":"874de010-c05a-4210-91bb-aca51f3b5619","name":"gbj_0523","type":"JDBC","driver":"com.mysql.jdbc.Driver","url":"jdbc:mysql://192.168.1.199:3306/test","username":"merce","password":"123456","dateToTimestamp":false,"catalog":"","schema":"","table":"","selectSQL":"","dbType":"DB"},"dataStore":{"path":"/tmp/c9/gbj_0523","format":"csv","separator":",","type":"HDFS"}}'
     url = '%s/api/woven/collectors/%s/schema/fetch' % (HOST_189, collector)
-    response = requests.post(url=url, headers=get_headers(), data=data)
+    response = requests.post(url=url, headers=get_headers(HOST_189), data=data)
     time.sleep(3)
     print(response.text)
     return response.text
@@ -120,7 +120,7 @@ def upload_jar_file_filter():
     url = "%s/api/processconfigs/uploadjar/filter class" % HOST_189
     # files = {"file": open('./new_api_cases/woven-common-3.0.jar', 'rb')}
     files = {"file": open(dir1, 'rb')}
-    headers = get_headers()
+    headers = get_headers(HOST_189)
     headers.pop('Content-Type')
     try:
         response = requests.post(url, files=files, headers=headers)
@@ -137,7 +137,7 @@ def upload_jar_file_workflow():
     print(url)
     # files = {"file": open('./new_api_cases/woven-common-3.0.jar', 'rb')}
     files = {"file": open(dir1, 'rb')}
-    headers = get_headers()
+    headers = get_headers(HOST_189)
     headers.pop('Content-Type')
     try:
         response = requests.post(url, files=files, headers=headers)
@@ -156,7 +156,7 @@ def upload_jar_file_dataflow():
     unquote_url = parse.unquote(url)
     # files = {"file": open('./new_api_cases/woven-common-3.0.jar', 'rb')}
     files = {"file": open(dir1, 'rb')}
-    headers = get_headers()
+    headers = get_headers(HOST_189)
     headers.pop('Content-Type')
     try:
         response = requests.post(url, files=files, headers=headers)
