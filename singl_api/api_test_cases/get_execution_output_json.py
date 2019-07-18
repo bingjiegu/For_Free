@@ -3,9 +3,10 @@ from basic_info.Open_DB import MYSQL
 from basic_info.get_auth_token import get_headers
 from basic_info.setting import MySQL_CONFIG, flow_id_list
 from basic_info.format_res import dict_res, get_time
-from basic_info.setting import HOST_189, tenant_id_189, tenant_id_57
+from basic_info.setting import HOST_189, tenant_id_189, tenant_id_76, tenant_id_57
 from new_api_cases.get_statementId import statementId_flow_use, preview_result_flow_use
 from util.encrypt import encrypt_decode, parameter_ungzip
+from util.get_tenant import get_tenant
 import time, random, requests
 from openpyxl import load_workbook
 import json
@@ -54,7 +55,7 @@ class GetCheckoutDataSet(object):
                 sql = 'select name, flow_type, parameters from merce_flow where id = "%s"' % flow_id
                 # print(sql)
                 flow_info = self.ms.ExecuQuery(sql)
-                # print('flow_info:', flow_info)
+                print('flow_info:', flow_info)
             except Exception as e:
                 raise e
             else:
@@ -63,16 +64,14 @@ class GetCheckoutDataSet(object):
                     # print('flow_name: ', flow_name)
                     flow_type = flow_info[0]["flow_type"]
                     flow_parameters = flow_info[0]["parameters"]
-                    parameters_use = parameter_ungzip(flow_parameters)  # 将加密后的参数进行解密和解压缩处理
-                    # print('flow返回的参数：', parameters_use)
-                    # print('参数类型：', type(parameters_use))
-                    flow_parameters_list = dict_res(parameters_use)   # 为空的处理？？？？？
-                    # print('json.loads处理后的参数：',flow_parameters_list)
-                    # print('参数类型：', type(flow_parameters_list))
+                    # flow_parameters_list = []
                     arguments_list = []
                     arguments = {}
+                    if flow_parameters:
+                        parameters_use = parameter_ungzip(flow_parameters)  # 将加密后的参数进行解密和解压缩处理
+                        flow_parameters_list = dict_res(parameters_use)   # 为空的处理？？？？？
                     # print('flow_parameters_list:', flow_parameters_list)
-                    if flow_parameters_list != [] and flow_parameters_list != None:
+                    # if flow_parameters_list != [] and flow_parameters_list != None:
                         arguments["name"] = flow_parameters_list[0]["name"]
                         arguments["category"] = flow_parameters_list[0]["category"]
                         arguments["value"] = flow_parameters_list[0]["defaultVal"]
@@ -163,6 +162,7 @@ class GetCheckoutDataSet(object):
 
             data_list.append(data)
         print("------data_for_create_scheduler(self)执行结束------\n")
+        # print(data_list)
         return data_list
 
     def create_new_scheduler(self):
@@ -175,7 +175,7 @@ class GetCheckoutDataSet(object):
         scheduler_id_list = []
         scheduler_number = 1
         for data in self.data_for_create_scheduler():
-            res = requests.post(url=create_scheduler_url, headers=get_headers(), json=data)
+            res = requests.post(url=create_scheduler_url, headers=get_headers(HOST_189), json=data)
             print('第%d 个scheduler' % scheduler_number)
             scheduler_number += 1
             time.sleep(2)
@@ -192,7 +192,7 @@ class GetCheckoutDataSet(object):
                 print("flow: %s scheduler创建失败" % data["flowid"])
                 # return None
         print("------create_new_scheduler(self)执行结束, 返回scheduler_id_list------\n")
-        # print('scheduler_id_list', scheduler_id_list)
+        print('scheduler_id_list', scheduler_id_list)
         return scheduler_id_list
 
     def get_execution_info(self):
@@ -351,8 +351,6 @@ class GetCheckoutDataSet(object):
     def get_json(self):
         print("------开始执行get_json()------\n")
         sink_dataset = self.check_out_put()
-        # print('打印sink_dataset', sink_dataset)
-        sink_dataset_json = []
         # ---使用openpyxl处理表格 12.26update---
         flow_table = load_workbook(abs_dir("flow_dataset_info.xlsx"))
         # info_sheet_names = flow_table.get_sheet_names()
@@ -364,20 +362,20 @@ class GetCheckoutDataSet(object):
             dataset_id = sink_dataset[i]["o_dataset"]
             # 第二步：判断dataset id是否存在，存在则取回预览结果并找到表中相等的dataset id，写入预览结果
             # print('dataset_id: ', dataset_id)
-            # 通过dataset预览接口，获取dataset json串
+            ## 通过dataset预览接口，获取dataset json串
             # nokia环境代码使用的是旧版的预览接口，0.8.11及以后高版本代码使用的是新预览接口
             if '57' in HOST_189:
                 priview_url = "%s/api/datasets/%s/preview?rows=5000&tenant=%s" % (
-                    HOST_189, dataset_id, tenant_id_57)
-                res = requests.get(url=priview_url, headers=get_headers())
+                    HOST_189, dataset_id, get_tenant(HOST_189))
+                res = requests.get(url=priview_url, headers=get_headers(HOST_189))
                 result = res.text
                 # print('预览接口返回的dataset json串', '\n', result.json())
             else:
                 # 高版本代码使用新的数据集预览接口；先获取statementID,再根据statementID查询数据集内容
                 statementID = statementId_flow_use(HOST_189, dataset_id, tenant_id_189)
                 print('数据集%s 的statementID: %s' % (dataset_id, statementID))
-                result = preview_result_flow_use(HOST_189, dataset_id, tenant_id_189, statementID)
-                # print(result)
+                result = preview_result_flow_use(HOST_189, dataset_id, get_tenant(HOST_189), statementID)
+                # result =
             for j in range(2, sheet_rows + 1):  # 按照行数进行循环
                     # 如果dataset id相等就写入实际结果，不相等就向下找
                     if dataset_id == flow_sheet.cell(row=j, column=4).value:
@@ -524,6 +522,7 @@ if __name__ == '__main__':
     # GetCheckoutDataSet()
     g = GetCheckoutDataSet()
     g.get_json()
+    # g.get_json()
     # g.get_json()
     # begin_time = datetime.datetime.now()
     # print('begin_time:', begin_time)

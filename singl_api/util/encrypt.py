@@ -43,3 +43,5 @@ def parameter_ungzip(parameters):
     # 4. 将解压缩后的byte内容转化成str取出并返回
     par_use = str(no_g, encoding='utf-8')
     return par_use
+
+print(parameter_ungzip('H4sIAAAAAAAAAItWSklNSyzNKVGKBQDXb6hoCwAAAA=='))

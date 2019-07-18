@@ -267,7 +267,18 @@ def post_request_result_check(row, column, url, host,headers, data, table_sheet_
             clean_vaule(table_sheet_name, row, column)
             write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
             write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
-
+        elif case_detail == "登录":
+            headers["Content-Type"] = "application/x-www-form-urlencoded"
+            headers.pop('X-AUTH-TOKEN')
+            response = requests.post(url, headers=headers, data=dict_res(data))
+            print(type(data))
+            print('headers', headers)
+            print(response.content)
+            print(response.headers)
+            print(response.status_code,response.text)
+            clean_vaule(table_sheet_name, row, column)
+            write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
+            write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
         else:
             print('开始执行：', case_detail)
             #  SQL语句作为参数，需要先将SQL语句执行，数据库查询返回数据作为接口要传递的参数
@@ -318,7 +329,8 @@ def post_request_result_check(row, column, url, host,headers, data, table_sheet_
                 else:
                     print('请先确认第%d行list参数值' % row)
             else:
-                    print('第%d行参数不是以startswith或者{,[开头，请先确认参数内容' % row)
+                print('请确认第%d行的data形式' % row)
+
     else:
         print('请确认第%d行的data形式' % row)
 

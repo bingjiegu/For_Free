@@ -31,7 +31,7 @@ def statementId(datasetId):
 
 def statementId_flow_use(HOST, datasetId, tenant):
     url = '%s/api/datasets/%s/previewinit?tenant=%s&rows=500' % (HOST, datasetId, tenant)
-    res = requests.get(url=url, headers=get_headers())
+    res = requests.get(url=url, headers=get_headers(HOST))
     try:
         res_statementId = dict_res(res.text)
         print('%s数据集获取的statementID信息：%s' %(datasetId, res_statementId))
@@ -47,12 +47,12 @@ def statementId_flow_use(HOST, datasetId, tenant):
 def preview_result_flow_use(HOST, datasetId, tenant, statementID):
     if isinstance(statementID, int):
         url = "%s/api/datasets/%s/previewresult?tenant=%s&statementId=%d" % (HOST, datasetId, tenant, statementID)
-        res = requests.get(url=url, headers=get_headers())
+        res = requests.get(url=url, headers=get_headers(HOST))
         print(res.url)
         print('%s数据集preview_result:%s' % (datasetId, res.text))
         count_num = 0
         while 'waiting' in res.text or 'running' in res.text:
-            res = requests.get(url=url, headers=get_headers())
+            res = requests.get(url=url, headers=get_headers(HOST))
         try:
             dataset_result = dict_res(res.text)['content']
         except KeyError:
@@ -65,9 +65,9 @@ def preview_result_flow_use(HOST, datasetId, tenant, statementID):
 
 
 # datasetId不存在时
-def statementId_no_dataset(param):
-    url = '%s/api/datasets/new/previewinit?tenant=%s' % (HOST_189, tenant_id_189)
-    res = requests.post(url=url, headers=get_headers(), json=param)
+def statementId_no_dataset(HOST,param):
+    url = '%s/api/datasets/new/previewinit?tenant=%s' % (HOST, tenant_id_189)
+    res = requests.post(url=url, headers=get_headers(HOST), json=param)
     try:
         res_statementId = json.loads(res.text)
         statementId = res_statementId['statementId']
@@ -77,9 +77,9 @@ def statementId_no_dataset(param):
 
 
 # 初始化Sql Analyze(解析数据集输出字段)，返回statement id，获取数据集字段给分析任务使用
-def get_sql_analyse_statement_id(param):
-    url = ' %s/api/datasets/sql/analyzeinit' % HOST_189
-    res = requests.post(url=url, headers=get_headers(), data=param)
+def get_sql_analyse_statement_id(HOST, param):
+    url = ' %s/api/datasets/sql/analyzeinit' % HOST
+    res = requests.post(url=url, headers=get_headers(HOST), data=param)
     # print(res.text)
     try:
         res_statementId = json.loads(res.text)
@@ -91,16 +91,16 @@ def get_sql_analyse_statement_id(param):
 
 
 # 根据初始化SQL Analyze返回的statement id,获取数据集字段(获取输出字段)
-def get_sql_analyse_dataset_info(params):
+def get_sql_analyse_dataset_info(HOST,params):
     sql_analyse_statement_id = get_sql_analyse_statement_id(params)
     # print(sql_analyse_statement_id)
-    url = ' %s/api/datasets/sql/analyzeresult?statementId=%s' % (HOST_189, sql_analyse_statement_id)
-    res = requests.get(url=url, headers=get_headers())
+    url = ' %s/api/datasets/sql/analyzeresult?statementId=%s' % (HOST, sql_analyse_statement_id)
+    res = requests.get(url=url, headers=get_headers(HOST))
     print(res.text)
     count_num = 0
     while ("waiting") in res.text or ("running") in res.text:
         print('再次查询前',res.text)
-        res = requests.get(url=url, headers=get_headers())
+        res = requests.get(url=url, headers=get_headers(HOST))
         count_num += 1
         if count_num == 100:
             return
@@ -119,9 +119,9 @@ def get_sql_analyse_dataset_info(params):
 
 
 # 解析SQL字段后，初始化Sql任务，返回statement id，执行SQL语句使用
-def get_sql_execte_statement_id(param):
-    url = '%s/api/datasets/sql/executeinit' % HOST_189
-    res = requests.post(url=url, headers=get_headers(), data=param)
+def get_sql_execte_statement_id(HOST,param):
+    url = '%s/api/datasets/sql/executeinit' % HOST
+    res = requests.post(url=url, headers=get_headers(HOST), data=param)
     print(res.text)
     try:
         res_statementId = json.loads(res.text)
@@ -133,9 +133,9 @@ def get_sql_execte_statement_id(param):
 
 
 # 根据Sql语句解析表名,初始化ParseSql任务,返回statementID
-def steps_sql_parseinit_statemenId(params):
-    url = '%s/api/steps/sql/parseinit/dataflow' % HOST_189
-    res = requests.post(url=url, headers=get_headers(), data=params)
+def steps_sql_parseinit_statemenId(HOST,params):
+    url = '%s/api/steps/sql/parseinit/dataflow' % HOST
+    res = requests.post(url=url, headers=get_headers(HOST), data=params)
     print(res.text)
     try:
         res_statementId = json.loads(res.text)
@@ -147,9 +147,9 @@ def steps_sql_parseinit_statemenId(params):
 
 
 # 初始化Sql Analyze,返回任务的statementID
-def steps_sql_analyzeinit_statementId(params):
-    url = '%s/api/steps/sql/analyzeinit/dataflow' % HOST_189
-    res = requests.post(url=url, headers=get_headers(), data=params)
+def steps_sql_analyzeinit_statementId(HOST,params):
+    url = '%s/api/steps/sql/analyzeinit/dataflow' % HOST
+    res = requests.post(url=url, headers=get_headers(HOST), data=params)
     print(res.text)
     try:
         res_statementId = json.loads(res.text)
@@ -159,10 +159,10 @@ def steps_sql_analyzeinit_statementId(params):
     except KeyError:
         return
 
-def get_step_output_init_statementId(params):
-    url = '%s/api/steps/output/fields/init' % HOST_189
+def get_step_output_init_statementId(HOST,params):
+    url = '%s/api/steps/output/fields/init' % HOST
     try:
-        res = requests.post(url=url, headers=get_headers(), data=params)
+        res = requests.post(url=url, headers=get_headers(HOST), data=params)
         print(res.status_code, res.text)
         print(dict_res(res.text)["statementId"])
     except:
@@ -170,9 +170,9 @@ def get_step_output_init_statementId(params):
     else:
         return dict_res(res.text)["statementId"]
 
-def get_step_output_ensure_statementId(params):
-    url = '%s/api/steps/validateinit/dataflow' % HOST_189
-    res = requests.post(url=url, headers=get_headers(), data=params)
+def get_step_output_ensure_statementId(HOST,params):
+    url = '%s/api/steps/validateinit/dataflow' % HOST
+    res = requests.post(url=url, headers=get_headers(HOST), data=params)
     try:
         print(dict_res(res.text)["statementId"])
         return dict_res(res.text)["statementId"]
