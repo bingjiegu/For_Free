@@ -1,16 +1,10 @@
 # coding:utf-8
-import unittest
-import time
-import HTMLTestRunner
-from send_mail import  main3
-from basic_info.get_auth_token import get_headers
+from util.send_mail import mail_for_flow
 from api_test_cases.get_execution_output_json import GetCheckoutDataSet
-import threading
 import datetime
-from new_api_cases.execute_cases import deal_request_method, CheckResult
-# from newSuite import NewSuite
 
-# 添加用例集的API用例。暂停执行该用例集
+
+# 添加用例集的API用例。暂停
 # testcase = unittest.TestSuite()
 # discover = unittest.defaultTestLoader.discover(start_dir='./api_test_cases', pattern='cases_for_*.py')
 # for test_suite in discover:
@@ -28,17 +22,22 @@ from new_api_cases.execute_cases import deal_request_method, CheckResult
 # fp.close()
 print('------开始执行用例-------')
 start_time = datetime.datetime.now()
-print('开始时间：', start_time)
+print('------开始执行flow用例------')
+# 执行flow用例
+obj = GetCheckoutDataSet()
+sink_dataet_json = obj.get_json()
 print('------开始执行api case------')
-# 执行API用例并对比结果
-deal_request_method()
+# 执行API用例
+# deal_request_method()
+# # 对比API用例结果
+# CheckResult().deal_result()
+# 发送邮件
+print('用例执行完毕，开始发送邮件')
 stop_time = datetime.datetime.now()
 print('结束时间：', stop_time)
 print('耗时:', stop_time-start_time)
 # 发送邮件
-main3()
-
-
+mail_for_flow()
 
 
 
