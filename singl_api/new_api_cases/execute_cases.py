@@ -380,7 +380,7 @@ def get_request_result_check(url, headers, host, data, table_sheet_name, row, co
 
         elif case_detail == ('根据解析sql parse接口返回的statementId,获取dataset name'):
             print('开始执行：', case_detail)
-            datasetName_statementId = steps_sql_parseinit_statemenId(data)
+            datasetName_statementId = steps_sql_parseinit_statemenId(HOST_189,data)
             new_url = url.format(datasetName_statementId)
             response = requests.get(url=new_url, headers=headers)
             # print(response.text)
@@ -396,7 +396,7 @@ def get_request_result_check(url, headers, host, data, table_sheet_name, row, co
             write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
         elif case_detail == ('根据Sql Analyze返回的statementId,获取SqlAnalyze结果'):
             print('开始执行：', case_detail)
-            steps_sql_analyse_statementId = steps_sql_analyzeinit_statementId(data)
+            steps_sql_analyse_statementId = steps_sql_analyzeinit_statementId(HOST_189, data)
             new_url = url.format(steps_sql_analyse_statementId)
             response = requests.get(url=new_url, headers=headers)
             # print(response.text)
@@ -412,7 +412,7 @@ def get_request_result_check(url, headers, host, data, table_sheet_name, row, co
             write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
         elif case_detail == ('结束sqlsource step中指定statementId对应任务'):
             print('开始执行：', case_detail)
-            cancel_sql_parseinit_statementId = steps_sql_parseinit_statemenId(data)
+            cancel_sql_parseinit_statementId = steps_sql_parseinit_statemenId(HOST_189, data)
             new_url = url.format(cancel_sql_parseinit_statementId)
             response = requests.get(url=new_url, headers=headers)
             # print(response.text)
@@ -445,7 +445,7 @@ def get_request_result_check(url, headers, host, data, table_sheet_name, row, co
             write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
         elif case_detail == '根据statementID获取step的输出字段':
             print('开始执行：', case_detail)
-            init_statementId = get_step_output_init_statementId(data)
+            init_statementId = get_step_output_init_statementId(HOST_189, data)
             # print(init_statementId)
             new_url = url.format(init_statementId)
             response = requests.get(url=new_url, headers=headers)
@@ -462,7 +462,7 @@ def get_request_result_check(url, headers, host, data, table_sheet_name, row, co
             write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
         elif case_detail == '根据statementID确认step':
             print('开始执行：', case_detail)
-            ensure_statementId = get_step_output_ensure_statementId(data)
+            ensure_statementId = get_step_output_ensure_statementId(HOST_189,data)
             # print(ensure_statementId)
             new_url = url.format(ensure_statementId)
             response = requests.get(url=new_url, headers=headers)

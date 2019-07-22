@@ -1,8 +1,12 @@
-from urllib.parse import urlparse
+from util.encrypt import parameter_ungzip
+from basic_info.setting import MySQL_CONFIG, HOST_189
+from basic_info.Open_DB import MYSQL
 
+# 配置数据库连接
+ms = MYSQL(MySQL_CONFIG["HOST"], MySQL_CONFIG["USER"], MySQL_CONFIG["PASSWORD"], MySQL_CONFIG["DB"])
 
-url = 'http://192.168.1.57:8515/api/flows/create'
-host = urlparse(url).scheme + '://' + urlparse(url).netloc
-print(host)
-if '57' in host:
-    print(1)
+sql = "select links from merce_flow where  name = 'minus_0628_3_no_element_test'"
+result = ms.ExecuQuery(sql)
+end_result = result[0]["links"]
+print(result[0]["links"])
+print(parameter_ungzip(end_result))

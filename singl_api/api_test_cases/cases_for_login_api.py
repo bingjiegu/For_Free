@@ -21,6 +21,9 @@ class CheckLogin(unittest.TestCase):
         """正常登录"""
         from basic_info.url_info import login_url
         res = requests.post(url=login_url, headers=self.login_header, data=self.login_info)
+        print(res.headers)
+        print('----------------')
+        print(res.text)
         self.assertEqual(res.status_code, 200)
         # assert res.status_code == 200
 
