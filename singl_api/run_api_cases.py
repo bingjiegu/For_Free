@@ -2,7 +2,7 @@
 import unittest
 import time
 import HTMLTestRunner
-from send_mail import main2, main3
+from send_mail import  main3
 from basic_info.get_auth_token import get_headers
 from api_test_cases.get_execution_output_json import GetCheckoutDataSet
 import threading
