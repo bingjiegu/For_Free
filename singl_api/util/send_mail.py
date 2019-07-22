@@ -61,8 +61,8 @@ def main3(host):
     # 发件人的邮箱
     sender_163_mail = "ruifan_test@163.com"
     # 收件人邮箱
-    # receivers = ['bingjie.gu@inforefiner.com', 'zhiming.wang@inforefiner.com', 'qian.feng@inforefiner.com']  # 定时任务使用
-    receivers = ['bingjie.gu@inforefiner.com']  # 调试使用
+    receivers = ['bingjie.gu@inforefiner.com', 'zhiming.wang@inforefiner.com', 'qian.feng@inforefiner.com']  # 定时任务使用
+    # receivers = ['bingjie.gu@inforefiner.com']  # 调试使用
     msg = MIMEMultipart()
 
     # 邮件的正文内容----API执行结果
@@ -147,8 +147,8 @@ def mail_for_flow(host):
     # 发件人的邮箱
     sender_163_mail = "ruifan_test@163.com"
     # 收件人邮箱
-    # receivers = ['bingjie.gu@inforefiner.com', 'zhiming.wang@inforefiner.com', 'qian.feng@inforefiner.com']  # 定时任务使用
-    receivers = ['bingjie.gu@inforefiner.com']  # 调试使用
+    receivers = ['bingjie.gu@inforefiner.com', 'zhiming.wang@inforefiner.com', 'qian.feng@inforefiner.com']  # 定时任务使用
+    # receivers = ['bingjie.gu@inforefiner.com']  # 调试使用
     msg = MIMEMultipart()
     # 邮件的正文内容----flow执行结果
     f = load_workbook(abs_dir("flow_dataset_info.xlsx"))
@@ -195,7 +195,7 @@ def mail_for_flow(host):
         mail_content = """各位好:
         用例执行环境：%s
         本次Flow用例共执行：%d 个
-        执行成功: %d 个, 
+        执行成功: %d 个 
         执行失败: %d 个
         失败的flow名称为: 
         %s
@@ -204,8 +204,8 @@ def mail_for_flow(host):
     else:
         mail_content = """各位好:
          用例执行环境：%s
-         本次Flow用例共执行 %d 个
-         执行成功:%d 个
+         本次Flow用例共执行: %d 个
+         执行成功: %d 个
          任务详情请查看附件《flow_info.xlsx》中的log
                         """ % (host, total, len(succeed_flow_s))
     # print(mail_content)

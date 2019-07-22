@@ -1,6 +1,7 @@
 # coding:utf-8
 from util.send_mail import mail_for_flow
 from api_test_cases.get_execution_output_json import GetCheckoutDataSet
+from basic_info.setting import HOST_189
 import datetime
 
 
@@ -37,7 +38,7 @@ stop_time = datetime.datetime.now()
 print('结束时间：', stop_time)
 print('耗时:', stop_time-start_time)
 # 发送邮件
-mail_for_flow()
+mail_for_flow(HOST_189)
 
 
 

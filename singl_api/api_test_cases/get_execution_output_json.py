@@ -520,21 +520,6 @@ class GetCheckoutDataSet(object):
 
 if __name__ == '__main__':
     GetCheckoutDataSet()
-    # g = GetCheckoutDataSet()
-#     g.get_json()
-    # g.get_json()
-    # g.get_json()
-    # begin_time = datetime.datetime.now()
-    # print('begin_time:', begin_time)
-    # g = GetCheckoutDataSet()
-    # print(g.get_execution_info())
-    # end_time = datetime.datetime.now()
-    # print('end_time:', end_time)
-    # print('此次执行耗时：', end_time-begin_time)
-
-
-    # threading.Timer(1500, get_headers()).start()
-    # g.data_for_create_scheduler()
 
 
 
