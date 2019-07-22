@@ -4,6 +4,7 @@ from basic_info.get_auth_token import get_headers
 from basic_info.setting import MySQL_CONFIG, flow_id_list
 from basic_info.format_res import dict_res, get_time
 from basic_info.setting import HOST_189, tenant_id_189, tenant_id_76, tenant_id_57
+from basic_info.get_execution_log import GetLog
 from new_api_cases.get_statementId import statementId_flow_use, preview_result_flow_use
 from util.encrypt import encrypt_decode, parameter_ungzip
 from util.get_tenant import get_tenant
@@ -361,8 +362,7 @@ class GetCheckoutDataSet(object):
         for i in range(0, len(sink_dataset)):
             dataset_id = sink_dataset[i]["o_dataset"]
             # 第二步：判断dataset id是否存在，存在则取回预览结果并找到表中相等的dataset id，写入预览结果
-            # print('dataset_id: ', dataset_id)
-            ## 通过dataset预览接口，获取dataset json串
+            # 通过dataset预览接口，获取dataset json串
             # nokia环境代码使用的是旧版的预览接口，0.8.11及以后高版本代码使用的是新预览接口
             if '57' in HOST_189:
                 priview_url = "%s/api/datasets/%s/preview?rows=5000&tenant=%s" % (
@@ -377,6 +377,7 @@ class GetCheckoutDataSet(object):
                 result = preview_result_flow_use(HOST_189, dataset_id, get_tenant(HOST_189), statementID)
                 # result =
             for j in range(2, sheet_rows + 1):  # 按照行数进行循环
+                    log_url = GetLog(sink_dataset[i]["execution_id"], HOST_189).get_log_url()
                     # 如果dataset id相等就写入实际结果，不相等就向下找
                     if dataset_id == flow_sheet.cell(row=j, column=4).value:
                         flow_sheet.cell(row=j, column=8, value=str(result))  # dataset id 相等，实际结果写入表格
@@ -384,11 +385,13 @@ class GetCheckoutDataSet(object):
                     if sink_dataset[i]["flow_id"] == flow_sheet.cell(row=j, column=2).value:
                         # print(sink_dataset[i]["flow_id"])
                         flow_sheet.cell(row=j, column=5, value=sink_dataset[i]["execution_id"])
+                        flow_sheet.cell(row=j,column=12, value=log_url)
                         flow_sheet.cell(row=j, column=6, value=sink_dataset[i]["e_final_status"])
                     else:
                         for t in range(j, 2, -1):
                             if sink_dataset[i]["flow_id"] == flow_sheet.cell(row=t - 1, column=2).value:
                                 flow_sheet.cell(row=j, column=5, value=sink_dataset[i]["execution_id"])
+                                flow_sheet.cell(row=j, column=12, value=log_url)
                                 flow_sheet.cell(row=j, column=6, value=sink_dataset[i]["e_final_status"])
                                 # flow_sheet.cell(row=j, column=8, value=result.text)  # 实际结果写入表格
                                 break

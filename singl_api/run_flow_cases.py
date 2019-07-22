@@ -1,7 +1,7 @@
 # coding:utf-8
 import unittest
 import time
-from send_mail import main3
+from send_mail import mail_for_flow
 from api_test_cases.get_execution_output_json import GetCheckoutDataSet
 import datetime
 
@@ -39,7 +39,7 @@ stop_time = datetime.datetime.now()
 print('结束时间：', stop_time)
 print('耗时:', stop_time-start_time)
 # 发送邮件
-main3()
+mail_for_flow()
 
 
 

@@ -51,7 +51,93 @@ def send_email(content, title, from_name, from_address, to_address, serverport, 
 
 
 # 发送邮件
-def main3():
+def main3(host):
+    # 163邮箱smtp服务器
+    host_server = "smtp.163.com"
+    # 发件人
+    sender_163 = "ruifan_test@163.com"
+    # pwd为发件人163邮箱的授权码
+    pwd = "ruifantest2018"
+    # 发件人的邮箱
+    sender_163_mail = "ruifan_test@163.com"
+    # 收件人邮箱
+    # receivers = ['bingjie.gu@inforefiner.com', 'zhiming.wang@inforefiner.com', 'qian.feng@inforefiner.com']  # 定时任务使用
+    receivers = ['bingjie.gu@inforefiner.com']  # 调试使用
+    msg = MIMEMultipart()
+
+    # 邮件的正文内容----API执行结果
+    # 统计api执行结果，加入到邮件正文中，失败的用例name：失败的原因
+    api_cases_table = load_workbook(ab_dir('api_cases.xlsx'))
+    cases_sheet = api_cases_table.get_sheet_by_name('tester')
+    sheet_rows = cases_sheet.max_row
+    cases_num = sheet_rows - 1
+    pass_cases = 0
+    failed_cases = 0
+    failed_cases_detail = {}
+    for row in range(2, sheet_rows+1):
+        if cases_sheet.cell(row=row, column=14).value == 'pass':
+            pass_cases += 1
+        else:
+            failed_cases += 1
+            case_name = cases_sheet.cell(row=row, column=2).value
+            failed_cases_detail[case_name] = cases_sheet.cell(row=row, column=15).value   # 将用例name和失败原因列出
+
+    # 邮件的正文内容
+    if failed_cases != 0:
+        mail_content = """各位好:
+        本次用例执行环境：%s
+        API用例共执行：%d 条，
+        执行成功: %d 条 
+        执行失败: %d 条
+        用例执行详情请查看附件《api_cases.xlsx》
+        """ % (host, cases_num, pass_cases, failed_cases)
+    else:
+        mail_content = """各位好:
+        本次用例执行环境：%s
+        API用例共执行：%d 条，
+        执行成功: %d 条
+        用例执行详情请查看附件《api_cases.xlsx》
+                       """ % (host, cases_num, pass_cases)
+    # print(mail_content)
+    # 邮件标题
+    mail_title = time.strftime("%Y-%m-%d", time.localtime()) + ' BayMax系统API用例自动化执行日报'
+
+    # 添加邮件正文，格式 MIMEText:
+    msg.attach(MIMEText(mail_content, "plain", 'utf-8'))
+
+    # 添加api用例 excel表格
+    # 添加附件，就是加上一个MIMEBase，从本地读取一个文件:
+    # 添加API用例集执行报告
+    apicases_filepath = ab_dir('api_cases.xlsx')
+    with open(apicases_filepath, 'rb') as a:
+        # 设置附件的MIME和文件名:
+        mime = MIMEBase('report', 'xlsx', filename='api_cases.xlsx')
+        # 加上必要的头信息:
+        mime.add_header('Content-Disposition', 'attachment', filename='api_casex.xlsx')
+        mime.add_header('Content-ID', '<0>')
+        mime.add_header('X-Attachment-Id', '0')
+        # 把附件的内容读进来:
+        mime.set_payload(a.read())
+        # # 用Base64编码:
+        encoders.encode_base64(mime)
+        # 添加到MIMEMultipart:
+        msg.attach(mime)
+
+    # ssl登录
+    smtp = SMTP_SSL(host_server)
+    # set_debuglevel()是用来调试的。参数值为1表示开启调试模式，参数值为0关闭调试模式
+    smtp.set_debuglevel(0)
+    smtp.ehlo(host_server)
+    smtp.login(sender_163_mail, pwd)
+    msg["Subject"] = Header(mail_title, 'utf-8')
+    msg["From"] = sender_163
+    msg["To"] = Header("顾冰洁，王志明", 'utf-8')  # 接收者的别名
+    smtp.sendmail(sender_163_mail, receivers, msg.as_string())
+    print('%s----发送邮件成功' % time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
+    smtp.quit()
+
+
+def mail_for_flow(host):
     # 163邮箱smtp服务器
     host_server = "smtp.163.com"
     # 发件人
@@ -102,73 +188,34 @@ def main3():
     for disct_id in (disct_ids for disct_ids in failed_flow_s if disct_ids in succeed_flow_s):
         succeed_flow_s.remove(disct_id)
 
-    # 邮件的正文内容----API执行结果
-    # 统计api执行结果，加入到邮件正文中，失败的用例name：失败的原因
-    api_cases_table = load_workbook(ab_dir('api_cases.xlsx'))
-    cases_sheet = api_cases_table.get_sheet_by_name('tester')
-    sheet_rows = cases_sheet.max_row
-    cases_num = sheet_rows - 1
-    pass_cases = 0
-    failed_cases = 0
-    failed_cases_detail = {}
-    for row in range(2, sheet_rows+1):
-        if cases_sheet.cell(row=row, column=14).value == 'pass':
-            pass_cases += 1
-        else:
-            failed_cases += 1
-            case_name = cases_sheet.cell(row=row, column=2).value
-            failed_cases_detail[case_name] = cases_sheet.cell(row=row, column=15).value   # 将用例name和失败原因列出
 
     # 邮件的正文内容
     filename = time.strftime("%Y%m%d%H", time.localtime()) + '_report.html'
-    mail_content = '\n各位好:' + '\n' + '\n' + \
-                   '一、Flow用例共 %d 个\n成功%d个, 失败 %d个\n失败的flow name为 %s\n失败原因为：\n ' % (
-                   total, len(succeed_flow_s), len(failed_flow_s), failed_flow_s) + detail_msg + \
-                   '-------------------------------------------------------------' + '\n' + \
-                   '二、 API测试用例共%d个，\n成功%d个， 失败%d个,失败的用例信息： \n%s' \
-                   % (cases_num, pass_cases, failed_cases, failed_cases_detail)
+    if len(failed_flow_s) != 0:
+        mail_content = """各位好:
+        用例执行环境：%s
+        本次Flow用例共执行：%d 个
+        执行成功: %d 个, 
+        执行失败: %d 个
+        失败的flow名称为: 
+        %s
+        具体失败原因请查看附件《flow_info.xlsx》中的log信息
+                    """ % (host, total, len(succeed_flow_s), len(failed_flow_s), failed_flow_s)
+    else:
+        mail_content = """各位好:
+         用例执行环境：%s
+         本次Flow用例共执行 %d 个
+         执行成功:%d 个
+         任务详情请查看附件《flow_info.xlsx》中的log
+                        """ % (host, total, len(succeed_flow_s))
     # print(mail_content)
     # 邮件标题
-    mail_title = time.strftime("%Y-%m-%d", time.localtime()) + ' BayMax系统API自动化测试日报'
+    mail_title = time.strftime("%Y-%m-%d", time.localtime()) + ' Flow用例自动化执行日报'
 
     # 添加邮件正文，格式 MIMEText:
     msg.attach(MIMEText(mail_content, "plain", 'utf-8'))
 
-
-    # filename = time.strftime("%Y%m%d%H", time.localtime()) + '_report.html'
-    # with open(report_path, 'rb') as f:
-    #     # 设置附件的MIME和文件名，这里是html类型:
-    #     mime = MIMEBase('report', 'html', filename=filename)
-    #     # 加上必要的头信息:
-    #     mime.add_header('Content-Disposition', 'attachment', filename=filename)
-    #     mime.add_header('Content-ID', '<0>')
-    #     mime.add_header('X-Attachment-Id', '0')
-    #     # 把附件的内容读进来:
-    #     mime.set_payload(f.read())
-    #     # # 用Base64编码:
-    #     encoders.encode_base64(mime)
-    #     # 添加到MIMEMultipart:
-    #     msg.attach(mime)
-
-    # 添加api用例 excel表格
-
     # 添加附件，就是加上一个MIMEBase，从本地读取一个文件:
-    # 添加API用例集执行报告
-    apicases_filepath = ab_dir('api_cases.xlsx')
-    with open(apicases_filepath, 'rb') as a:
-        # 设置附件的MIME和文件名:
-        mime = MIMEBase('report', 'xlsx', filename='api_cases.xlsx')
-        # 加上必要的头信息:
-        mime.add_header('Content-Disposition', 'attachment', filename='api_casex.xlsx')
-        mime.add_header('Content-ID', '<0>')
-        mime.add_header('X-Attachment-Id', '0')
-        # 把附件的内容读进来:
-        mime.set_payload(a.read())
-        # # 用Base64编码:
-        encoders.encode_base64(mime)
-        # 添加到MIMEMultipart:
-        msg.attach(mime)
-
     flow_filepath = abs_dir('flow_dataset_info.xlsx')
     with open(flow_filepath, 'rb') as ff:
         # 设置附件的MIME和文件名，这里是html类型:
@@ -197,7 +244,5 @@ def main3():
     print('%s----发送邮件成功' % time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
     smtp.quit()
 
-# report_path = 'E:\Reports\\2018122813_report.html'
-# main3()
-# apicases_filepath = table_dir('api_cases.xlse')
-# # # print(apicases_filepath)
+# host = '192.168.1.76:8515'
+# main3(host)
