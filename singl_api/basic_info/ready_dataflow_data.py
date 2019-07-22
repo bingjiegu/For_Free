@@ -1,7 +1,7 @@
 # coding:utf-8
-from basic_info.Open_DB import MYSQL
+from util.Open_DB import MYSQL
 from basic_info.setting import MySQL_CONFIG
-from basic_info.format_res import get_time
+from util.format_res import get_time
 import random
 
 def get_dataflow_data(flow_name):

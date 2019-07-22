@@ -1,7 +1,7 @@
-from basic_info.Open_DB import MYSQL
+from util.Open_DB import MYSQL
 from basic_info.get_auth_token import get_headers
-from basic_info.setting import MySQL_CONFIG, HOST_189
-from basic_info.format_res import dict_res
+from basic_info.setting import MySQL_CONFIG
+from util.format_res import dict_res
 import requests
 
 

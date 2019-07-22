@@ -1,6 +1,6 @@
 # coding:utf-8
 import os
-from basic_info import Open_DB
+from util import Open_DB
 from util.encrypt import encrypt_rf
 
 
