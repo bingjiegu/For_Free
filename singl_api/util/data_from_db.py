@@ -1,13 +1,11 @@
 # coding:utf-8
-import pymysql
 import json
 import requests
-import time
-from basic_info.Open_DB import MYSQL
-from basic_info.setting import MySQL_CONFIG, schema_id, scheduler_name,flow_id, MY_LOGIN_INFO
+from util.Open_DB import MYSQL
+from basic_info.setting import MySQL_CONFIG, schema_id, scheduler_name,flow_id
 import traceback
 from basic_info.get_auth_token import get_headers
-from basic_info.format_res import get_time, dict_res
+from util.format_res import get_time, dict_res
 import random
 
 ms = MYSQL(MySQL_CONFIG["HOST"], MySQL_CONFIG["USER"], MySQL_CONFIG["PASSWORD"], MySQL_CONFIG["DB"],)

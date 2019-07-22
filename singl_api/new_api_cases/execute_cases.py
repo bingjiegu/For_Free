@@ -3,21 +3,20 @@ import os
 import re
 import time
 # from selenium import webdriver
-from urllib.parse import urlparse
 from util import get_host
 from openpyxl import load_workbook
 import requests
 from basic_info.get_auth_token import get_headers, get_headers_root,get_auth_token
-from basic_info.format_res import dict_res, get_time
+from util.format_res import dict_res, get_time
 from basic_info.setting import MySQL_CONFIG
-from basic_info.Open_DB import MYSQL
+from util.Open_DB import MYSQL
 from basic_info.setting import HOST_189
-from basic_info.timestamp_13 import get_timestamp, get_now_time
-import random, json, unittest
+from util.timestamp_13 import get_timestamp, get_now_time
+import random, unittest
 from new_api_cases.get_statementId import statementId, statementId_no_dataset, get_sql_analyse_statement_id, \
     get_sql_analyse_dataset_info, get_sql_execte_statement_id, steps_sql_parseinit_statemenId, \
     steps_sql_analyzeinit_statementId,get_step_output_init_statementId,get_step_output_ensure_statementId
-from new_api_cases.prepare_datas_for_cases import get_job_tasks_id,collector_schema_sync,get_flow_id,get_applicationId,\
+from new_api_cases.prepare_datas_for_cases import get_job_tasks_id,collector_schema_sync, get_applicationId,\
     get_woven_qaoutput_dataset_path,upload_jar_file_workflow,upload_jar_file_dataflow,upload_jar_file_filter
 
 

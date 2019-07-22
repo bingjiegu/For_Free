@@ -1,8 +1,7 @@
 # coding:utf-8
 from openpyxl import load_workbook
-import os,unittest,json
-from basic_info.format_res import dict_res
-from new_api_cases.execute_cases import deal_request_method
+import os,unittest
+from util.format_res import dict_res
 
 table_dir = lambda n: os.path.abspath(os.path.join(os.path.dirname(__file__), n))
 case_table = load_workbook(table_dir('api_cases.xlsx'))

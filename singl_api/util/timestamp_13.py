@@ -1,6 +1,4 @@
 import time
-import pymysql
-from basic_info import data_from_db
 
 
 def timestamp_to_13(digits=13):

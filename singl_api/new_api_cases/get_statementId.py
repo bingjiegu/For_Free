@@ -1,7 +1,7 @@
 import requests,json
 from basic_info.get_auth_token import get_headers
 from basic_info.setting import HOST_189, tenant_id_189, tenant_id_81
-from basic_info.format_res import dict_res
+from util.format_res import dict_res
 
 
 # 根据host信息返回tenant信息

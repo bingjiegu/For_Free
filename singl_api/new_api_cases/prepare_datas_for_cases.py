@@ -2,17 +2,14 @@
 import os
 import time
 from urllib import parse
-from openpyxl import load_workbook
 import requests
-from basic_info.get_auth_token import get_headers, get_headers_upload
-from basic_info.format_res import dict_res
-from basic_info.setting import MySQL_CONFIG,collector_id
-from basic_info.Open_DB import MYSQL
+from basic_info.get_auth_token import get_headers
+from util.format_res import dict_res
+from basic_info.setting import MySQL_CONFIG
+from util.Open_DB import MYSQL
 from basic_info.setting import HOST_189
 from selenium import webdriver
 import random
-from new_api_cases.get_statementId import statementId, statementId_no_dataset, get_sql_analyse_statement_id, get_sql_analyse_dataset_info, get_sql_execte_statement_id, steps_sql_parseinit_statemenId, steps_sql_analyzeinit_statementId
-
 
 ms = MYSQL(MySQL_CONFIG["HOST"], MySQL_CONFIG["USER"], MySQL_CONFIG["PASSWORD"], MySQL_CONFIG["DB"])
 ab_dir = lambda n: os.path.abspath(os.path.join(os.path.dirname(__file__), n))

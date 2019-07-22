@@ -1,6 +1,6 @@
 from util.encrypt import parameter_ungzip
-from basic_info.setting import MySQL_CONFIG, HOST_189
-from basic_info.Open_DB import MYSQL
+from basic_info.setting import MySQL_CONFIG
+from util.Open_DB import MYSQL
 
 # 配置数据库连接
 ms = MYSQL(MySQL_CONFIG["HOST"], MySQL_CONFIG["USER"], MySQL_CONFIG["PASSWORD"], MySQL_CONFIG["DB"])
