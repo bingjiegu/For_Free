@@ -1,11 +1,11 @@
 # coding:utf-8
 from basic_info.get_auth_token import get_headers
-import unittest, time, json, requests, random
+import unittest, time, requests, random
 from basic_info.setting import preProcessFlowId, preProcessFlowName, processDataId
-from basic_info.Open_DB import MYSQL
+from util.Open_DB import MYSQL
 from basic_info.setting import MySQL_CONFIG,  HOST_189
-from basic_info.format_res import get_time
-from basic_info.timestamp_13 import timestamp_to_13
+from util.format_res import get_time
+from util.timestamp_13 import timestamp_to_13
 
 ms = MYSQL(MySQL_CONFIG["HOST"], MySQL_CONFIG["USER"], MySQL_CONFIG["PASSWORD"], MySQL_CONFIG["DB"])
 

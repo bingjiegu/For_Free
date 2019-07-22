@@ -1,12 +1,12 @@
 # coding:utf-8
-from basic_info.get_auth_token import get_headers, get_auth_token
-from basic_info.data_from_db import get_datasource, schema
+from basic_info.get_auth_token import get_headers
+from util.data_from_db import get_datasource, schema
 import unittest
 import requests
 import json
 import time
 from basic_info.setting import MySQL_CONFIG, HOST_189
-from basic_info.Open_DB import MYSQL
+from util.Open_DB import MYSQL
 
 # 配置数据库连接
 ms = MYSQL(MySQL_CONFIG["HOST"], MySQL_CONFIG["USER"], MySQL_CONFIG["PASSWORD"], MySQL_CONFIG["DB"])

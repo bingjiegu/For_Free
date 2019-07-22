@@ -2,7 +2,7 @@
 from basic_info.get_auth_token import get_headers
 import unittest
 import requests
-from basic_info.Open_DB import MYSQL
+from util.Open_DB import MYSQL
 from basic_info.setting import MySQL_CONFIG, zmod_id,HOST_189
 
 ms = MYSQL(MySQL_CONFIG["HOST"], MySQL_CONFIG["USER"], MySQL_CONFIG["PASSWORD"], MySQL_CONFIG["DB"])

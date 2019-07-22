@@ -4,11 +4,11 @@ import unittest
 import requests
 import json
 import time
-from basic_info.format_res import dict_res, get_time
-from basic_info.Open_DB import MYSQL
+from util.format_res import dict_res, get_time
+from util.Open_DB import MYSQL
 from basic_info.url_info import *
-from basic_info.data_from_db import create_schedulers
-import random, xlrd
+from util.data_from_db import create_schedulers
+import random
 from openpyxl import load_workbook
 
 

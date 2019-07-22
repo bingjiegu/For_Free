@@ -1,20 +1,17 @@
 # coding=gbk
-from basic_info.Open_DB import MYSQL
+from util.Open_DB import MYSQL
 from basic_info.get_auth_token import get_headers
-from basic_info.setting import MySQL_CONFIG, flow_id_list
-from basic_info.format_res import dict_res, get_time
-from basic_info.setting import HOST_189, tenant_id_189, tenant_id_76, tenant_id_57
+from basic_info.setting import MySQL_CONFIG
+from util.format_res import dict_res, get_time
+from basic_info.setting import HOST_189, tenant_id_189
 from basic_info.get_execution_log import GetLog
 from new_api_cases.get_statementId import statementId_flow_use, preview_result_flow_use
-from util.encrypt import encrypt_decode, parameter_ungzip
+from util.encrypt import parameter_ungzip
 from util.get_tenant import get_tenant
 import time, random, requests
 from openpyxl import load_workbook
 import json
-import os,threading
-
-
-
+import os
 
 abs_dir = lambda n: os.path.abspath(os.path.join(os.path.dirname(__file__), n))
 

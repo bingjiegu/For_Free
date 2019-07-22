@@ -4,11 +4,12 @@ import unittest
 import requests
 import json
 import time
-from basic_info.setting import MySQL_CONFIG, HOST_189, Flows_resourceid, idnameage_schema_name, idnameage_schema_id, tenant_id_189, \
+from basic_info.setting import MySQL_CONFIG, Flows_resourceid, idnameage_schema_name, idnameage_schema_id, tenant_id_189, \
     left_age_dataset_name, left_age_dataset_id, query_flow_name, query_flow_version, flow_update_id, HOST_189
-from basic_info.Open_DB import MYSQL
-from basic_info.url_info import query_flows_url, create_flows_url, query_flowname_url, query_flowname_version_url, query_flow_all_url, flow_update_url, \
-    query_flow_history_id_url, query_flow_history_version_url, query_flow_flowAscheduler_id_url, query_flow_version_url
+from util.Open_DB import MYSQL
+from basic_info.url_info import query_flows_url, create_flows_url, query_flowname_url, query_flowname_version_url, \
+    flow_update_url, \
+    query_flow_history_id_url, query_flow_history_version_url, query_flow_version_url
 
 # 配置数据库连接
 ms = MYSQL(MySQL_CONFIG["HOST"], MySQL_CONFIG["USER"], MySQL_CONFIG["PASSWORD"], MySQL_CONFIG["DB"])

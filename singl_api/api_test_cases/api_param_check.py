@@ -1,14 +1,13 @@
 # coding:utf-8
 from basic_info.get_auth_token import get_headers
-from basic_info.data_from_db import get_datasource, schema
+from util.data_from_db import get_datasource, schema
 import unittest
 import requests
 import json
 import time
-from basic_info.setting import MySQL_CONFIG, owner, dataset_resource, schema_resource, MY_LOGIN_INFO, HOST_189
-from basic_info.Open_DB import MYSQL
-import xlrd, random, os
-from basic_info.format_res import get_time
+from basic_info.setting import MySQL_CONFIG, owner, dataset_resource, schema_resource, HOST_189
+from util.Open_DB import MYSQL
+import os
 
 # 配置数据库连接
 ms = MYSQL(MySQL_CONFIG["HOST"], MySQL_CONFIG["USER"], MySQL_CONFIG["PASSWORD"], MySQL_CONFIG["DB"])
@@ -414,7 +413,7 @@ class ForCreateSchema(unittest.TestCase):
 abs_dir = lambda n: os.path.abspath(os.path.join(os.path.dirname(__file__), n))
 class ForScheduler(unittest.TestCase):
     """创建scheduler，删除scheduler接口参数校验"""
-    from basic_info.url_info import remove_list_url, create_scheduler_url
+    from basic_info.url_info import remove_list_url
 
     def test_case01(self):
         """根据id删除scheduler"""

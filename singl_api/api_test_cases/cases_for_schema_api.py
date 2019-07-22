@@ -1,10 +1,7 @@
 # coding:utf-8
-from basic_info.get_auth_token import get_headers
 import unittest
-import requests
-import json
-from basic_info.data_from_db import *
-from basic_info.Open_DB import MYSQL
+from util.data_from_db import *
+from util.Open_DB import MYSQL
 from basic_info.setting import MySQL_CONFIG, schema_resource,HOST_189
 
 ms = MYSQL(MySQL_CONFIG["HOST"], MySQL_CONFIG["USER"], MySQL_CONFIG["PASSWORD"], MySQL_CONFIG["DB"])

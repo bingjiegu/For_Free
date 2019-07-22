@@ -2,13 +2,13 @@
 import unittest
 import requests
 import time
-from basic_info.Open_DB import MYSQL
+from util.Open_DB import MYSQL
 from basic_info.setting import MySQL_CONFIG, HOST_189
-from basic_info.format_res import dict_res
+from util.format_res import dict_res
 from basic_info.ready_dataflow_data import get_dataflow_data
 from basic_info.url_info import create_scheduler_url
 from basic_info.get_auth_token import get_headers
-from basic_info.setting import MY_LOGIN_INFO2
+
 
 class ExecuteWeirdDataflow(unittest.TestCase):
 
