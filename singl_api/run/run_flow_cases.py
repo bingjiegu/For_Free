@@ -5,6 +5,7 @@ from basic_info.setting import HOST_189
 import datetime
 
 
+
 # 添加用例集的API用例。暂停
 # testcase = unittest.TestSuite()
 # discover = unittest.defaultTestLoader.discover(start_dir='./api_test_cases', pattern='cases_for_*.py')
@@ -39,6 +40,7 @@ print('结束时间：', stop_time)
 print('耗时:', stop_time-start_time)
 # 发送邮件
 mail_for_flow(HOST_189)
+
 
 
 

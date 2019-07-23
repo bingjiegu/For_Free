@@ -7,7 +7,7 @@ from email.mime.text import MIMEText
 from email.header import Header
 from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
-from basic_info.setting import email_to
+import sys
 from smtplib import SMTP_SSL
 from openpyxl import load_workbook
 from api_test_cases.get_execution_output_json import abs_dir, GetCheckoutDataSet
@@ -15,6 +15,11 @@ from new_api_cases.execute_cases import ab_dir
 
 receivers = ['bingjie.gu@inforefiner.com', 'zhiming.wang@inforefiner.com', 'qian.feng@inforefiner.com']  # 定时任务使用
 receivers_test = ['bingjie.gu@inforefiner.com']
+
+current_path = os.path.abspath(os.path.dirname(__file__))
+root_path = os.path.split(current_path)[0]
+sys.path.append(root_path)
+
 
 def send_email(content, title, from_name, from_address, to_address, serverport, serverip, username, password):
     # 邮件对象:
