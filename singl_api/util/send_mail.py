@@ -13,7 +13,7 @@ from openpyxl import load_workbook
 from api_test_cases.get_execution_output_json import abs_dir, GetCheckoutDataSet
 from new_api_cases.execute_cases import ab_dir
 
-receivers = ['bingjie.gu@inforefiner.com', 'zhiming.wang@inforefiner.com', 'qian.feng@inforefiner.com']  # 定时任务使用
+receivers_list = ['bingjie.gu@inforefiner.com', 'zhiming.wang@inforefiner.com', 'qian.feng@inforefiner.com']  # 定时任务使用
 receivers_test = ['bingjie.gu@inforefiner.com']
 
 current_path = os.path.abspath(os.path.dirname(__file__))
@@ -68,7 +68,7 @@ def main3(host):
     # 发件人的邮箱
     sender_163_mail = "ruifan_test@163.com"
     # 收件人邮箱
-    receivers = receivers_test  # 定时任务使用
+    receivers = receivers_list  # 定时任务使用
     msg = MIMEMultipart()
 
     # 邮件的正文内容----API执行结果
@@ -153,7 +153,7 @@ def mail_for_flow(host):
     # 发件人的邮箱
     sender_163_mail = "ruifan_test@163.com"
     # 收件人邮箱
-    receivers = receivers_test  # 定时任务使用
+    receivers = receivers_list # 定时任务使用
     # receivers = receivers  # 调试使用
     msg = MIMEMultipart()
     # 邮件的正文内容----flow执行结果
