@@ -19,7 +19,7 @@ def get_auth_token(HOST):
     #     return token
     else:
         res = requests.post(url=MY_LOGIN_INFO2["URL"], headers=MY_LOGIN_INFO2["HEADERS"], data=MY_LOGIN_INFO2["DATA"])
-        print(res.url)
+        # print(res.url)
         dict_headers = dict_res(res.text)
         # print(dict_headers)
         token = dict_headers['content']["accessToken"]
