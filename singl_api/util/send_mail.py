@@ -13,6 +13,8 @@ from openpyxl import load_workbook
 from api_test_cases.get_execution_output_json import abs_dir, GetCheckoutDataSet
 from new_api_cases.execute_cases import ab_dir
 
+receivers = ['bingjie.gu@inforefiner.com', 'zhiming.wang@inforefiner.com', 'qian.feng@inforefiner.com']  # 定时任务使用
+receivers_test = ['bingjie.gu@inforefiner.com']
 
 def send_email(content, title, from_name, from_address, to_address, serverport, serverip, username, password):
     # 邮件对象:
@@ -61,8 +63,7 @@ def main3(host):
     # 发件人的邮箱
     sender_163_mail = "ruifan_test@163.com"
     # 收件人邮箱
-    receivers = ['bingjie.gu@inforefiner.com', 'zhiming.wang@inforefiner.com', 'qian.feng@inforefiner.com']  # 定时任务使用
-    # receivers = ['bingjie.gu@inforefiner.com']  # 调试使用
+    receivers = receivers_test  # 定时任务使用
     msg = MIMEMultipart()
 
     # 邮件的正文内容----API执行结果
@@ -147,8 +148,8 @@ def mail_for_flow(host):
     # 发件人的邮箱
     sender_163_mail = "ruifan_test@163.com"
     # 收件人邮箱
-    receivers = ['bingjie.gu@inforefiner.com', 'zhiming.wang@inforefiner.com', 'qian.feng@inforefiner.com']  # 定时任务使用
-    # receivers = ['bingjie.gu@inforefiner.com']  # 调试使用
+    receivers = receivers_test  # 定时任务使用
+    # receivers = receivers  # 调试使用
     msg = MIMEMultipart()
     # 邮件的正文内容----flow执行结果
     f = load_workbook(abs_dir("flow_dataset_info.xlsx"))
@@ -199,7 +200,7 @@ def mail_for_flow(host):
         执行失败: %d 个
         失败的flow名称为: 
         %s
-        具体失败原因请查看附件《flow_info.xlsx》中的log信息
+        失败原因请查看附件《flow_info.xlsx》中的log信息
                     """ % (host, total, len(succeed_flow_s), len(failed_flow_s), failed_flow_s)
     else:
         mail_content = """各位好:
