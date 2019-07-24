@@ -54,28 +54,31 @@ class GetCheckoutDataSet(object):
                 # print(sql)
                 flow_info = self.ms.ExecuQuery(sql)
                 print('flow_info:', flow_info)
-            except Exception as e:
-                raise e
+            except Exception:
+                return
             else:
                 try:
                     flow_name = flow_info[0]["name"]
                     # print('flow_name: ', flow_name)
                     flow_type = flow_info[0]["flow_type"]
                     flow_parameters = flow_info[0]["parameters"]
+                    print('parameters没有解压缩时：',flow_parameters)
                     # flow_parameters_list = []
                     arguments_list = []
                     arguments = {}
                     if flow_parameters:
                         parameters_use = parameter_ungzip(flow_parameters)  # 将加密后的参数进行解密和解压缩处理
+                        print('parameters解压缩后：', parameters_use)
                         flow_parameters_list = dict_res(parameters_use)   # 为空的处理？？？？？
                     # print('flow_parameters_list:', flow_parameters_list)
                     # if flow_parameters_list != [] and flow_parameters_list != None:
-                        arguments["name"] = flow_parameters_list[0]["name"]
-                        arguments["category"] = flow_parameters_list[0]["category"]
-                        arguments["value"] = flow_parameters_list[0]["defaultVal"]
-                        arguments["refs"] = flow_parameters_list[0]["refs"]
-                        arguments["description"] = flow_parameters_list[0]["description"]
-                        arguments_list.append(arguments)
+                        if len(flow_parameters_list) > 0:
+                            arguments["name"] = flow_parameters_list[0]["name"]
+                            arguments["category"] = flow_parameters_list[0]["category"]
+                            arguments["value"] = flow_parameters_list[0]["defaultVal"]
+                            arguments["refs"] = flow_parameters_list[0]["refs"]
+                            arguments["description"] = flow_parameters_list[0]["description"]
+                            arguments_list.append(arguments)
                         # print('arguments:', arguments)
 
                 except KeyError as e:
