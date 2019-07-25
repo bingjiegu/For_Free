@@ -27,7 +27,7 @@ start_time = datetime.datetime.now()
 print('------开始执行flow用例------')
 # 执行flow用例
 obj = GetCheckoutDataSet()
-sink_dataet_json = obj.get_json()
+obj.get_json()
 print('------开始执行api case------')
 # 执行API用例
 # deal_request_method()
