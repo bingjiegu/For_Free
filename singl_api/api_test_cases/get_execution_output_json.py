@@ -365,7 +365,7 @@ class GetCheckoutDataSet(object):
             # 通过dataset预览接口，获取dataset json串
             # nokia环境代码使用的是旧版的预览接口，0.8.11及以后高版本代码使用的是新预览接口
             if '57' in HOST_189:
-                priview_url = "%s/api/datasets/%s/preview?rows=5000&tenant=%s" % (
+                priview_url = "%s/api/datasets/%s/preview?rows=5000&tenant=%s&rows=50" % (
                     HOST_189, dataset_id, get_tenant(HOST_189))
                 res = requests.get(url=priview_url, headers=get_headers(HOST_189))
                 result = res.text
