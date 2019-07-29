@@ -412,14 +412,10 @@ class GetCheckoutDataSet(object):
                     new_result = []
                     expect_result = list(eval(table_sheet.cell(row=i, column=7).value))
                     actual_result = list(eval(table_sheet.cell(row=i, column=8).value))
-                    for b_item in range(len(expect_result)):
-                        for a_item in range(len(actual_result)):
-                            if actual_result[a_item] == expect_result[b_item]:
-                                new_result.append(actual_result[a_item])
-                    if len(new_result) == len(actual_result):
-                        # print(new_result)
-                        # print(actual_result)
-                        # print(expect_result)
+                    for item in actual_result:
+                        if item in expect_result:
+                            new_result.append(item)
+                    if new_result == actual_result:
                         table_sheet.cell(row=i, column=9, value="pass")
                         # print('test_result:', table_sheet.cell(row=i, column=9).value)
                         table_sheet.cell(row=i, column=10, value="")
