@@ -30,7 +30,7 @@ def statementId(datasetId):
         return
 
 def statementId_flow_use(HOST, datasetId, tenant):
-    url = '%s/api/datasets/%s/previewinit?tenant=%s&rows=500' % (HOST, datasetId, tenant)
+    url = '%s/api/datasets/%s/previewinit?tenant=%s&rows=50' % (HOST, datasetId, tenant)
     res = requests.get(url=url, headers=get_headers(HOST))
     try:
         res_statementId = dict_res(res.text)
