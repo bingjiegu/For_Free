@@ -24,6 +24,7 @@ import datetime
 # fp.close()
 print('------开始执行用例-------')
 start_time = datetime.datetime.now()
+print('开始执行用例', start_time)
 print('------开始执行flow用例------')
 # 执行flow用例
 obj = GetCheckoutDataSet()
