@@ -111,7 +111,7 @@ def get_woven_qaoutput_dataset_path():
     # print(path)
     return path
 
-dir1 = os.path.abspath('woven-common-3.0.jar')
+dir1 = ab_dir('woven-common-3.0.jar')
 
 def upload_jar_file_filter():
     url = "%s/api/processconfigs/uploadjar/filter class" % HOST_189

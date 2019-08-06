@@ -43,4 +43,9 @@ def parameter_ungzip(parameters):
     par_use = str(no_g, encoding='utf-8')
     return par_use
 
-# print(parameter_ungzip('H4sIAAAAAAAAAItWSklNSyzNKVGKBQDXb6hoCwAAAA=='))
+# res = parameter_ungzip('H4sIAAAAAAAAAIuOBQApu0wNAgAAAA==')
+# print(res)
+# if res:
+#     print('OK')
+# else:
+#     print('N')

@@ -21,7 +21,7 @@ def get_tenant(host):
 # datasetId存在时
 def statementId(datasetId):
     url = '%s/api/datasets/%s/previewinit?tenant=%s' % (HOST_189, datasetId, get_tenant(HOST_189))
-    res = requests.get(url=url, headers=get_headers())
+    res = requests.get(url=url, headers=get_headers(HOST_189))
     try:
         res_statementId = json.loads(res.text)
         statementId = res_statementId['statementId']
@@ -92,7 +92,7 @@ def get_sql_analyse_statement_id(HOST, param):
 
 # 根据初始化SQL Analyze返回的statement id,获取数据集字段(获取输出字段)
 def get_sql_analyse_dataset_info(HOST,params):
-    sql_analyse_statement_id = get_sql_analyse_statement_id(params)
+    sql_analyse_statement_id = get_sql_analyse_statement_id(HOST_189,params)
     # print(sql_analyse_statement_id)
     url = ' %s/api/datasets/sql/analyzeresult?statementId=%s' % (HOST, sql_analyse_statement_id)
     res = requests.get(url=url, headers=get_headers(HOST))

@@ -26,7 +26,7 @@ case_table = load_workbook(ab_dir("api_cases.xlsx"))
 case_table_sheet = case_table.get_sheet_by_name('tester')
 all_rows = case_table_sheet.max_row
 # print(case_table_sheet.cell(row=2, column=10).value, case_table_sheet.cell(row=2,column=12).value)
-jar_dir = os.path.abspath('woven-common-3.0.jar')
+jar_dir = ab_dir('woven-common-3.0.jar')
 
 
 # 判断请求方法，并根据不同的请求方法调用不同的处理方式
@@ -102,7 +102,7 @@ def post_request_result_check(row, column, url, host,headers, data, table_sheet_
                            'FTP，根据statementId取Dataset数据(datasetId不存在)'):
             # 先获取statementId,然后格式化URL，再发送请求
             print('开始执行：', case_detail)
-            statement = statementId_no_dataset(dict_res(data))
+            statement = statementId_no_dataset(HOST_189,dict_res(data))
             new_url = url.format(statement)
             response = requests.post(url=new_url, headers=headers, data=data)
             # print(response.url)
@@ -114,10 +114,10 @@ def post_request_result_check(row, column, url, host,headers, data, table_sheet_
         elif case_detail == '获取SQL执行任务结果':
             print('开始执行：', case_detail)
             # 先获取接口需要使用的statement id 和 数据集分析字段
-            execte_statement_id = get_sql_execte_statement_id(data)  # statement id
+            execte_statement_id = get_sql_execte_statement_id(HOST_189,data)  # statement id
             new_url = url.format(execte_statement_id)
             # print('获取SQL执行任务结果URL:', new_url)
-            execte_use_params = get_sql_analyse_dataset_info(data)  # 数据集分析字段
+            execte_use_params = get_sql_analyse_dataset_info(HOST_189,data)  # 数据集分析字段
             # print(execte_use_params)
             response = requests.post(url=new_url, headers=headers, json=execte_use_params)
             count_num = 0
@@ -360,7 +360,7 @@ def get_request_result_check(url, headers, host, data, table_sheet_name, row, co
             write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
         elif case_detail == ('根据statement id,获取Sql Analyze结果(获取输出字段)'):
             print('开始执行：', case_detail)
-            sql_analyse_statement_id = get_sql_analyse_statement_id(data)
+            sql_analyse_statement_id = get_sql_analyse_statement_id(HOST_189,data)
             new_url = url.format(sql_analyse_statement_id)
             # print(new_url)
             response = requests.get(url=new_url, headers=headers)
@@ -370,7 +370,7 @@ def get_request_result_check(url, headers, host, data, table_sheet_name, row, co
             write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
         elif case_detail == ('结束指定statementId对应的查询任务'):  # 取消SQL analyse接口
             print('开始执行：', case_detail)
-            cancel_statement_id = get_sql_analyse_statement_id(data)
+            cancel_statement_id = get_sql_analyse_statement_id(HOST_189,data)
             new_url = url.format(cancel_statement_id)
             response = requests.get(url=new_url, headers=headers)
             clean_vaule(table_sheet_name, row, column)

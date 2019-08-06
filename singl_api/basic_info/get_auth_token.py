@@ -51,11 +51,12 @@ def get_headers_upload(HOST):
 # root用户登录使用
 def get_auth_token_root(HOST):
     if '57' in HOST:
-        res = requests.post(url=MY_LOGIN_INFO_root_dam["URL"], headers=MY_LOGIN_INFO_root_dam["HEADERS"], data=MY_LOGIN_INFO_root_dam["DATA"])
-        dict_headers = dict_res(res.text)
-        token = dict_headers['content']["accessToken"]
+        res = requests.post(url=MY_LOGIN_INFO_dam["URL"], headers=MY_LOGIN_INFO_dam["HEADERS"],
+                            data=MY_LOGIN_INFO_dam["DATA"])
+        dict_headers = dict(res.headers)
+        token = dict_headers['X-AUTH-TOKEN']
         # print(token)
-        return 'Bearer ' + token
+        return token
     else:
         res = requests.post(url=MY_LOGIN_INFO_root["URL"], headers=MY_LOGIN_INFO_root["HEADERS"],
                             data=MY_LOGIN_INFO_root["DATA"])
