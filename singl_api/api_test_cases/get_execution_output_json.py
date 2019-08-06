@@ -407,6 +407,7 @@ class GetCheckoutDataSet(object):
         for i in range(2, c_rows+1):
             table_sheet.cell(row=i, column=1, value=i-1)
             # 对sampe step涉及的flow单独进行结果判断
+
             if table_sheet.cell(row=i, column=2).value == '0822a0a2-ce58-42cb-82de-f2ec434b5d94':  #
                 if table_sheet.cell(row=i, column=6).value == 'SUCCEEDED' and table_sheet.cell(row=i, column=8):
                     new_result = []
