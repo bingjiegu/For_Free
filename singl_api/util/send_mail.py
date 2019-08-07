@@ -199,6 +199,8 @@ def mail_for_flow(host):
     filename = time.strftime("%Y%m%d%H", time.localtime()) + '_report.html'
     if len(failed_flow_s) != 0:
         mail_content = """各位好:
+        
+        flow用例执行信息如下
         用例执行环境：%s
         本次Flow用例共执行：%d 个
         执行成功: %d 个 
@@ -250,5 +252,5 @@ def mail_for_flow(host):
     print('%s----发送邮件成功' % time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
     smtp.quit()
 
-# host = '192.168.1.76:8515'
-# main3(host)
+host = '192.168.1.76:8515'
+mail_for_flow(host)
