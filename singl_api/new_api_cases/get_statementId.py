@@ -29,14 +29,15 @@ def statementId(datasetId):
     except KeyError:
         return
 
-def statementId_flow_use(HOST, datasetId, tenant):
-    url = '%s/api/datasets/%s/previewinit?tenant=%s&rows=50' % (HOST, datasetId, tenant)
-    res = requests.get(url=url, headers=get_headers(HOST))
+
+def statementId_flow_use(host, datasetId, tenant):
+    url = '%s/api/datasets/%s/previewinit?tenant=%s&rows=50' % (host, datasetId, tenant)
+    res = requests.get(url=url, headers=get_headers(host))
     try:
         res_statementId = dict_res(res.text)
-        print('%s数据集获取的statementID信息：%s' %(datasetId, res_statementId))
+        # print('%s数据集获取的statementID信息：%s' %(datasetId, res_statementId))
         statementId = res_statementId['statementId']
-        print('%s数据集获取的statementID：%s' % (datasetId, statementId))
+        # print('%s数据集获取的statementID：%s' % (datasetId, statementId))
     except:
         print('数据集%s的statementID返回空' % datasetId)
         return
@@ -44,15 +45,15 @@ def statementId_flow_use(HOST, datasetId, tenant):
         return statementId
 
 
-def preview_result_flow_use(HOST, datasetId, tenant, statementID):
+def preview_result_flow_use(host, datasetId, tenant, statementID):
     if isinstance(statementID, int):
-        url = "%s/api/datasets/%s/previewresult?tenant=%s&statementId=%d" % (HOST, datasetId, tenant, statementID)
-        res = requests.get(url=url, headers=get_headers(HOST))
+        url = "%s/api/datasets/%s/previewresult?tenant=%s&statementId=%d" % (host, datasetId, tenant, statementID)
+        res = requests.get(url=url, headers=get_headers(host))
         print(res.url)
         print('%s数据集preview_result:%s' % (datasetId, res.text))
         count_num = 0
         while 'waiting' in res.text or 'running' in res.text:
-            res = requests.get(url=url, headers=get_headers(HOST))
+            res = requests.get(url=url, headers=get_headers(host))
         try:
             dataset_result = dict_res(res.text)['content']
         except KeyError:
@@ -65,9 +66,9 @@ def preview_result_flow_use(HOST, datasetId, tenant, statementID):
 
 
 # datasetId不存在时
-def statementId_no_dataset(HOST,param):
-    url = '%s/api/datasets/new/previewinit?tenant=%s' % (HOST, tenant_id_189)
-    res = requests.post(url=url, headers=get_headers(HOST), json=param)
+def statementId_no_dataset(host, param):
+    url = '%s/api/datasets/new/previewinit?tenant=%s' % (host, tenant_id_189)
+    res = requests.post(url=url, headers=get_headers(host), json=param)
     try:
         res_statementId = json.loads(res.text)
         statementId = res_statementId['statementId']
@@ -77,9 +78,9 @@ def statementId_no_dataset(HOST,param):
 
 
 # 初始化Sql Analyze(解析数据集输出字段)，返回statement id，获取数据集字段给分析任务使用
-def get_sql_analyse_statement_id(HOST, param):
-    url = ' %s/api/datasets/sql/analyzeinit' % HOST
-    res = requests.post(url=url, headers=get_headers(HOST), data=param)
+def get_sql_analyse_statement_id(host, param):
+    url = ' %s/api/datasets/sql/analyzeinit' % host
+    res = requests.post(url=url, headers=get_headers(host), data=param)
     # print(res.text)
     try:
         res_statementId = json.loads(res.text)
@@ -91,16 +92,16 @@ def get_sql_analyse_statement_id(HOST, param):
 
 
 # 根据初始化SQL Analyze返回的statement id,获取数据集字段(获取输出字段)
-def get_sql_analyse_dataset_info(HOST,params):
-    sql_analyse_statement_id = get_sql_analyse_statement_id(HOST_189,params)
+def get_sql_analyse_dataset_info(host, params):
+    sql_analyse_statement_id = get_sql_analyse_statement_id(host, params)
     # print(sql_analyse_statement_id)
-    url = ' %s/api/datasets/sql/analyzeresult?statementId=%s' % (HOST, sql_analyse_statement_id)
-    res = requests.get(url=url, headers=get_headers(HOST))
+    url = ' %s/api/datasets/sql/analyzeresult?statementId=%s' % (host, sql_analyse_statement_id)
+    res = requests.get(url=url, headers=get_headers(host))
     print(res.text)
     count_num = 0
     while ("waiting") in res.text or ("running") in res.text:
         print('再次查询前',res.text)
-        res = requests.get(url=url, headers=get_headers(HOST))
+        res = requests.get(url=url, headers=get_headers(host))
         count_num += 1
         if count_num == 100:
             return

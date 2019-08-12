@@ -166,8 +166,8 @@ def mail_for_flow(host):
     failed = 0
     failed_flow = []
     flow_failed_detail = []
-    flow_id_list = GetCheckoutDataSet().file_flowid_count()
-    total = len(flow_id_list)
+    flow_id_list = GetCheckoutDataSet().get_flow_id()
+    total = len(list(set(flow_id_list)))
     # print('flow总数total:', total)
     detail_msg = ''' '''
     for row in range(2, rows+1):
@@ -252,5 +252,5 @@ def mail_for_flow(host):
     print('%s----发送邮件成功' % time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
     smtp.quit()
 
-host = '192.168.1.76:8515'
-mail_for_flow(host)
+# host = '192.168.1.76:8515'
+# # mail_for_flow(host)
