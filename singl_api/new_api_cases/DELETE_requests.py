@@ -2,7 +2,7 @@ import requests
 from new_api_cases.clean_then_write_result import *
 
 
-def delete_request_result_check(url, data, table_sheet_name, row, column, headers,case_table_sheet,ms):
+def delete_request_result_check(url, data,  row, column, headers,case_table_sheet,ms):
     case_detail = case_table_sheet.cell(row=row, column=2).value
     if isinstance(data, str):
         if case_detail == '':
@@ -26,9 +26,9 @@ def delete_request_result_check(url, data, table_sheet_name, row, column, header
                             response = requests.delete(url=new_url, headers=headers)
                             # print(response.url, response.status_code)
                             # 将返回的status_code和response.text分别写入第10列和第14列
-                            clean_vaule(table_sheet_name, row, column)
-                            write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
-                            write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
+                            clean_vaule(case_table_sheet, row, column)
+                            write_result(sheet=case_table_sheet, row=row, column=column, value=response.status_code)
+                            write_result(sheet=case_table_sheet, row=row, column=column + 4, value=response.text)
                         else:
                             print('请确认 select 语句查询返回值是不是只有一个')
                 else:
@@ -39,9 +39,9 @@ def delete_request_result_check(url, data, table_sheet_name, row, column, header
                 new_url = url.format(data)
                 response = requests.delete(url=new_url, headers=headers)
                 # 将返回的status_code和response.text分别写入第10列和第14列
-                clean_vaule(table_sheet_name, row, column)
-                write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
-                write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
+                clean_vaule(case_table_sheet, row, column)
+                write_result(sheet=case_table_sheet, row=row, column=column, value=response.status_code)
+                write_result(sheet=case_table_sheet, row=row, column=column + 4, value=response.text)
     else:
         # print(data)
         # print(type(data))

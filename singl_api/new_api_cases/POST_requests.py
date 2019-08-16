@@ -13,10 +13,10 @@ from new_api_cases.get_statementId import statementId, statementId_no_dataset, g
 from new_api_cases.prepare_datas_for_cases import get_job_tasks_id,collector_schema_sync, get_applicationId,\
     get_woven_qaoutput_dataset_path,upload_jar_file_workflow,upload_jar_file_dataflow,upload_jar_file_filter
 from new_api_cases.clean_then_write_result import *
-from new_api_cases.execute_cases import jar_dir
+# from new_api_cases.execute_cases import jar_dir
 
 # POST请求
-def post_request_result_check(row, column, url, host, headers, data, case_table_sheet,ms):
+def post_request_result_check(row, column, url, host, headers, data, case_table_sheet,ms,jar_dir):
     if isinstance(data, str):
         case_detail = case_table_sheet.cell(row=row, column=2).value
         if case_detail in ('预览dataset-HDFS-csv,获取预览Dataset的数据(Id不存在)', '预览dataset-HDFS-parquet,获取预览Dataset的数据(Id不存在)',
@@ -256,3 +256,4 @@ def post_request_result_check(row, column, url, host, headers, data, case_table_
     else:
         print('请确认第%d行的data形式' % row)
 
+print('post')

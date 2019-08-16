@@ -5,7 +5,7 @@ from new_api_cases.prepare_datas_for_cases import collector_schema_sync, get_wov
 from basic_info.get_auth_token import get_auth_token
 
 # GET请求
-def get_request_result_check(case_table_sheet,url, headers, host, data, table_sheet_name, row, column,ms):
+def get_request_result_check(case_table_sheet,url, headers, host, data, row, column,ms):
     case_detail = case_table_sheet.cell(row=row, column=2).value
 
     # GET请求需要从parameter中获取参数,并把参数拼装到URL中，
@@ -31,9 +31,9 @@ def get_request_result_check(case_table_sheet,url, headers, host, data, table_sh
                 count_num += 1
                 if count_num == 100:
                     return
-            clean_vaule(table_sheet_name, row, column)
-            write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
-            write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
+            clean_vaule(case_table_sheet, row, column)
+            write_result(sheet=case_table_sheet, row=row, column=column, value=response.status_code)
+            write_result(sheet=case_table_sheet, row=row, column=column + 4, value=response.text)
         elif case_detail == ('根据statement id,获取Sql Analyze结果(获取输出字段)'):
             print('开始执行：', case_detail)
             sql_analyse_statement_id = get_sql_analyse_statement_id(host, data)
@@ -41,17 +41,17 @@ def get_request_result_check(case_table_sheet,url, headers, host, data, table_sh
             # print(new_url)
             response = requests.get(url=new_url, headers=headers)
             # print(response.url, response.text)
-            clean_vaule(table_sheet_name, row, column)
-            write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
-            write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
+            clean_vaule(case_table_sheet, row, column)
+            write_result(sheet=case_table_sheet, row=row, column=column, value=response.status_code)
+            write_result(sheet=case_table_sheet, row=row, column=column + 4, value=response.text)
         elif case_detail == ('结束指定statementId对应的查询任务'):  # 取消SQL analyse接口
             print('开始执行：', case_detail)
             cancel_statement_id = get_sql_analyse_statement_id(HOST_189,data)
             new_url = url.format(cancel_statement_id)
             response = requests.get(url=new_url, headers=headers)
-            clean_vaule(table_sheet_name, row, column)
-            write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
-            write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
+            clean_vaule(case_table_sheet, row, column)
+            write_result(sheet=case_table_sheet, row=row, column=column, value=response.status_code)
+            write_result(sheet=case_table_sheet, row=row, column=column + 4, value=response.text)
 
         elif case_detail == ('根据解析sql parse接口返回的statementId,获取dataset name'):
             print('开始执行：', case_detail)
@@ -66,9 +66,9 @@ def get_request_result_check(case_table_sheet,url, headers, host, data, table_sh
                 if count_num == 100:
                     return
             # print(response.text)
-            clean_vaule(table_sheet_name, row, column)
-            write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
-            write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
+            clean_vaule(case_table_sheet, row, column)
+            write_result(sheet=case_table_sheet, row=row, column=column, value=response.status_code)
+            write_result(sheet=case_table_sheet, row=row, column=column + 4, value=response.text)
         elif case_detail == ('根据Sql Analyze返回的statementId,获取SqlAnalyze结果'):
             print('开始执行：', case_detail)
             steps_sql_analyse_statementId = steps_sql_analyzeinit_statementId(HOST_189, data)
@@ -82,18 +82,18 @@ def get_request_result_check(case_table_sheet,url, headers, host, data, table_sh
                 if count_num == 100:
                     return
             # print(response.text)
-            clean_vaule(table_sheet_name, row, column)
-            write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
-            write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
+            clean_vaule(case_table_sheet, row, column)
+            write_result(sheet=case_table_sheet, row=row, column=column, value=response.status_code)
+            write_result(sheet=case_table_sheet, row=row, column=column + 4, value=response.text)
         elif case_detail == ('结束sqlsource step中指定statementId对应任务'):
             print('开始执行：', case_detail)
             cancel_sql_parseinit_statementId = steps_sql_parseinit_statemenId(HOST_189, data)
             new_url = url.format(cancel_sql_parseinit_statementId)
             response = requests.get(url=new_url, headers=headers)
             # print(response.text)
-            clean_vaule(table_sheet_name, row, column)
-            write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
-            write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
+            clean_vaule(case_table_sheet, row, column)
+            write_result(sheet=case_table_sheet, row=row, column=column, value=response.status_code)
+            write_result(sheet=case_table_sheet, row=row, column=column + 4, value=response.text)
         elif case_detail in ('查看元数据同步任务的日志进度','拉取元数据同步任务的日志','根据tasks id 查看完整log'):
             print('开始执行：', case_detail)
             time.sleep(10)
@@ -105,9 +105,9 @@ def get_request_result_check(case_table_sheet,url, headers, host, data, table_sh
             # time.sleep(2)
             response = requests.get(url=new_url, headers=headers)
             # print(response.url, response.text)
-            clean_vaule(table_sheet_name, row, column)
-            write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
-            write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
+            clean_vaule(case_table_sheet, row, column)
+            write_result(sheet=case_table_sheet, row=row, column=column, value=response.status_code)
+            write_result(sheet=case_table_sheet, row=row, column=column + 4, value=response.text)
         elif case_detail == '导出flow':
             print('开始执行：', case_detail)
             token = get_auth_token(host)
@@ -115,9 +115,9 @@ def get_request_result_check(case_table_sheet,url, headers, host, data, table_sh
             # print(token)
             response = requests.get(url=new_url,headers=headers)
             # print(response.url, response.text)
-            clean_vaule(table_sheet_name, row, column)
-            write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
-            write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
+            clean_vaule(case_table_sheet, row, column)
+            write_result(sheet=case_table_sheet, row=row, column=column, value=response.status_code)
+            write_result(sheet=case_table_sheet, row=row, column=column + 4, value=response.text)
         elif case_detail == '根据statementID获取step的输出字段':
             print('开始执行：', case_detail)
             init_statementId = get_step_output_init_statementId(HOST_189, data)
@@ -132,9 +132,9 @@ def get_request_result_check(case_table_sheet,url, headers, host, data, table_sh
                 if count_num == 100:
                     return
             # print(response.url, response.text)
-            clean_vaule(table_sheet_name, row, column)
-            write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
-            write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
+            clean_vaule(case_table_sheet, row, column)
+            write_result(sheet=case_table_sheet, row=row, column=column, value=response.status_code)
+            write_result(sheet=case_table_sheet, row=row, column=column + 4, value=response.text)
         elif case_detail == '根据statementID确认step':
             print('开始执行：', case_detail)
             ensure_statementId = get_step_output_ensure_statementId(HOST_189,data)
@@ -151,9 +151,9 @@ def get_request_result_check(case_table_sheet,url, headers, host, data, table_sh
                 if count_num == 100:
                     return
             # print(response.url, response.text)
-            clean_vaule(table_sheet_name, row, column)
-            write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
-            write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
+            clean_vaule(case_table_sheet, row, column)
+            write_result(sheet=case_table_sheet, row=row, column=column, value=response.status_code)
+            write_result(sheet=case_table_sheet, row=row, column=column + 4, value=response.text)
 
         else:
             print('开始执行：', case_detail)
@@ -192,24 +192,24 @@ def get_request_result_check(case_table_sheet,url, headers, host, data, table_sh
                 except Exception:
                     return
                 # print(response.url, response.status_code,response.text)
-                clean_vaule(table_sheet_name, row, column)
-                write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
-                write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
+                clean_vaule(case_table_sheet, row, column)
+                write_result(sheet=case_table_sheet, row=row, column=column, value=response.status_code)
+                write_result(sheet=case_table_sheet, row=row, column=column + 4, value=response.text)
             elif len(parameters) == 2:
                 url_new = url.format(parameters[0], parameters[1])
                 # print(url_new)
                 response = requests.get(url=url_new, headers=headers)
                 # print(response.url, response.status_code, response.text)
-                clean_vaule(table_sheet_name, row, column)
-                write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
-                write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
+                clean_vaule(case_table_sheet, row, column)
+                write_result(sheet=case_table_sheet, row=row, column=column, value=response.status_code)
+                write_result(sheet=case_table_sheet, row=row, column=column + 4, value=response.text)
             elif len(parameters) == 3:
                 url_new = url.format(parameters[0], parameters[1], parameters[2])
                 response = requests.get(url=url_new, headers=headers)
                 # print(response.url, response.status_code, response.text)
-                clean_vaule(table_sheet_name, row, column)
-                write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
-                write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
+                clean_vaule(case_table_sheet, row, column)
+                write_result(sheet=case_table_sheet, row=row, column=column, value=response.status_code)
+                write_result(sheet=case_table_sheet, row=row, column=column + 4, value=response.text)
             else:
                 print('请确认第%d行parameters' % row)
     # GET 请求参数写在URL中，直接发送请求
@@ -220,9 +220,9 @@ def get_request_result_check(case_table_sheet,url, headers, host, data, table_sh
             new_url = url.format(application_id)
             response = requests.get(url=new_url, headers=headers)
             # print(response.status_code, response.text, type(response.text))
-            clean_vaule(table_sheet_name, row, column)
-            write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
-            write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
+            clean_vaule(case_table_sheet, row, column)
+            write_result(sheet=case_table_sheet, row=row, column=column, value=response.status_code)
+            write_result(sheet=case_table_sheet, row=row, column=column + 4, value=response.text)
         elif case_detail == '根据质量分析结果path预览dataset-获取datasetId':
             print('开始执行：', case_detail)
             dataset_path = get_woven_qaoutput_dataset_path()[0]
@@ -231,16 +231,16 @@ def get_request_result_check(case_table_sheet,url, headers, host, data, table_sh
             response = requests.get(url=new_url, headers=headers)
             # print(response.url)
             # print(response.status_code, response.text)
-            clean_vaule(table_sheet_name, row, column)
-            write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
-            write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
+            clean_vaule(case_table_sheet, row, column)
+            write_result(sheet=case_table_sheet, row=row, column=column, value=response.status_code)
+            write_result(sheet=case_table_sheet, row=row, column=column + 4, value=response.text)
         else:
             print('开始执行：', case_detail)
             response = requests.get(url=url, headers=headers)
             # print(response.url)
             # print(response.content)
             # print(response.status_code,response.text)
-            clean_vaule(table_sheet_name, row, column)
-            write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
-            write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
+            clean_vaule(case_table_sheet, row, column)
+            write_result(sheet=case_table_sheet, row=row, column=column, value=response.status_code)
+            write_result(sheet=case_table_sheet, row=row, column=column + 4, value=response.text)
 

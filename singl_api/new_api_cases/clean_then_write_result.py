@@ -1,3 +1,5 @@
+
+
 #  写入返回结果
 def write_result(sheet, row, column, value):
     sheet.cell(row=row, column=column, value=value)
@@ -11,3 +13,4 @@ def clean_vaule(sheet, row, column):
     sheet.cell(row=row, column=column + 5, value='')
     sheet.cell(row=row, column=column + 6, value='')
     sheet.cell(row=row, column=column + 7, value='')
+

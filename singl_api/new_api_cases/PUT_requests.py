@@ -4,7 +4,7 @@ import requests
 
 
 # PUT请求
-def put_request_result_check(url, host, row, data, table_sheet_name, column, headers, ms):
+def put_request_result_check(case_table_sheet, url, host, row, data, column, headers, ms):
     if data and isinstance(data, str):
         if '&' in data:
             # 分隔参数
@@ -17,9 +17,9 @@ def put_request_result_check(url, host, row, data, table_sheet_name, column, hea
             parameters_data = parameters[-1]
             if parameters_data.startswith('{'):
                 response = requests.put(url=new_url, headers=headers, json=dict_res(parameters_data))
-                clean_vaule(table_sheet_name, row, column)
-                write_result(table_sheet_name, row, column, response.status_code)
-                write_result(table_sheet_name, row, column+4, response.text)
+                clean_vaule(case_table_sheet, row, column)
+                write_result(case_table_sheet, row, column, response.status_code)
+                write_result(case_table_sheet, row, column+4, response.text)
             else:
                 print('请确认第%d行parameters中需要update的值格式，应为id&{data}' % row)
         else:
@@ -31,16 +31,16 @@ def put_request_result_check(url, host, row, data, table_sheet_name, column, hea
                 # print('new_url:', new_url)
                 response = requests.put(url=new_url, headers=headers)
                 # print(response.status_code, response.text)
-                clean_vaule(table_sheet_name, row, column)
-                write_result(table_sheet_name, row, column, response.status_code)
-                write_result(table_sheet_name, row, column + 4, response.text)
+                clean_vaule(case_table_sheet, row, column)
+                write_result(case_table_sheet, row, column, response.status_code)
+                write_result(case_table_sheet, row, column + 4, response.text)
             elif data.startswith('{') and data.endswith('}'):
                 response = requests.put(url=url, headers=headers, data=data)
                 # print(response.status_code, response.text)
                 # print(response.url, response.content)
-                clean_vaule(table_sheet_name, row, column)
-                write_result(table_sheet_name, row, column, response.status_code)
-                write_result(table_sheet_name, row, column + 4, response.text)
+                clean_vaule(case_table_sheet, row, column)
+                write_result(case_table_sheet, row, column, response.status_code)
+                write_result(case_table_sheet, row, column + 4, response.text)
             elif data.startswith('[') and data.endswith(']'):
                 pass
             else:
@@ -48,8 +48,8 @@ def put_request_result_check(url, host, row, data, table_sheet_name, column, hea
                 # print('new_url:', new_url)
                 response = requests.put(url=new_url, headers=headers)
                 # print(response.status_code, response.text)
-                clean_vaule(table_sheet_name, row, column)
-                write_result(table_sheet_name, row, column, response.status_code)
-                write_result(table_sheet_name, row, column + 4, response.text)
+                clean_vaule(case_table_sheet, row, column)
+                write_result(case_table_sheet, row, column, response.status_code)
+                write_result(case_table_sheet, row, column + 4, response.text)
     else:
         print('第%s行的参数为空或格式异常' % row)
