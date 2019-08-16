@@ -352,11 +352,11 @@ def get_request_result_check(url, headers, host, data, table_sheet_name, row, co
             parameter_list = []
             parameter_list.append(data)
             parameter_list.append(statement_id)
-            print(parameter_list)
+            # print(parameter_list)
             url_new = url.format(parameter_list[0], parameter_list[1])
-            print(url_new)
+            # print(url_new)
             response = requests.get(url=url_new, headers=headers)
-            print(response.status_code, response.text)
+            # print(response.status_code, response.text)
             count_num = 0
             while response.text in ('{"statement":"waiting"}', '{"statement":"running"}'):
                 response = requests.get(url=url_new, headers=headers)
@@ -430,7 +430,7 @@ def get_request_result_check(url, headers, host, data, table_sheet_name, row, co
             print('开始执行：', case_detail)
             time.sleep(10)
             task_id = collector_schema_sync(data)
-            print(task_id)
+            # print(task_id)
             # print(task_id)
             time.sleep(5)
             new_url = url.format(task_id)
@@ -518,9 +518,9 @@ def get_request_result_check(url, headers, host, data, table_sheet_name, row, co
             if len(parameters) == 1:
                 try:
                     url_new = url.format(parameters[0])
-                    print(url_new)
+                    # print(url_new)
                     response = requests.get(url=url_new, headers=headers)
-                    print(response.content, response.status_code, response.text)
+                    # print(response.content, response.status_code, response.text)
                 except Exception:
                     return
                 # print(response.url, response.status_code,response.text)
@@ -529,9 +529,9 @@ def get_request_result_check(url, headers, host, data, table_sheet_name, row, co
                 write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
             elif len(parameters) == 2:
                 url_new = url.format(parameters[0], parameters[1])
-                print(url_new)
+                # print(url_new)
                 response = requests.get(url=url_new, headers=headers)
-                print(response.url, response.status_code, response.text)
+                # print(response.url, response.status_code, response.text)
                 clean_vaule(table_sheet_name, row, column)
                 write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
                 write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
@@ -559,7 +559,7 @@ def get_request_result_check(url, headers, host, data, table_sheet_name, row, co
             print('开始执行：', case_detail)
             dataset_path = get_woven_qaoutput_dataset_path()[0]
             new_url = url.format(dataset_path)
-            print(new_url)
+            # print(new_url)
             response = requests.get(url=new_url, headers=headers)
             # print(response.url)
             # print(response.status_code, response.text)
@@ -569,9 +569,9 @@ def get_request_result_check(url, headers, host, data, table_sheet_name, row, co
         else:
             print('开始执行：', case_detail)
             response = requests.get(url=url, headers=headers)
-            print(response.url)
-            print(response.content)
-            print(response.status_code,response.text)
+            # print(response.url)
+            # print(response.content)
+            # print(response.status_code,response.text)
             clean_vaule(table_sheet_name, row, column)
             write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
             write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
@@ -585,8 +585,8 @@ def put_request_result_check(url, host, row, data, table_sheet_name, column, hea
             parameters = data.split('&')
             # 拼接URL
             new_url = url.format(parameters[0])
-            print(new_url)
-            print(parameters)
+            # print(new_url)
+            # print(parameters)
             # 发送的参数体
             parameters_data = parameters[-1]
             if parameters_data.startswith('{'):
@@ -610,8 +610,8 @@ def put_request_result_check(url, host, row, data, table_sheet_name, column, hea
                 write_result(table_sheet_name, row, column + 4, response.text)
             elif data.startswith('{') and data.endswith('}'):
                 response = requests.put(url=url, headers=headers, data=data)
-                print(response.status_code, response.text)
-                print(response.url, response.content)
+                # print(response.status_code, response.text)
+                # print(response.url, response.content)
                 clean_vaule(table_sheet_name, row, column)
                 write_result(table_sheet_name, row, column, response.status_code)
                 write_result(table_sheet_name, row, column + 4, response.text)
@@ -785,10 +785,6 @@ class CheckResult(unittest.TestCase):
                 compare_result = re.findall('[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}', '%s' % (response_text))
                 response_text_list = []
                 response_text_list.append(response_text)
-                # print('response_text_dict', response_text_dict)
-                # print(type(response_text_dict))
-                # print('expect_text', expect_text)
-                # print(type(expect_text))
                 # 返回值是id 串，字母和数字的组合
                 if compare_result == response_text_list:
                     try:
