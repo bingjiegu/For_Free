@@ -29,20 +29,20 @@ def deal_request_method(table_name, case_table, case_table_sheet, all_rows, ms):
                 if request_method_upper == 'POST':
                     # 调用post方法发送请求
                     post_request_result_check(row=i, column=8, url=request_url, host=host, headers=get_headers_root(host),
-                                              data=request_data, case_table_sheet=case_table_sheet,ms=ms)
+                                              data=request_data, case_table_sheet=case_table_sheet, ms=ms)
 
                 elif request_method_upper == 'GET':
                     # 调用GET请求
                     get_request_result_check(url=request_url, host=host, headers=get_headers_root(host), data=request_data,
-                                             table_sheet_name=case_table_sheet, row=i, column=8)
+                                             table_sheet_name=case_table_sheet, row=i, column=8, ms=ms)
 
                 elif request_method_upper == 'PUT':
                     put_request_result_check(url=request_url, host=host, row=i, data=request_data,
-                                             table_sheet_name=case_table_sheet, column=8, headers=get_headers_root(host))
+                                             table_sheet_name=case_table_sheet, column=8, headers=get_headers_root(host),ms=ms)
 
                 elif request_method_upper == 'DELETE':
-                    delete_request_result_check(request_url, request_data, table_sheet_name=case_table_sheet,row=i,
-                                                column=8, headers=get_headers_root(host))
+                    delete_request_result_check(request_url, request_data, table_sheet_name=case_table_sheet, row=i,
+                                                column=8, headers=get_headers_root(host), ms=ms)
                 else:
                     print('请求方法%s不在处理范围内' % request_method)
             else:
@@ -50,18 +50,20 @@ def deal_request_method(table_name, case_table, case_table_sheet, all_rows, ms):
                 if request_method_upper == 'POST':
                     # 调用post方法发送请求
                     post_request_result_check(row=i, host=host, column=8, url=request_url, headers=get_headers(host),
-                                                    data=request_data, case_table_sheet=case_table_sheet,ms=ms)
+                                                    data=request_data, case_table_sheet=case_table_sheet, ms=ms)
 
                 elif request_method_upper == 'GET':
                     # 调用GET请求
                     get_request_result_check(url=request_url, host=host, headers=get_headers(host), data=request_data,
-                                             table_sheet_name=case_table_sheet, row=i, column=8)
+                                             table_sheet_name=case_table_sheet, row=i, column=8, ms=ms)
 
                 elif request_method_upper == 'PUT':
-                    put_request_result_check(url=request_url, host=host, row=i, data=request_data, table_sheet_name=case_table_sheet, column=8, headers=get_headers(host))
+                    put_request_result_check(url=request_url, host=host, row=i, data=request_data,
+                                             table_sheet_name=case_table_sheet, column=8, headers=get_headers(host), ms=ms)
 
                 elif request_method_upper == 'DELETE':
-                    delete_request_result_check(url=request_url, data=request_data,table_sheet_name=case_table_sheet,row=i, column=8, headers=get_headers(host))
+                    delete_request_result_check(url=request_url, data=request_data,table_sheet_name=case_table_sheet,
+                                                row=i, column=8, headers=get_headers(host), ms=ms)
 
                 else:
                     print('请求方法%s不在处理范围内' % request_method)
