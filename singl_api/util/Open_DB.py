@@ -2,7 +2,6 @@
 import pymysql
 
 
-
 # 数据库连接
 class MYSQL:
     def __init__(self, host, user, pwd, db):

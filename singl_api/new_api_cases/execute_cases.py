@@ -11,7 +11,7 @@ from util.format_res import dict_res, get_time
 from basic_info.setting import MySQL_CONFIG
 from util.Open_DB import MYSQL
 from basic_info.setting import HOST_189
-from util.timestamp_13 import get_timestamp, get_now_time
+from new_api_cases.deal_parameters import deal_parameters
 import random, unittest
 from new_api_cases.get_statementId import statementId, statementId_no_dataset, get_sql_analyse_statement_id, \
     get_sql_analyse_dataset_info, get_sql_execte_statement_id, steps_sql_parseinit_statemenId, \
@@ -33,12 +33,14 @@ jar_dir = ab_dir('woven-common-3.0.jar')
 def deal_request_method():
     for i in range(2, all_rows+1):
         request_method = case_table_sheet.cell(row=i, column=4).value
-        request_url = case_table_sheet.cell(row=i, column=5).value
-        request_url = deal_parameters(request_url)
+        old_request_url = case_table_sheet.cell(row=i, column=5).value
+        request_url = deal_parameters(old_request_url)
+        # print(request_url, type(request_url))
         host = get_host.get_host(request_url)
-        # request_data = case_table_sheet.cell(row=i, column=6).value
-        data = case_table_sheet.cell(row=i, column=6).value
-        request_data = deal_parameters(data)
+        old_data = case_table_sheet.cell(row=i, column=6).value
+        request_data = deal_parameters(old_data)
+        # request_data = data.encode('utf-8')
+        # print(request_data)
         key_word = case_table_sheet.cell(row=i, column=3).value
         api_name = case_table_sheet.cell(row=i, column=1).value
         # 请求方法转大写
@@ -91,20 +93,21 @@ def deal_request_method():
     case_table.save(ab_dir("api_cases.xlsx"))
 
 
-
 # POST请求
 def post_request_result_check(row, column, url, host,headers, data, table_sheet_name):
     if isinstance(data, str):
         case_detail = case_table_sheet.cell(row=row, column=2).value
         # if case_detail =='HDFS，根据statementId取结果数据(datasetId不存在)':
-        if case_detail in ('HDFS，根据statementId取结果数据(datasetId不存在)', 'HIVE，根据statementId取Dataset数据(datasetId不存在)',
-                           'KAFKA，根据statementId取Dataset数据(datasetId不存在)',
-                           'FTP，根据statementId取Dataset数据(datasetId不存在)'):
+        if case_detail in ('预览dataset-HDFS-csv,获取预览Dataset的数据(Id不存在)', '预览dataset-HDFS-parquet,获取预览Dataset的数据(Id不存在)',
+                           '预览dataset-HDFS-orc,获取预览Dataset的数据(Id不存在)','预览dataset-HDFS-txt,获取预览Dataset的数据(Id不存在)',
+                           '预览dataset-HDFS-avro,获取预览Dataset的数据(Id不存在)','预览dataset-DB,获取预览数据(Id不存在)'):
             # 先获取statementId,然后格式化URL，再发送请求
             print('开始执行：', case_detail)
-            statement = statementId_no_dataset(HOST_189,dict_res(data))
+            statement = statementId_no_dataset(host, dict_res(data))
             new_url = url.format(statement)
+            data = data.encode('utf-8')
             response = requests.post(url=new_url, headers=headers, data=data)
+            print(response.text, response.status_code)
             # print(response.url)
             # 将返回的status_code和response.text分别写入第10列和第14列
             clean_vaule(table_sheet_name, row, column)
@@ -230,23 +233,22 @@ def post_request_result_check(row, column, url, host,headers, data, table_sheet_
                 if '57' in HOST_189:
                     res = requests.post(url=disable_user_url_dam, headers=headers, json=user_id_list)
                 # print(headers)
-                    print(res.content, res.status_code, res.status_code)
+                #     print(res.content, res.status_code, res.status_code)
                 # 删除该用户
                     res2 = requests.post(url=remove_user_url_dam, headers=headers, json=user_id_list)
-                    print(res2.status_code, res2.text)
+                    # print(res2.status_code, res2.text)
                 # 创建dudu666666用户
                     response = requests.post(url=url, headers=headers, data=data)
-                    print(response.status_code, response.text)
+                    # print(response.status_code, response.text)
                 else:
                     res = requests.post(url=disable_user_url, headers=headers, json=user_id_list)
-                #     # print(headers)
-                    print(res.content, res.status_code, res.status_code)
-                #     # 删除该用户
+
+                # 删除该用户
                     res2 = requests.post(url=remove_user_url, headers=headers, json=user_id_list)
-                    print(res2.status_code, res2.text)
-                #     # 创建dudu666666用户
+
+                # 创建dudu666666用户
                     response = requests.post(url=url, headers=headers, data=data)
-                    print(response.status_code, response.text)
+                    # print(response.status_code, response.text)
                 clean_vaule(table_sheet_name, row, column)
                 write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
                 write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
@@ -270,11 +272,11 @@ def post_request_result_check(row, column, url, host,headers, data, table_sheet_
             headers["Content-Type"] = "application/x-www-form-urlencoded"
             headers.pop('X-AUTH-TOKEN')
             response = requests.post(url, headers=headers, data=dict_res(data))
-            print(type(data))
-            print('headers', headers)
-            print(response.content)
-            print(response.headers)
-            print(response.status_code,response.text)
+            # print(type(data))
+            # print('headers', headers)
+            # print(response.content)
+            # print(response.headers)
+            # print(response.status_code,response.text)
             clean_vaule(table_sheet_name, row, column)
             write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
             write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
@@ -307,9 +309,9 @@ def post_request_result_check(row, column, url, host,headers, data, table_sheet_
                 data_dict = dict_res(data)
                 # print(data_dict)
                 response = requests.post(url=url, headers=headers, json=data_dict)
-                print(response.url)
-                print(response.content)
-                print(response.status_code, response.text)
+                # print(response.url)
+                # print(response.content)
+                # print(response.status_code, response.text)
                 clean_vaule(table_sheet_name, row, column)
                 write_result(sheet=table_sheet_name, row=row, column=column, value=response.status_code)
                 write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
@@ -340,15 +342,21 @@ def get_request_result_check(url, headers, host, data, table_sheet_name, row, co
 
     # GET请求需要从parameter中获取参数,并把参数拼装到URL中，
     if data:
-        if case_detail == '根据statement id,获取预览Dataset的结果数据(datasetId存在)':
+        if case_detail in('预览DB dataset,获取预览Dataset的数据(Id存在)','预览dataset-HDFS-csv,获取预览Dataset的数据(Id存在)',
+                          '预览dataset-HDFS-parquet,获取预览Dataset的数据(Id存在)','预览dataset-HDFS-orc,获取预览Dataset的数据(Id存在)',
+                          '预览dataset-HDFS-txt,获取预览Dataset的数据(Id存在)','预览dataset-HDFS-avro,获取预览Dataset的数据(Id存在)'):
             # print(data)
             print('开始执行：', case_detail)
-            statement_id = statementId(data)
+            # data = deal_parameters(data)
+            statement_id = statementId(host, data)
             parameter_list = []
             parameter_list.append(data)
             parameter_list.append(statement_id)
+            print(parameter_list)
             url_new = url.format(parameter_list[0], parameter_list[1])
+            print(url_new)
             response = requests.get(url=url_new, headers=headers)
+            print(response.status_code, response.text)
             count_num = 0
             while response.text in ('{"statement":"waiting"}', '{"statement":"running"}'):
                 response = requests.get(url=url_new, headers=headers)
@@ -360,7 +368,7 @@ def get_request_result_check(url, headers, host, data, table_sheet_name, row, co
             write_result(sheet=table_sheet_name, row=row, column=column + 4, value=response.text)
         elif case_detail == ('根据statement id,获取Sql Analyze结果(获取输出字段)'):
             print('开始执行：', case_detail)
-            sql_analyse_statement_id = get_sql_analyse_statement_id(HOST_189,data)
+            sql_analyse_statement_id = get_sql_analyse_statement_id(host, data)
             new_url = url.format(sql_analyse_statement_id)
             # print(new_url)
             response = requests.get(url=new_url, headers=headers)
@@ -680,34 +688,6 @@ def clean_vaule(sheet, row, column):
     sheet.cell(row=row, column=column + 5, value='')
     sheet.cell(row=row, column=column + 6, value='')
     sheet.cell(row=row, column=column + 7, value='')
-
-
-def deal_parameters(data):
-    if data:
-        if '随机数' in data:
-            # print(data)
-            data = data.replace('随机数', str(random.randint(0, 999999999999999)))
-            return deal_parameters(data)
-        if '6天前时间戳' in data:
-            data = data.replace('6天前时间戳', get_timestamp(6))
-            return deal_parameters(data)
-        if '当前时间戳' in data:
-            data = data.replace('当前时间戳', get_timestamp(0))
-            # print(deal_parameters(new_data))
-            return deal_parameters(data)
-        if '监控开始时间' in data:
-            data = data.replace('监控开始时间', get_now_time()[0])
-            print(data)
-            return deal_parameters(data)
-        if '监控结束时间' in data:
-            data = data.replace('监控结束时间', get_now_time()[1])
-            print(data)
-            return deal_parameters(data)
-        else:
-            print(data)
-            return data
-    else:
-        return data
 
 
 # 对比code和text

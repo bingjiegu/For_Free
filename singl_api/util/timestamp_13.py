@@ -29,3 +29,5 @@ def get_now_time():
     # yesterday_time_date = datetime.datetime.strptime(yesterday_time_nyr, '%Y-%m-%d')
     # return yesterday_time_date, now_time_date
     return yesterday_time_nyr, now_time_nyr
+
+print(get_now_time()[1])

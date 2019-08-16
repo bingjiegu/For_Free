@@ -87,21 +87,34 @@ email_to = {
 #     "DB": 'database_81'
 # }
 # # -------76环境使用-------
-# # HOST
-HOST_189 = "http://192.168.1.76:8515"
-# # # # 数据库连接信息
+# # # HOST
+# HOST_189 = "http://192.168.1.76:8515"
+# # # # # 数据库连接信息
+# MySQL_CONFIG = {
+#     'HOST': '192.168.1.76',
+#     "PORT": 3306,
+#     "USER": 'merce',
+#     "PASSWORD": 'merce',
+#     "DB": 'merce_76'
+# }
+# -------83环境使用-------
+# HOST
+HOST_189 = "http://192.168.1.83:8515"
+# 数据库的连接配置，需要根据不同环境进行变更
 MySQL_CONFIG = {
-    'HOST': '192.168.1.76',
+    'HOST': '192.168.1.199',
     "PORT": 3306,
     "USER": 'merce',
-    "PASSWORD": 'merce',
-    "DB": 'merce_76'
-}
+    "PASSWORD": '123456',
+    "DB": 'wac666',
+    'case_db': 'test'}
+
 
 tenant_id_189 = "2d7ad891-41c5-4fba-9ff2-03aef3c729e5"  # 189环境default租戶ID
 tenant_id_81 = "55f7f910-b1c9-41d2-9771-e734e6b8285f"  # 81环境default租戶ID
 tenant_id_76 = "d545436b-3f53-4c89-b1b7-966faa5f2d13"
 tenant_id_57 = "087e55ee-5ad4-451e-ba3d-0be93ec4546c"
+tenant_id_83 = "fc75a4d5-72af-486b-9a48-c35aeaefedca"
 
 MY_LOGIN_INFO = {
  "HEADERS": {'Content-Type': 'application/x-www-form-urlencoded'},

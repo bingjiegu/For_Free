@@ -1,6 +1,6 @@
 import requests,json
 from basic_info.get_auth_token import get_headers
-from basic_info.setting import HOST_189, tenant_id_189, tenant_id_81
+from basic_info.setting import HOST_189, tenant_id_189, tenant_id_81,tenant_id_83
 from util.format_res import dict_res
 
 
@@ -13,15 +13,19 @@ def get_tenant(host):
     elif '189' in host:
         tenant_id = tenant_id_189
         return tenant_id
+    elif '83' in host:
+        tenant_id = tenant_id_83
+        return tenant_id
     else:
-        print('请确认host信息')
+        print('使用的host不在预期中，请确认host信息')
         return
 
 
 # datasetId存在时
-def statementId(datasetId):
-    url = '%s/api/datasets/%s/previewinit?tenant=%s' % (HOST_189, datasetId, get_tenant(HOST_189))
-    res = requests.get(url=url, headers=get_headers(HOST_189))
+def statementId(host, datasetId):
+
+    url = '%s/api/datasets/%s/previewinit?tenant=%s' % (host, datasetId, get_tenant(host))
+    res = requests.get(url=url, headers=get_headers(host))
     try:
         res_statementId = json.loads(res.text)
         statementId = res_statementId['statementId']
