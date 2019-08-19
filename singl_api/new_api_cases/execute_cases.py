@@ -7,7 +7,7 @@ from new_api_cases.operate_method import deal_request_method
 from new_api_cases.check_result import CheckResult
 
 
-table_names = ["api_cases_83.xlsx", "api_cases_57.xlsx"]
+table_names = ["api_cases_83.xlsx"]
 ab_dir = lambda n: os.path.abspath(os.path.join(os.path.dirname(__file__), n))
 jar_dir = ab_dir('woven-common-3.0.jar')
 
